@@ -24,7 +24,8 @@
       event.waitUntil(
         caches.open('v1').then(function(cache) {
           return cache.addAll([
-            'index.html',
+              'index.html',
+              'page2.html',
               'service_worker.js'
           ]);
         })
