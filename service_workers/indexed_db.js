@@ -59,8 +59,9 @@
       var external_id = document.getElementById('external_id').value;
       var name = document.getElementById('name').value;
       var email = document.getElementById('email').value;
+        var phone_number = document.getElementById('phone_number').value;
       //addPublication(biblioid, title, year, selected_file);
-        var obj = { external_id: external_id, name: name, email: email };
+        var obj = { external_id: external_id, name: name, email: email, phone_number: phone_number };
         var store = getObjectStore(DB_STORE_NAME, 'readwrite');
         var req;
         
