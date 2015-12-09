@@ -90,9 +90,9 @@
 
     function addResource(evt) {
       console.log("add ...");
-      var external_id = document.getElementById('external_id');
-      var name = document.getElementById('name');
-      var email = document.getElementById('email');
+      var external_id = document.getElementById('external_id').value;
+      var name = document.getElementById('name').value;
+      var email = document.getElementById('email').value;
       //addPublication(biblioid, title, year, selected_file);
         var obj = { external_id: external_id, name: name, email: email };
         var store = getObjectStore(DB_STORE_NAME, 'readwrite');
