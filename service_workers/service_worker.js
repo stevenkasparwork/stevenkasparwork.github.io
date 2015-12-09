@@ -45,7 +45,14 @@ if (!window.indexedDB) {
 }
 // Let us open our database
 var request = window.indexedDB.open("MyTestDatabase", 1);
-
+request.onerror = function(event) {
+  // Do something with request.errorCode!
+    console.log(event);
+};
+request.onsuccess = function(event) {
+  // Do something with request.result!
+    console.log(event);
+};
 
     if(counter){
         counter++;
