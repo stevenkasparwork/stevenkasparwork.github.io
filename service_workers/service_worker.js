@@ -80,4 +80,32 @@ if(typeof window !== 'undefined'){
         }
       };
     };
+    // Do something when all the data is added to the database.
+    transaction.oncomplete = function(event) {
+        console.log(event);
+      alert("All done!");
+    };
+
+    transaction.onerror = function(event) {
+      // Don't forget to handle errors!
+        console.log(event);
+    };
+}
+function addResource(){
+    var external_id = document.getElementById('external_id').value;
+    var name = document.getElementById('name').value;
+    var age = document.getElementById('age').value;
+    var email = document.getElementById('email').value;
+    
+    
+    var request = objectStore.add({ external_id: external_id, name: name, age: age, email: email});
+    request.onerror = function(event) {
+    // event.target.result == customerData[i].ssn;
+        console.log(event);
+    }
+    request.onsuccess = function(event) {
+    // event.target.result == customerData[i].ssn;
+        console.log(event);
+    }
+};
 }
