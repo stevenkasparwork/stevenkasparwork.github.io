@@ -23,6 +23,7 @@
         console.log('install event');
       event.waitUntil(
         caches.open('v1').then(function(cache) {
+            startDB();
           return cache.addAll([
               'index.html',
               'page2.html',
@@ -31,7 +32,7 @@
         })
       );
     });
-window.onload = function () {
+startDB = function () {
   var COMPAT_ENVS = [
     ['Firefox', ">= 16.0"],
     ['Google Chrome',
