@@ -43,21 +43,13 @@ window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.ms
 if (!window.indexedDB) {
     window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
 }
-// Let us open our database
-var request = window.indexedDB.open("MyTestDatabase", 1);
+var db;
+var request = indexedDB.open("MyTestDatabase");
 request.onerror = function(event) {
-  // Do something with request.errorCode!
-    console.log(event);
+  alert("Why didn't you allow my web app to use IndexedDB?!");
 };
 request.onsuccess = function(event) {
-  // Do something with request.result!
     console.log(event);
+  db = event.target.result;
+    console.log(db);
 };
-
-    if(counter){
-        counter++;
-    }
-    else {
-        var counter = 0;
-    }
-    console.log(counter);
