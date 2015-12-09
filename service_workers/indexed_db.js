@@ -70,7 +70,7 @@ var db;
 
     };
     $.ajax({
-        url: "../service_workers/controllers/getResources.php",
+        url: "//li617-242.members.linode.com/cgi-bin/controllers/getResources.php",
         data: {
             api_key: OFSC_API_KEY
         },
