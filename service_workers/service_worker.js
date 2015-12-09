@@ -38,7 +38,7 @@ const resourcesData = [
 ];
 
 var transaction, db, objectStore, request, indexedDB;
-;
+
 if(typeof window !== 'undefined'){
     console.log(window);
     // In the following line, you should include the prefixes of implementations you want to test.
