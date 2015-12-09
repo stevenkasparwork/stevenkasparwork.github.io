@@ -28,7 +28,8 @@ this.addEventListener('install', function(event) {
           '/service_workers/',
           '/service_workers/index.html',
           '/service_workers/page2.html',
-          '/service_workers/indexed_db.js'
+          '/service_workers/indexed_db.js',
+          '/service_workers/jquery.js'
       ]);
     })
   );
