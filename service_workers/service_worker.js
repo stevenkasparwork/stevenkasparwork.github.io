@@ -36,6 +36,7 @@ const resourcesData = [
   { external_id: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
   { external_id: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
 ];
+var transaction, db;
 if(typeof window !== 'undefined'){
     console.log(window);
     // In the following line, you should include the prefixes of implementations you want to test.
@@ -79,17 +80,19 @@ if(typeof window !== 'undefined'){
           resourcesObjectStore.add(resourcesData[i]);
         }
       };
-    };
-    var transaction = db.transaction(["customers"], "readwrite");
-    // Do something when all the data is added to the database.
-    transaction.oncomplete = function(event) {
-        console.log(event);
-      alert("All done!");
-    };
+        
+        
+        transaction = db.transaction(["customers"], "readwrite");
+        // Do something when all the data is added to the database.
+        transaction.oncomplete = function(event) {
+            console.log(event);
+          alert("All done!");
+        };
 
-    transaction.onerror = function(event) {
-      // Don't forget to handle errors!
-        console.log(event);
+        transaction.onerror = function(event) {
+          // Don't forget to handle errors!
+            console.log(event);
+        };
     };
 }
 function addResource(){
