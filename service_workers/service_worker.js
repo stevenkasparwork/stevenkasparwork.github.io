@@ -26,7 +26,7 @@
           return cache.addAll([
               'index.html',
               'page2.html',
-              'service_worker.js'
+              'indexed_db.js'
           ]);
         })
       );
