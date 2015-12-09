@@ -56,46 +56,20 @@ if(typeof window !== 'undefined'){
         console.log(event);
       db = event.target.result;
         console.log(db);
-    }; 
-    request.onupgradeneeded = function(event) {
-        console.log('upgrade needed');
-      db = event.target.result;
-
-      // Create an objectStore to hold information about our customers. We're
-      // going to use "ssn" as our key path because it's guaranteed to be
-      // unique - or at least that's what I was told during the kickoff meeting.
-      objectStore = db.createObjectStore("resources2", { keyPath: "external_id" });
-
-      // Create an index to search resources by name. We may have duplicates
-      // so we can't use a unique index.
-      objectStore.createIndex("name", "name", { unique: false });
-
-      // Create an index to search customers by email. We want to ensure that
-      // no two customers have the same email, so use a unique index.
-      objectStore.createIndex("email", "email", { unique: true });
-
-      // Use transaction oncomplete to make sure the objectStore creation is 
-      // finished before adding data into it.
-      objectStore.transaction.oncomplete = function(event) {
-        // Store values in the newly created objectStore.
-        var resourcesObjectStore = db.transaction("resources", "readwrite").objectStore("resources");
-        for (var i in resourcesData) {
-          resourcesObjectStore.add(resourcesData[i]);
-        }
-      };
-        
-        
-        transaction = db.transaction(["customers"], "readwrite");
+        objectStore = db.transaction(["resources"], "readwrite").objectStore("customers");
         // Do something when all the data is added to the database.
-        transaction.oncomplete = function(event) {
+        objectStore.oncomplete = function(event) {
             console.log(event);
           alert("All done!");
         };
 
-        transaction.onerror = function(event) {
+        objectStore.onerror = function(event) {
           // Don't forget to handle errors!
             console.log(event);
         };
+    }; 
+    request.onupgradeneeded = function(event) {
+        console.log('upgrade needed');
     };
 }
 function addResource(){
