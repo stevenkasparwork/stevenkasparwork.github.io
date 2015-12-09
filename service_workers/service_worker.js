@@ -89,4 +89,11 @@ function addResource(){
         console.log(event);
     }
 };
+function getResource(){
+    var index = objectStore.index("name");
+
+    index.get("Donna").onsuccess = function(event) {
+      console.log("Donna's SSN is " + event.target.result.ssn);
+    };
+}
 
