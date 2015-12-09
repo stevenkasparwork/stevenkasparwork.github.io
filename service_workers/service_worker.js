@@ -31,7 +31,7 @@
         })
       );
     });
-(function () {
+window.onload = function () {
   var COMPAT_ENVS = [
     ['Firefox', ">= 16.0"],
     ['Google Chrome',
@@ -478,5 +478,5 @@
   openDb();
   addEventListeners();
 
-})(); // Immediately-Invoked Function Expression (IIFE)
+}(); // Immediately-Invoked Function Expression (IIFE)
 
