@@ -36,7 +36,9 @@ const resourcesData = [
   { external_id: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
   { external_id: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
 ];
-var transaction, db, objectStore;
+
+var transaction, db, objectStore, request, indexedDB;
+;
 if(typeof window !== 'undefined'){
     console.log(window);
     // In the following line, you should include the prefixes of implementations you want to test.
@@ -45,8 +47,8 @@ if(typeof window !== 'undefined'){
     if (!window.indexedDB) {
         window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
     }
-    var db;
-    var request = indexedDB.open("HelixOFSCMobilityDB");
+    
+    request = indexedDB.open("HelixOFSCMobilityDB");
     request.onerror = function(event) {
       alert("Why didn't you allow my web app to use IndexedDB?!");
     };
@@ -56,7 +58,8 @@ if(typeof window !== 'undefined'){
         console.log(db);
     }; 
     request.onupgradeneeded = function(event) {
-      var db = event.target.result;
+        console.log('upgrade needed');
+      db = event.target.result;
 
       // Create an objectStore to hold information about our customers. We're
       // going to use "ssn" as our key path because it's guaranteed to be
