@@ -31,7 +31,7 @@
         })
       );
     });
-if(window){
+if(typeof window !== 'undefined'){
     console.log(window);
     // In the following line, you should include the prefixes of implementations you want to test.
     indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
