@@ -54,7 +54,7 @@ if(typeof window !== 'undefined'){
         console.log(event);
       db = event.target.result;
         console.log(db);
-    };
+    }; 
     request.onupgradeneeded = function(event) {
       var db = event.target.result;
 
