@@ -56,7 +56,7 @@ if(typeof window !== 'undefined'){
         console.log(event);
       db = event.target.result;
         console.log(db);
-        objectStore = db.transaction(["resources"], "readwrite").objectStore("customers");
+        objectStore = db.transaction(["resources"], "readwrite").objectStore("resources");
         // Do something when all the data is added to the database.
         objectStore.oncomplete = function(event) {
             console.log(event);
