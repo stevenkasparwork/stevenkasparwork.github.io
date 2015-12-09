@@ -108,4 +108,4 @@ function addResource(){
         console.log(event);
     }
 };
-}
+
