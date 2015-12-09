@@ -23,6 +23,7 @@
         console.log('install event');
       event.waitUntil(
         caches.open('v2').then(function(cache) {
+            console.log(cache);
           return cache.addAll([
               'index.html',
               'page2.html',
