@@ -25,9 +25,9 @@
         caches.open('v2').then(function(cache) {
             console.log(cache);
           return cache.addAll([
-              'index.html',
-              'page2.html',
-              'indexed_db.js'
+              '/service_workers/index.html',
+              '/service_workers/page2.html',
+              '/service_workers/indexed_db.js'
           ]);
         })
       );
