@@ -80,6 +80,7 @@ if(typeof window !== 'undefined'){
         }
       };
     };
+    var transaction = db.transaction(["customers"], "readwrite");
     // Do something when all the data is added to the database.
     transaction.oncomplete = function(event) {
         console.log(event);
