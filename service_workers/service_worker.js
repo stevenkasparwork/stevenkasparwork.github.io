@@ -2,7 +2,7 @@
         // register service worker
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service_workers/service_worker.js').then(function(reg) {
+      navigator.serviceWorker.register('/service_workers/service_worker.js', '/service_workers/').then(function(reg) {
 
         if(reg.installing) {
           console.log('Service worker installing');
@@ -19,7 +19,8 @@
     };
         
         
-    /*this.addEventListener('install', function(event) {
+    this.addEventListener('install', function(event) {
+        console.log('install event');
       event.waitUntil(
         caches.open('v1').then(function(cache) {
           return cache.addAll([
@@ -42,5 +43,5 @@
       }).catch(function() {
         return caches.match('/sw-test/gallery/myLittleVader.jpg');
       }));
-    });*/
+    });
     
