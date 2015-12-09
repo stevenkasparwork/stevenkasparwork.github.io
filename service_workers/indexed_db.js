@@ -70,7 +70,7 @@ var db;
 
     };
     $.ajax({
-        url: "../controllers/getResources.php",
+        url: "../service_workers/controllers/getResources.php",
         data: {
             api_key: OFSC_API_KEY
         },
