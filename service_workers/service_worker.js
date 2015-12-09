@@ -31,6 +31,11 @@
         })
       );
     });
+// This is what our customer data looks like.
+const resourcesData = [
+  { external_id: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
+  { external_id: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
+];
 if(typeof window !== 'undefined'){
     console.log(window);
     // In the following line, you should include the prefixes of implementations you want to test.
@@ -40,7 +45,7 @@ if(typeof window !== 'undefined'){
         window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
     }
     var db;
-    var request = indexedDB.open("MyTestDatabase");
+    var request = indexedDB.open("HelixOFSCMobilityDB");
     request.onerror = function(event) {
       alert("Why didn't you allow my web app to use IndexedDB?!");
     };
@@ -48,5 +53,31 @@ if(typeof window !== 'undefined'){
         console.log(event);
       db = event.target.result;
         console.log(db);
+    };
+    request.onupgradeneeded = function(event) {
+      var db = event.target.result;
+
+      // Create an objectStore to hold information about our customers. We're
+      // going to use "ssn" as our key path because it's guaranteed to be
+      // unique - or at least that's what I was told during the kickoff meeting.
+      var objectStore = db.createObjectStore("resources", { keyPath: "external_id" });
+
+      // Create an index to search resources by name. We may have duplicates
+      // so we can't use a unique index.
+      objectStore.createIndex("name", "name", { unique: false });
+
+      // Create an index to search customers by email. We want to ensure that
+      // no two customers have the same email, so use a unique index.
+      objectStore.createIndex("email", "email", { unique: true });
+
+      // Use transaction oncomplete to make sure the objectStore creation is 
+      // finished before adding data into it.
+      objectStore.transaction.oncomplete = function(event) {
+        // Store values in the newly created objectStore.
+        var resourcesObjectStore = db.transaction("resources", "readwrite").objectStore("resources");
+        for (var i in resourcesData) {
+          resourcesObjectStore.add(resourcesData[i]);
+        }
+      };
     };
 }
