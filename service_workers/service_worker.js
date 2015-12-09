@@ -36,7 +36,7 @@ const resourcesData = [
   { external_id: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
   { external_id: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
 ];
-var transaction, db;
+var transaction, db, objectStore;
 if(typeof window !== 'undefined'){
     console.log(window);
     // In the following line, you should include the prefixes of implementations you want to test.
@@ -61,7 +61,7 @@ if(typeof window !== 'undefined'){
       // Create an objectStore to hold information about our customers. We're
       // going to use "ssn" as our key path because it's guaranteed to be
       // unique - or at least that's what I was told during the kickoff meeting.
-      var objectStore = db.createObjectStore("resources", { keyPath: "external_id" });
+      objectStore = db.createObjectStore("resources", { keyPath: "external_id" });
 
       // Create an index to search resources by name. We may have duplicates
       // so we can't use a unique index.
