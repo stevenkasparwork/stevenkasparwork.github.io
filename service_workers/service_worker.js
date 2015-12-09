@@ -48,7 +48,7 @@ if(typeof window !== 'undefined'){
         window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
     }
     
-    request = indexedDB.open("HelixOFSCMobilityDB");
+    request = indexedDB.open("HelixOFSCMobilityDB", 2);
     request.onerror = function(event) {
       alert("Why didn't you allow my web app to use IndexedDB?!");
     };
@@ -56,7 +56,11 @@ if(typeof window !== 'undefined'){
         console.log(event);
       db = event.target.result;
         console.log(db);
-        
+    }; 
+    request.onupgradeneeded = function(event) {
+        console.log('upgrade needed');
+      db = event.target.result;
+
       // Create an objectStore to hold information about our customers. We're
       // going to use "ssn" as our key path because it's guaranteed to be
       // unique - or at least that's what I was told during the kickoff meeting.
@@ -92,11 +96,6 @@ if(typeof window !== 'undefined'){
           // Don't forget to handle errors!
             console.log(event);
         };
-    }; 
-    
-    request.onupgradeneeded = function(event) {
-        console.log('upgrade needed');
-
     };
 }
 function addResource(){
