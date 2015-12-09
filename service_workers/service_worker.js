@@ -22,7 +22,7 @@
     this.addEventListener('install', function(event) {
         console.log('install event');
       event.waitUntil(
-        caches.open('v1').then(function(cache) {
+        caches.open('v2').then(function(cache) {
           return cache.addAll([
               'index.html',
               'page2.html',
