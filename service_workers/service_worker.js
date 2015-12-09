@@ -24,7 +24,8 @@
       event.waitUntil(
         caches.open('v1').then(function(cache) {
           return cache.addAll([
-            '/sw-test/'
+            'index.html',
+              'service_worker.js'
           ]);
         })
       );
