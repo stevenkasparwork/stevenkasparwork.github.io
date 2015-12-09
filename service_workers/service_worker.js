@@ -32,10 +32,14 @@
       );
     });
 
-if(counter){
-    counter++;
-}
-else {
-    var counter = 0;
-}
-    
+navigator.serviceWorker.controller.postMessage({test: 'test message body'});
+
+
+
+    if(counter){
+        counter++;
+    }
+    else {
+        var counter = 0;
+    }
+    console.log(counter);
