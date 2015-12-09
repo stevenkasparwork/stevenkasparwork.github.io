@@ -31,20 +31,22 @@
         })
       );
     });
-console.log(window);
-// In the following line, you should include the prefixes of implementations you want to test.
-indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+if(window){
+    console.log(window);
+    // In the following line, you should include the prefixes of implementations you want to test.
+    indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-if (!window.indexedDB) {
-    window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
+    if (!window.indexedDB) {
+        window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
+    }
+    var db;
+    var request = indexedDB.open("MyTestDatabase");
+    request.onerror = function(event) {
+      alert("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = function(event) {
+        console.log(event);
+      db = event.target.result;
+        console.log(db);
+    };
 }
-var db;
-var request = indexedDB.open("MyTestDatabase");
-request.onerror = function(event) {
-  alert("Why didn't you allow my web app to use IndexedDB?!");
-};
-request.onsuccess = function(event) {
-    console.log(event);
-  db = event.target.result;
-    console.log(db);
-};
