@@ -2,7 +2,7 @@
 const DB_NAME = 'helix-ofsc-mobility';
 const DB_VERSION = 1; // Use a long long for this value (don't use a float)
 const DB_STORE_NAME = 'resources';
-const OFSC_API_KEY = 'bWV3dWRVcnVEZmpXb3E0Y0ZFUUZtSUgzWk5NM0pVUEdIY3VUaVdiRmE3aFdxRkM4N24va3BBeWJFeGRCcjZ0Zg==';
+const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
 
