@@ -40,6 +40,7 @@ this.addEventListener('fetch', function(event) {
   event.respondWith(caches.match(event.request).catch(function() {
     return fetch(event.request);
   }).then(function(r) {
+      console.log(r);
     response = r;
     caches.open('v2').then(function(cache) {
       cache.put(event.request, response);
