@@ -56,7 +56,7 @@ var db;
         var name = document.getElementById('name').value;
         
         
-        var obj = { external_id: external_id, name: name, email: email, phone_number: phone_number };
+        var obj = { external_id: external_id, name: name };
         var store = getObjectStore(DB_STORE_NAME, 'readwrite');
         var req;
 
