@@ -36,19 +36,19 @@ this.addEventListener('install', function(event) {
 });
 
 this.addEventListener('fetch', function(event) {
-  var response;
-  event.respondWith(caches.match(event.request).catch(function() {
-    return fetch(event.request);
-  }).then(function(r) {
-      console.log(r);
-    response = r;
-    caches.open('v2').then(function(cache) {
-      cache.put(event.request, response);
-    });
-    return response.clone();
-  }).catch(function() {
-    return caches.match('/service_workers/index.html');
-  }));
+    
+    event.respondWith(caches.match(event.request).catch(function() {
+        return fetch(event.request);
+    }).then(function(response) {
+        if(response){
+            caches.open('v2').then(function(cache) {
+                cache.put(event.request, response);
+            });
+            return response.clone();
+        }
+    }).catch(function() {
+        return caches.match('/service_workers/index.html');
+    }));
 });
 
 
