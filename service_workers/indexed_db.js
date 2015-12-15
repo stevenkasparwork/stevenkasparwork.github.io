@@ -423,6 +423,7 @@ function updateActivity(event){
     Helix.activity_details[event.target.id] = event.target.value;
     
     addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [Helix.activity_details]);
+    console.log(Helix.activity_details);
     
 }
 
