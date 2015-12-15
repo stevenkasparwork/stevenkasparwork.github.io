@@ -119,13 +119,7 @@ function addActivity(evt) {
         status: 'completed'
     };
 
-    req = store.add(obj);
-    req.onsuccess = function (evt) {
-        console.log("Insertion in DB successful");
-    };
-    req.onerror = function() {
-        console.error("addPublication error", this.error);
-    };
+    addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [obj]);
 
 };
 
@@ -297,6 +291,11 @@ function addActivitiesToIndexedDB(activities){
 * recursively adds all objects in the obj_array to the db.store_name
 */
 function addObjectsToIndexedDB(store_name, obj_array){
+    
+    var date = new Date();
+    
+    localStorage.setItem('local_indexeddb_last_update', date.setUTCMilliseconds);
+                         
     return new Promise(function(resolve, reject){
 
         // need to get the transaction and store for adding to the db
