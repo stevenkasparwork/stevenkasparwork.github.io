@@ -203,11 +203,10 @@ function addObjectsToIndexedDB(store, obj_array){
             console.log(obj_array);
             addObjectsToIndexedDB(store, obj_array.splice(1));
         };
-        req.onerror = function() {
-            // a constraint error can be thrown when duplicating an insert, so for now we will ignore it
-            if(this.error.name !== "ConstraintError"){
-                console.error("add error", this.error);
-            }
+        req.onerror = function(evt) {
+            console.log(evt);
+            console.log(this);
+            
             addObjectsToIndexedDB(store, obj_array.splice(1))
         };
     }
