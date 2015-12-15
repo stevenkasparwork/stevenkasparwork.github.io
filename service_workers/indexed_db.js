@@ -217,24 +217,32 @@ function addActivitiesToIndexedDB(activities){
 }
 
 function addObjectsToIndexedDB(store_name, obj_array){
-    // need to get the transaction and store for adding to the db
-    var store = getObjectStore(store_name, 'readwrite'), req;
-    
-    if(obj_array.length > 0){
-        
-        // using put instead of add because put will update if the key index exists
-        req = store.put(obj_array[0]);
+    return new Promise(function(resolve, reject){
 
-        req.onsuccess = function (evt) {
-            addObjectsToIndexedDB(store_name, obj_array.splice(1));
-        };
-        req.onerror = function(evt) {
-            console.log(evt);
-            console.log(this);
-            
-            addObjectsToIndexedDB(store_name, obj_array.splice(1))
-        };
-    }
+        // need to get the transaction and store for adding to the db
+        var store = getObjectStore(store_name, 'readwrite'), req;
+
+        if(obj_array.length > 0){
+
+            // using put instead of add because put will update if the key index exists
+            req = store.put(obj_array[0]);
+
+            req.onsuccess = function (evt) {
+                resolve(evt);
+                addObjectsToIndexedDB(store_name, obj_array.splice(1));
+            };
+            req.onerror = function(evt) {
+                console.log(evt);
+                console.log(this);
+
+                addObjectsToIndexedDB(store_name, obj_array.splice(1))
+            };
+        }
+        else {
+            resolve('obj_array empty');
+        }
+        
+    });
     
 }
 
@@ -260,7 +268,12 @@ openDb().then(function(evt){
 }).then(function(activities) {
     
     console.log(activities);
-    addActivitiesToIndexedDB(activities);
+    return addActivitiesToIndexedDB(activities);
+    
+}).then(function(msg) {
+    
+    console.log(msg);
+    getActivitiesFromIndexedDb();
     
     return true;
     
