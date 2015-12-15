@@ -170,7 +170,7 @@ function addResourceToIndexedDB(resource){
 function addActivitiesToIndexedDB(activities){
     
     var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
-    var req, obj, activity_array = [];
+    var activity_array = [];
 
     for(var i in activities){
         console.log(activities[i]);
@@ -191,7 +191,11 @@ function addActivitiesToIndexedDB(activities){
 }
 
 function addObjectsToIndexedDB(store, obj_array){
-    if(obj_array.length){
+    var req;
+    
+    if(obj_array.length > 0){
+        
+        console.log(obj_array[0]);
         
         req = store.add(obj_array[0]);
 
@@ -206,6 +210,7 @@ function addObjectsToIndexedDB(store, obj_array){
             }
         };
     }
+    
 }
 openDb().then(function(evt){
     
