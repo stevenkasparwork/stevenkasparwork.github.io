@@ -257,7 +257,7 @@ function getActivitiesFromIndexedDb(){
             cursor.continue();
         }
         else {
-            console.log("Got all activities: " + activities);
+            console.log(activities);
             return activities;
         }
     };
