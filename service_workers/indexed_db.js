@@ -390,12 +390,12 @@ function updateHelixList(model_name, editable){
         var li_content = '';
         if(editable.indexOf(i) > -1 ){
             if(Helix.options[i]){
-                li_content += '<select>'+Helix.options[i].map(function(option){
+                li_content += '<select onchange="updateActivity(event);" id="'+i+'">'+Helix.options[i].map(function(option){
                     if(option.value === Helix[model_name][i]){
                         return '<option value="'+option.value+'" selected> '+option.label+'</option>';
                     }
                     else {
-                        return '<option value="'+option.value+'"> '+option.label+'</option>';
+                        return '<option value="'+option.value+'" onblur="updateActivity(event);" id="'+i+'"> '+option.label+'</option>';
                     }
                     
                     
@@ -418,6 +418,9 @@ function updateHelixList(model_name, editable){
     
 }
 
+function updateActivity(event){
+    console.log(event);
+}
 
 function getIndexedDBActivityByApptNumber(appt_number){
     return new Promise(function(resolve, reject){
