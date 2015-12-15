@@ -133,7 +133,10 @@ function addResourceToIndexedDB(resource){
         console.log("Resource insertion in DB successful");
     };
     req.onerror = function() {
-        console.error("add error", this.error);
+        // a constraint error can be thrown when duplicating an insert, so for now we will ignore it
+        if(this.error.name !== "ConstraintError"){
+            console.error("add error", this.error);
+        }
     };
     
 }
