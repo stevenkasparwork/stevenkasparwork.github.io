@@ -13,6 +13,11 @@ var Helix = {
     resource: {}
 }
 
+/*
+    opens up our IndexedDB and sets a global variable db
+    so that we can access the Database later and make changes as necessary
+    This also will check to see if we are needing to upgradethe db
+*/
 function openDb() {
     return new Promise(function(resolve, reject) {
         console.log("openDb ...");
@@ -51,8 +56,13 @@ function getObjectStore(store_name, mode) {
     return tx.objectStore(store_name);
 }
 
-function clearObjectStore(db_name) {
-    var store = getObjectStore(db_name, 'readwrite');
+/**
+* @param {string} store_name
+* will empty the contents of the indexedDb.DB_NAME.store_name
+* be carefull with this
+*/
+function clearObjectStore(store_name) {
+    var store = getObjectStore(store_name, 'readwrite');
     var req = store.clear();
     req.onsuccess = function(evt) {
         console.log(evt);
@@ -63,6 +73,10 @@ function clearObjectStore(db_name) {
 }
 
 
+/**
+* @param {obj} evt
+* NOT IN USE
+*/
 function addResource(evt) {
     console.log("add ...");
     var external_id = document.getElementById('external_id').value;
@@ -82,6 +96,10 @@ function addResource(evt) {
     };
 
 };
+
+/**
+* Placeholder for the API call that will get resource information from an external system
+*/
 function getResource(){
     return new Promise(function(resolve, reject) {
         
@@ -102,6 +120,9 @@ function getResource(){
         });
     });
 }
+/**
+* Placeholder for the API call that will get activity information from an external system
+*/
 function getActivities(){
     return new Promise(function(resolve, reject) {
         
@@ -175,6 +196,12 @@ function getActivities(){
         }]);
     });
 }
+
+
+/**
+* @param {string} resource
+* Puts a single resource object to the db.DB_RESOURCE_STORE_NAME
+*/
 function addResourceToIndexedDB(resource){
     
     var store = getObjectStore(DB_RESOURCE_STORE_NAME, 'readwrite');
@@ -185,7 +212,7 @@ function addResourceToIndexedDB(resource){
         name: resource.name,
     };
     
-    req = store.add(obj);
+    req = store.put(obj);
     
     req.onsuccess = function (evt) {
         console.log("Resource insertion in DB successful");
@@ -198,13 +225,19 @@ function addResourceToIndexedDB(resource){
     };
     
 }
+
+/**
+* @param {array} activites
+* Builds out an array of activities to be added to the store
+* This isn't really necessary now but could be in the future
+*/
 function addActivitiesToIndexedDB(activities){
     
     var activity_array = [];
 
     for(var i in activities){
         console.log(activities[i]);
-
+        
         activity_array.push({
             id: activities[i].id,
             date: activities[i].date,
@@ -220,6 +253,11 @@ function addActivitiesToIndexedDB(activities){
     addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
 }
 
+/**
+* @param {string} store_name
+* @param {array} obj_array
+* recursively adds all objects in the obj_array to the db.store_name
+*/
 function addObjectsToIndexedDB(store_name, obj_array){
     return new Promise(function(resolve, reject){
 
@@ -250,6 +288,9 @@ function addObjectsToIndexedDB(store_name, obj_array){
     
 }
 
+/**
+* gets all activities from the local IndexedDB
+*/
 function getActivitiesFromIndexedDb(){
     return new Promise(function(resolve, reject){
 
@@ -272,6 +313,9 @@ function getActivitiesFromIndexedDb(){
     
 }
 
+/**
+* Placeholder function for updating the view.
+*/
 function updateHelixModel(model_name){
     console.log(Helix[model_name]);
     var items_string = Helix[model_name].map(function(item){
@@ -287,6 +331,17 @@ function updateHelixModel(model_name){
     
 }
 
+/* 
+
+openDB() 
+-> getResource() 
+-> addResourceToIndexedDb() 
+-> getActivities() 
+-> addObjectsToIndexedDB() 
+-> getActivitiesFromIndexedDb() 
+-> updateHelixModel('activities')
+
+*/
 openDb().then(function(evt){
     
     console.log(evt);
@@ -302,7 +357,7 @@ openDb().then(function(evt){
 }).then(function(activities) {
     
     console.log(activities);
-    return addActivitiesToIndexedDB(activities);
+    return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
     
 }).then(function(msg) {
     
@@ -311,6 +366,7 @@ openDb().then(function(evt){
     
 }).then(function(activities) {
     updateHelixModel('activities');
+    return true;
     
 }).catch(function(err) {
     
