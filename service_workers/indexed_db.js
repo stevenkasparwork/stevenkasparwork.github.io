@@ -347,7 +347,7 @@ function updateHelixList(model_name){
     var item_string = '';
     
     for(var i in Helix[model_name]){
-        item_string += '<li>'+Helix[model_name][i]+'</li>';
+        item_string += '<li>'+i+': '+Helix[model_name][i]+'</li>';
     }
         
     
