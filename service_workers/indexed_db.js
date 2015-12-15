@@ -320,7 +320,7 @@ function updateHelixModel(model_name){
     console.log(Helix[model_name]);
     var header_row = '';
     
-    var items_string = Helix[model_name].map(function(item){
+    var items_string = Helix[model_name].map(function(item, index){
         var item_string = '';
         
         for(var i in item){
