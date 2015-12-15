@@ -14,7 +14,7 @@ function openDb() {
         console.log("openDb ...");
         var req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onsuccess = function (evt) {
-            
+            console.log(evt);
             db = this.result;
             resolve(db);
         };
@@ -25,7 +25,9 @@ function openDb() {
 
         req.onupgradeneeded = function (evt) {
             alert("openDb.onupgradeneeded");
-            var store = evt.currentTarget.result.createObjectStore(DB_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+            var store = evt.currentTarget.result.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'external_id', autoIncrement: false });
+            store = evt.currentTarget.result.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'appt_number', autoIncrement: false });
+            
             resolve(this.result);
 
 
@@ -108,7 +110,8 @@ function getActivities(){
             console.log(error);
         });*/
         resolve([{
-            id: '333333',
+            id: '555555',
+            appt_number: '333333',
             address: '374 N Highland St',
             zip: '38122',
             state: 'Tennessee',
@@ -148,6 +151,7 @@ function addActivitiesToIndexedDB(activities){
     for(var i in activities){
         obj = {
             id: activities[i].id,
+            appt_number: activities[i].appt_number,
             address: activities[i].address,
             zip: activities[i].zip,
             state: activities[i].state,
