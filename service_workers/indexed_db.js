@@ -141,6 +141,15 @@ function getActivities(){
             state: 'Tennessee',
             time_from: '14:00:00',
             time_to: '16:00:00'
+        },{
+            id: '3',
+            date: date_string,
+            appt_number: '667',
+            address: '374 N Highland St',
+            zip: '38122',
+            state: 'Tennessee',
+            time_from: '14:00:00',
+            time_to: '16:00:00'
         }]);
     });
 }
