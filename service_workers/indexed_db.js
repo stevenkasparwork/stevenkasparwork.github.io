@@ -247,7 +247,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
 }
 
 function getActivitiesFromIndexedDb(){
-    var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'read');
+    var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readonly');
     var request = store.getAll();
     console.log(request);
 }
