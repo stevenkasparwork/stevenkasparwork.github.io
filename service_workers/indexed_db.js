@@ -12,9 +12,6 @@ var Helix = {
     activities: [],
     resource: {}
 }
-Helix.activities.watch(function(e){
-    console.log(e);
-})
 
 function openDb() {
     return new Promise(function(resolve, reject) {
@@ -377,6 +374,9 @@ if (!Object.prototype.unwatch) {
 		}
 	});
 }
+Helix.activities.watch(function(e){
+    console.log(e);
+})
 
 
 
