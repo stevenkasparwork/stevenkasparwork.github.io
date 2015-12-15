@@ -22,7 +22,7 @@ if ('serviceWorker' in navigator) {
 this.addEventListener('install', function(event) {
     console.log('install event');
     event.waitUntil(
-        caches.open('v3').then(function(cache) {
+        caches.open('v4').then(function(cache) {
             console.log(cache);
             return cache.addAll([
                 '/service_workers/',
@@ -42,7 +42,7 @@ this.addEventListener('fetch', function(event) {
         return fetch(event.request);
     }).then(function(response) {
         if(response){
-            caches.open('v3').then(function(cache) {
+            caches.open('v4').then(function(cache) {
                 cache.put(event.request, response);
             });
             return response.clone();
