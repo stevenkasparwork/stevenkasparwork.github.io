@@ -305,7 +305,7 @@ openDb().then(function(evt){
     }).join("");
     
     console.log(activities_string);
-    $('[helix-model="activities"]').html(activities_string);
+    $('[helix-model="activities"]').html(activities_string); 
     
 }).catch(function(err) {
     
