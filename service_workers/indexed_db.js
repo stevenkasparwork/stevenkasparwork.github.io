@@ -10,7 +10,8 @@ var db;
 
 var Helix = {
     activities: [],
-    resource: {}
+    resource: {},
+    activity_details: {}
 }
 
 /*
