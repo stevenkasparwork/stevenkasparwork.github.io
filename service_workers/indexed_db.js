@@ -418,7 +418,7 @@ function initializePage(){
         case 'detail.html':
             console.log('on detail page');
             var appt_number = localStorage.getItem('appt_number');
-            console.log('appt_number');
+            console.log(appt_number);
             if(appt_number) {
                 openDb().then(function(evt){
                     getIndexedDBActivityByApptNumber( appt_number );
