@@ -217,17 +217,15 @@ function addActivitiesToIndexedDB(activities){
 }
 
 function addObjectsToIndexedDB(store_name, obj_array){
-    var store = getObjectStore(store_name, 'readwrite');
-    var req;
+    // need to get the transaction and store for adding to the db
+    var store = getObjectStore(store_name, 'readwrite'), req;
     
     if(obj_array.length > 0){
         
-        console.log(obj_array[0]);
-        
+        // using put instead of add because put will update if the key index exists
         req = store.put(obj_array[0]);
 
         req.onsuccess = function (evt) {
-            console.log(obj_array);
             addObjectsToIndexedDB(store_name, obj_array.splice(1));
         };
         req.onerror = function(evt) {
@@ -239,6 +237,14 @@ function addObjectsToIndexedDB(store_name, obj_array){
     }
     
 }
+
+function getActivitiesFromIndexedDb(){
+    var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'read');
+    var request = store.getAll();
+    console.log(request);
+}
+
+
 openDb().then(function(evt){
     
     console.log(evt);
