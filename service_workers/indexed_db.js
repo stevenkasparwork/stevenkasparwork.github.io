@@ -318,22 +318,22 @@ function getActivitiesFromIndexedDb(){
 */
 function updateHelixModel(model_name){
     console.log(Helix[model_name]);
-    var build_header_row = true, header_row = '';
+    var header_row = '';
     
     var items_string = Helix[model_name].map(function(item){
         var item_string = '';
+        
         for(var i in item){
-            if(build_header_row){
+            if(index === 0){
                 header_row += '<th>'+i+'</th>';
             }
             item_string += '<td>'+item[i]+'</td>';
         }
         
-        build_header_row = false;
         
         return '<tr>'+item_string+'</tr>';
     }).join("");
-    
+    console.log(header_row);
     $('[helix-model="'+model_name+'"]').html(header_row+items_string); 
     
 }
