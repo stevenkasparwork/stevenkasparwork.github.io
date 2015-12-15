@@ -8,6 +8,7 @@ const DB_RESOURCE_STORE_NAME = 'resources';
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
+
 var Helix = {
     activities: [],
     resource: {},
@@ -29,7 +30,8 @@ var Helix = {
             {
                 label: 'completed',
                 value: 'completed'
-            }]
+            }
+        ]
     }
 }
 
@@ -405,14 +407,14 @@ function updateHelixList(model_name, editable){
                         return '<option value="'+option.value+'" selected> '+option.label+'</option>';
                     }
                     else {
-                        return '<option value="'+option.value+'" onblur="updateActivity(event);" id="'+i+'"> '+option.label+'</option>';
+                        return '<option value="'+option.value+'" > '+option.label+'</option>';
                     }
                     
                     
                 }).join('')+'</select>';
             }
             else {
-                li_content += '<input value="'+Helix[model_name][i]+'" >';
+                li_content += '<input value="'+Helix[model_name][i]+'" onblur="updateActivity(event);" id="'+i+'">';
             }
         }
         else {
