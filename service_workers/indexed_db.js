@@ -331,7 +331,7 @@ function updateHelixModel(model_name){
         }
         
         
-        return '<tr style="cursor: pointer;" onclick="window.location.href = \'detail.html?appt_number='+item.appt_number+' \'">'+item_string+'</tr>';
+        return '<tr style="cursor: pointer;" onclick=" localStorage.setItem(\'appt_number\', '+item.appt_number+'); window.location.href = \'detail.html\'">'+item_string+'</tr>';
     }).join("");
     
     $('[helix-model="'+model_name+'"]').html('<tr>'+header_cells+'</tr>'+items_string); 
@@ -417,7 +417,8 @@ function initializePage(){
             break;
         case 'detail.html':
             console.log('on detail page');
-            var appt_number = getUrlParam('appt_number');
+            var appt_number = localStorage.getItem('appt_number');
+            console.log('appt_number');
             if(appt_number) {
                 openDb().then(function(evt){
                     getIndexedDBActivityByApptNumber( appt_number );
