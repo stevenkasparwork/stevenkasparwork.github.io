@@ -279,7 +279,7 @@ function updateHelixModel(model_name){
         for(var i in item){
             item_string += '<td>'+item[i]+'</td>';
         }
-        return '<tr>'+items_string+'</tr>';
+        return '<tr>'+item_string+'</tr>';
     }).join("");
     
     console.log(items_string);
