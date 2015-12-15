@@ -42,8 +42,8 @@ function getObjectStore(store_name, mode) {
     return tx.objectStore(store_name);
 }
 
-function clearObjectStore(store_name) {
-    var store = getObjectStore(DB_STORE_NAME, 'readwrite');
+function clearResourceStore() {
+    var store = getObjectStore(DB_RESOURCE_STORE_NAME, 'readwrite');
     var req = store.clear();
     req.onsuccess = function(evt) {
         console.log(evt);
