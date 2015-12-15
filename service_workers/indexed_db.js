@@ -294,7 +294,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
     
     var date = new Date();
     
-    localStorage.setItem('local_indexeddb_last_update', date.setUTCMilliseconds);
+    localStorage.setItem('local_indexeddb_last_update', date.getUTCMilliseconds());
                          
     return new Promise(function(resolve, reject){
 
