@@ -1,6 +1,6 @@
 
 const DB_NAME = 'helix-ofsc-mobility';
-const DB_VERSION = 1; // Use a long long for this value (don't use a float)
+const DB_VERSION = 2; // Use a long long for this value (don't use a float)
 
 const DB_ACTIVITY_STORE_NAME = 'activities';
 const DB_RESOURCE_STORE_NAME = 'resources';
@@ -24,7 +24,7 @@ function openDb() {
         };
 
         req.onupgradeneeded = function (evt) {
-            console.log("openDb.onupgradeneeded");
+            alert("openDb.onupgradeneeded");
             var store = evt.currentTarget.result.createObjectStore(DB_STORE_NAME, { keyPath: 'id', autoIncrement: true });
             resolve(this.result);
 
