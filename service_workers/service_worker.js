@@ -37,6 +37,8 @@ this.addEventListener('install', function(event) {
 
 this.addEventListener('fetch', function(event) {
     console.log('fetch (service_worker)');
+    console.log(event);
+    
     event.respondWith(caches.match(event.request).catch(function() {
         return fetch(event.request);
     }).then(function(response) {
