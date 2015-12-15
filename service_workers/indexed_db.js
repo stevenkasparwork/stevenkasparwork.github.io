@@ -8,6 +8,11 @@ const DB_RESOURCE_STORE_NAME = 'resources';
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
+var Helix = {
+    activities: [],
+    resource: {}
+}
+
 
 function openDb() {
     return new Promise(function(resolve, reject) {
@@ -247,20 +252,23 @@ function addObjectsToIndexedDB(store_name, obj_array){
 }
 
 function getActivitiesFromIndexedDb(){
-    var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
-    var activities = [];
+    return new Promise(function(resolve, reject){
 
-    store.openCursor().onsuccess = function(event) {
-        var cursor = event.target.result;
-        if (cursor) {
-            activities.push(cursor.value);
-            cursor.continue();
-        }
-        else {
-            console.log(activities);
-            return activities;
-        }
-    };
+        var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
+        var activities = [];
+
+        store.openCursor().onsuccess = function(event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                activities.push(cursor.value);
+                cursor.continue();
+            }
+            else {
+                console.log(activities);
+                resolve(activities);
+            }
+        };
+    });
     
 }
 
@@ -285,9 +293,18 @@ openDb().then(function(evt){
 }).then(function(msg) {
     
     console.log(msg);
-    getActivitiesFromIndexedDb();
+    return getActivitiesFromIndexedDb();
     
-    return true;
+}).then(function(activities) {
+    var activities_string = activities.map(function(activity){
+        var activity_string = '';
+        for(var i in activity){
+            activity_string += '<td>'+activity[i]+'</td>';
+        }
+        return activity_string;
+    }).join("");
+    
+    console.log(activities_string);
     
 }).catch(function(err) {
     
