@@ -390,7 +390,7 @@ function updateHelixList(model_name, editable){
         var li_content = '';
         if(editable.indexOf(i) > -1 ){
             if(Helix.options[i]){
-                li_content += '<select>'+Helix.options[i].map(function(option){
+                li_content += '<select value="'+Helix[model_name][i]+'">'+Helix.options[i].map(function(option){
                     return '<option value="'+option.value+'"> '+option.label+'</option>';
                 }).join('')+'</select>';
             }
