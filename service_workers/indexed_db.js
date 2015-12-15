@@ -332,12 +332,21 @@ function updateHelixTable(model_name){
         }
         
         
-        return '<tr style="cursor: pointer;" onclick=" localStorage.setItem(\'appt_number\', '+item.appt_number+'); window.location.href = \'detail.html\'">'+item_string+'</tr>';
+        return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'appt_number\':'+item.appt_number+'},\'detail.html\');">'+item_string+'</tr>';
     }).join("");
     
     $('[helix-model="'+model_name+'"]').html('<tr>'+header_cells+'</tr>'+items_string); 
     
 }
+
+function navigateWithParameters(param_obj, page){
+    for(var i in param_obj){
+        localStorage.setItem(i, param_obj[i]);
+    }
+    window.location.href = page;
+}
+
+
 /**
 * Placeholder function for updating the view.
 */
