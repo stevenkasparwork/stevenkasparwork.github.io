@@ -13,7 +13,23 @@ var Helix = {
     resource: {},
     activity_details: {},
     options: {
-        status: ['pending', 'started', 'completed']
+        status: [
+            {
+                label: 'pending',
+                value: 'pending'
+            },
+            {
+                label: 'started',
+                value: 'started'
+            }, 
+            {
+                label: 'cancelled',
+                value: 'cancelled'
+            }, 
+            {
+                label: 'completed',
+                value: 'completed'
+            }]
     }
 }
 
@@ -375,7 +391,7 @@ function updateHelixList(model_name, editable){
         if(editable.indexOf(i) > -1 ){
             if(Helix.options[i]){
                 li_content += '<select>'+Helix.options[i].map(function(option){
-                    return '<option value="'+option.value+'"> '+option.name+'</option>';
+                    return '<option value="'+option.value+'"> '+option.label+'</option>';
                 }).join('')+'</select>';
             }
             else {
