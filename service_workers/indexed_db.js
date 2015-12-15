@@ -135,12 +135,9 @@ function addResourceToIndexedDB(resource){
     req.onerror = function() {
         console.error("add error", this.error);
     };
-    }
     
 }
-var open_db = openDb();
-
-open_db.then(function(evt){
+openDb().then(function(evt){
     
     console.log(evt);
     return getResource();
