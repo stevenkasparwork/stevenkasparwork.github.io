@@ -37,15 +37,13 @@ this.addEventListener('install', function(event) {
 
 this.addEventListener('fetch', function(event) {
     console.log('fetch (service_worker)');
-    console.log(event);
     
-    var event_params_obj = cleanRequest(event.request.url);
-    
-    event.request.url = event_params_obj.event_url;
-    param_string = event_params_obj.param_string;
+    event.request.url = event.request.url.split('?')[0];
+    param_string = event.request.url.split('?')[1];
     
     console.log(event.request.url);
     console.log(param_string);
+    
     event.respondWith(caches.match(event.request).catch(function() {
         return fetch(event.request);
     }).then(function(response) {
