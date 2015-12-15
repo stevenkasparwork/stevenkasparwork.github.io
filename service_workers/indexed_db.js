@@ -145,7 +145,7 @@ function getActivities(){
             id: '3',
             date: date_string,
             appt_number: '667',
-            address: '374 N Highland St',
+            address: '333 N Highland St',
             zip: '38122',
             state: 'Tennessee',
             time_from: '14:00:00',
@@ -206,7 +206,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
         
         console.log(obj_array[0]);
         
-        req = store.add(obj_array[0]);
+        req = store.put(obj_array[0]);
 
         req.onsuccess = function (evt) {
             console.log(obj_array);
