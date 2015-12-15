@@ -11,7 +11,10 @@ var db;
 var Helix = {
     activities: [],
     resource: {},
-    activity_details: {}
+    activity_details: {},
+    options: {
+        status: ['pending', 'started', 'completed']
+    }
 }
 
 /*
@@ -360,13 +363,31 @@ function navigateWithParameters(param_obj, page){
 * Placeholder function for updating the view.
 * Helix[model_name] must be an object
 */
-function updateHelixList(model_name){
+function updateHelixList(model_name, editable){
     console.log(Helix[model_name]);
+    if(!editable){editable = '';}
+    console.log(editable);
     
     var item_string = '';
     
     for(var i in Helix[model_name]){
-        item_string += '<li>'+i+': '+Helix[model_name][i]+'</li>';
+        var li_content = '';
+        if(editable.indexOf(i) > -1 ){
+            if(Helix.options[i]){
+                li_content += '<select>'+Helix.options[i].map(function(option){
+                    return '<option value="'+option.value+'"> '+option.name+'</option>';
+                }).join('')+'</select>';
+            }
+            else {
+                li_content += '<input value="'+Helix[model_name][i]+'" >';
+            }
+        }
+        else {
+            li_content = Helix[model_name][i];
+        }
+        
+        
+        item_string += '<li>'+i+': '+li_content+'</li>';
     }
         
     
@@ -465,7 +486,7 @@ function initializePage(){
                     return getIndexedDBActivityByApptNumber( appt_number );
                 }).then(function(activity){
                     Helix.activity_details = activity;
-                    updateHelixList('activity_details');
+                    updateHelixList('activity_details', 'status,address');
                 });
             }
             else {
