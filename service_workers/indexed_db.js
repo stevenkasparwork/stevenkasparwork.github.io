@@ -174,7 +174,8 @@ function addActivitiesToIndexedDB(activities){
 
     for(var i in activities){
         console.log(activities[i]);
-        obj = {
+
+        req = store.add({
             id: activities[i].id,
             date: activities[i].date,
             appt_number: activities[i].appt_number,
@@ -183,9 +184,7 @@ function addActivitiesToIndexedDB(activities){
             state: activities[i].state,
             time_from: activities[i].time_from,
             time_to: activities[i].time_to,
-        };
-
-        req = store.add(obj);
+        });
 
         req.onsuccess = function (evt) {
             console.log("Activity insertion in DB successful");
