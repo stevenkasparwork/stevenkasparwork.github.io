@@ -112,10 +112,11 @@ function getActivities(){
         }).error(function(error){
             console.log(error);
         });*/
-        var date_string = Date().getFullYear()+"-"+Date().getMonth()+"-"+Date().getDate();
+        var d = new Date();
+        var date_string = d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate();
         resolve([{
             id: '0',
-            date: '',
+            date: date_string,
             appt_number: '333',
             address: '374 N Highland St',
             zip: '38122',
@@ -124,6 +125,7 @@ function getActivities(){
             time_to: '11:00:00'
         }],[{
             id: '1',
+            date: date_string,
             appt_number: '444',
             address: '374 N Highland St',
             zip: '38122',
@@ -132,6 +134,7 @@ function getActivities(){
             time_to: '12:45:00'
         }],[{
             id: '2',
+            date: date_string,
             appt_number: '555',
             address: '374 N Highland St',
             zip: '38122',
@@ -172,6 +175,7 @@ function addActivitiesToIndexedDB(activities){
     for(var i in activities){
         obj = {
             id: activities[i].id,
+            date: activities[i].date,
             appt_number: activities[i].appt_number,
             address: activities[i].address,
             zip: activities[i].zip,
