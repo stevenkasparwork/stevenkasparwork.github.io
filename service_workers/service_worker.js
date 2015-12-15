@@ -39,12 +39,13 @@ this.addEventListener('fetch', function(event) {
     console.log('fetch (service_worker)');
     console.log(event);
     
-    var event_params_obj = cleanRequest(event);
+    var event_params_obj = cleanRequest(event.request.url);
     
-    event = event_params_obj.event;
+    event.request.url = event_params_obj.event_url;
     param_string = event_params_obj.param_string;
     
     console.log(event);
+    console.log(param_string);
     event.respondWith(caches.match(event.request).catch(function() {
         return fetch(event.request);
     }).then(function(response) {
@@ -59,13 +60,13 @@ this.addEventListener('fetch', function(event) {
     }));
 });
 
-function cleanRequest(event){
+function cleanRequest(url){
     var event_params_obj = {
-        event: null,
+        event_url: '',
         param_string: ''
     };
-    event_params_obj.event = event.request.url.split('?')[0];
-    event_params_obj.param_string = event.request.url.split('?')[1];
+    event_params_obj.event_url = url.split('?')[0];
+    event_params_obj.param_string = url.split('?')[1];
     
     return event_params_obj;
 }
