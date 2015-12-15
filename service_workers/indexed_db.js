@@ -168,7 +168,7 @@ function getActivities(){
             state: 'Tennessee',
             time_from: '08:00:00',
             time_to: '11:00:00',
-            status: 'complete'
+            status: 'completed'
         },{
             id: '1',
             date: date_string,
