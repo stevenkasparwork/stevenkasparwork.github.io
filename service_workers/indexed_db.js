@@ -107,14 +107,14 @@ function getActivities(){
         }).error(function(error){
             console.log(error);
         });*/
-        resolve({
+        resolve([{
             id: '333333',
             address: '374 N Highland St',
             zip: '38122',
             state: 'Tennessee',
             time_from: '08:00:00',
             time_to: '11:00:00'
-        });
+        }]);
     });
 }
 function addResourceToIndexedDB(resource){
@@ -192,6 +192,7 @@ openDb().then(function(evt){
 }).catch(function(err) {
     
     console.log('error in initialization');
+    console.log(err);
     return false;
     
 });
