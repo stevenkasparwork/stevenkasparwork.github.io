@@ -331,24 +331,47 @@ function updateHelixModel(model_name){
         }
         
         
-        return '<tr style="cursor: pointer;" onclick="window.location.href = \'detail?a_id='+item.id+' \'">'+item_string+'</tr>';
+        return '<tr style="cursor: pointer;" onclick="window.location.href = \'detail?appt_number='+item.appt_number+' \'">'+item_string+'</tr>';
     }).join("");
     
     $('[helix-model="'+model_name+'"]').html('<tr>'+header_cells+'</tr>'+items_string); 
     
 }
 
-function getPage(){
-    var path = window.location.pathname;
-    var page = path.split("/").pop();
-    return page;
+function getIndexedDBActivityByApptNumber(appt_number){
+    
+    var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
+    
+    var req = store.get(appt_number);
+
+    req.onsuccess = function(event) {
+        console.log(event);
+        
+        console.log(req.result);
+    };
 }
 
+function getUrlParam(param) {
+    var urlParamString = location.search.split(param + "=");
+    if (urlParamString.length <= 1) return false;
+    else {
+        var tmp = urlParamString[1].split("&");
+        return tmp[0];
+    }
+}
+
+/**
+* Since we are loading all javascript files FOR NOW, we need to differentiate 
+* by getting what page we are on
+*/
 function initializePage(){
-    var page = getPage();
+    
+    var path = window.location.pathname;
+    var page = path.split("/").pop();
+    
     switch(page){
         case 'index.html':
-            console.log('index');
+            console.log('on index page');
             /* 
             openDB() 
             -> getResource() 
@@ -393,7 +416,15 @@ function initializePage(){
             });
             break;
         case 'detail.html':
-            console.log('detail');
+            console.log('on detail page');
+            var appt_number = getUrlParam('appt_number');
+            if(appt_number) {
+                getIndexedDBActivityByApptNumber( appt_number );
+            }
+            else {
+                console.warn('No appt_number in url');
+            }
+            
             break;
 
             
