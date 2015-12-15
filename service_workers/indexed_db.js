@@ -331,7 +331,7 @@ function updateHelixModel(model_name){
         }
         
         
-        return '<tr style="cursor: pointer;" onclick="window.location.href = \'detail?appt_number='+item.appt_number+' \'">'+item_string+'</tr>';
+        return '<tr style="cursor: pointer;" onclick="window.location.href = \'detail.html?appt_number='+item.appt_number+' \'">'+item_string+'</tr>';
     }).join("");
     
     $('[helix-model="'+model_name+'"]').html('<tr>'+header_cells+'</tr>'+items_string); 
