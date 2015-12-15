@@ -317,7 +317,7 @@ function getActivitiesFromIndexedDb(){
 /**
 * Placeholder function for updating the view.
 */
-function updateHelixModel(model_name){
+function updateHelixTable(model_name){
     console.log(Helix[model_name]);
     var header_cells = '';
     
@@ -338,18 +338,39 @@ function updateHelixModel(model_name){
     $('[helix-model="'+model_name+'"]').html('<tr>'+header_cells+'</tr>'+items_string); 
     
 }
+/**
+* Placeholder function for updating the view.
+*/
+function updateHelixList(model_name){
+    console.log(Helix[model_name]);
+    
+    var item_string = '';
+    
+    for(var i in Helix[model_name]){
+        item_string += '<li>'+Helix[model_name][i]+'</li>';
+    }
+        
+    
+    $('[helix-model="'+model_name+'"]').html(item_string); 
+    
+}
+
 
 function getIndexedDBActivityByApptNumber(appt_number){
-    
-    var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
-    
-    var req = store.get(appt_number);
-
-    req.onsuccess = function(event) {
-        console.log(event);
+    return new Promise(function(resolve, reject){
         
-        console.log(req.result);
-    };
+        var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
+
+        var req = store.get(appt_number);
+
+        req.onsuccess = function(event) {
+            console.log(event);
+
+            console.log(req.result);
+            
+            resolve(req.result);
+        };
+    }
 }
 
 function getUrlParam(param) {
@@ -380,7 +401,7 @@ function initializePage(){
             -> getActivities() 
             -> addObjectsToIndexedDB() 
             -> getActivitiesFromIndexedDb() 
-            -> updateHelixModel('activities')
+            -> updateHelixTable('activities')
             */
             openDb().then(function(evt){
 
@@ -405,7 +426,7 @@ function initializePage(){
                 return getActivitiesFromIndexedDb();
 
             }).then(function(activities) {
-                updateHelixModel('activities');
+                updateHelixTable('activities');
                 return true;
 
             }).catch(function(err) {
@@ -422,7 +443,10 @@ function initializePage(){
             console.log(appt_number);
             if(appt_number) {
                 openDb().then(function(evt){
-                    getIndexedDBActivityByApptNumber( appt_number );
+                    return getIndexedDBActivityByApptNumber( appt_number );
+                }).then(function(activity){
+                    Helix.activity_details = activity;
+                    updateHelixList('activity_details');
                 });
             }
             else {
