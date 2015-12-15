@@ -419,7 +419,9 @@ function initializePage(){
             console.log('on detail page');
             var appt_number = getUrlParam('appt_number');
             if(appt_number) {
-                getIndexedDBActivityByApptNumber( appt_number );
+                openDb().then(function(evt){
+                    getIndexedDBActivityByApptNumber( appt_number );
+                });
             }
             else {
                 console.warn('No appt_number in url');
