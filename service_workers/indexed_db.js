@@ -248,9 +248,20 @@ function addObjectsToIndexedDB(store_name, obj_array){
 
 function getActivitiesFromIndexedDb(){
     var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
-    console.log(store);
-    var request = store.getAll();
-    console.log(request);
+    var activities = [];
+
+    store.openCursor().onsuccess = function(event) {
+        var cursor = event.target.result;
+        if (cursor) {
+            activities.push(cursor.value);
+            cursor.continue();
+        }
+        else {
+            console.log("Got all activities: " + activities);
+            return activities;
+        }
+    };
+    
 }
 
 
