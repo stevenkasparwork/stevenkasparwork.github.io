@@ -170,12 +170,12 @@ function addResourceToIndexedDB(resource){
 function addActivitiesToIndexedDB(activities){
     
     var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
-    var req, obj;
+    var req, obj, activity_array = [];
 
     for(var i in activities){
         console.log(activities[i]);
 
-        req = store.add({
+        activity_array.push({
             id: activities[i].id,
             date: activities[i].date,
             appt_number: activities[i].appt_number,
@@ -185,9 +185,19 @@ function addActivitiesToIndexedDB(activities){
             time_from: activities[i].time_from,
             time_to: activities[i].time_to,
         });
+        
+    } 
+    addObjectsToIndexedDB(store, activity_array);
+}
+
+function addObjectsToIndexedDB(store, obj_array){
+    if(obj_array.length){
+        
+        req = store.add(obj_array[0]);
 
         req.onsuccess = function (evt) {
-            console.log("Activity insertion in DB successful");
+            console.log(obj_array);
+            addObjectsToIndexedDB(store, obj_array.splice(1))
         };
         req.onerror = function() {
             // a constraint error can be thrown when duplicating an insert, so for now we will ignore it
@@ -195,9 +205,7 @@ function addActivitiesToIndexedDB(activities){
                 console.error("add error", this.error);
             }
         };
-        
     }
-    
 }
 openDb().then(function(evt){
     
