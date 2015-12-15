@@ -301,10 +301,11 @@ openDb().then(function(evt){
         for(var i in activity){
             activity_string += '<td>'+activity[i]+'</td>';
         }
-        return activity_string;
+        return '<tr>'+activity_string+'</tr>';
     }).join("");
     
     console.log(activities_string);
+    $('[helix-model="activites"]').html(activities_string);
     
 }).catch(function(err) {
     
