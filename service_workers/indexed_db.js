@@ -148,7 +148,8 @@ function getActivities(){
             zip: '38122',
             state: 'Tennessee',
             time_from: '08:00:00',
-            time_to: '11:00:00'
+            time_to: '11:00:00',
+            status: 'pending'
         },{
             id: '1',
             date: date_string,
@@ -157,7 +158,8 @@ function getActivities(){
             zip: '38122',
             state: 'Tennessee',
             time_from: '11:30:00',
-            time_to: '12:45:00'
+            time_to: '12:45:00',
+            status: 'pending'
         },{
             id: '2',
             date: date_string,
@@ -166,7 +168,8 @@ function getActivities(){
             zip: '38122',
             state: 'Tennessee',
             time_from: '14:00:00',
-            time_to: '16:00:00'
+            time_to: '16:00:00',
+            status: 'pending'
         },{
             id: '3',
             date: date_string,
@@ -175,7 +178,8 @@ function getActivities(){
             zip: '38122',
             state: 'Tennessee',
             time_from: '14:00:00',
-            time_to: '16:00:00'
+            time_to: '16:00:00',
+            status: 'pending'
         },{
             id: '4',
             date: date_string,
@@ -184,7 +188,8 @@ function getActivities(){
             zip: '38122',
             state: 'Tennessee',
             time_from: '14:00:00',
-            time_to: '16:00:00'
+            time_to: '16:00:00',
+            status: 'pending'
         },{
             id: '5',
             date: date_string,
@@ -193,7 +198,8 @@ function getActivities(){
             zip: '38122',
             state: 'Tennessee',
             time_from: '14:00:00',
-            time_to: '16:00:00'
+            time_to: '16:00:00',
+            status: 'pending'
         }]);
     });
 }
@@ -315,7 +321,9 @@ function getActivitiesFromIndexedDb(){
 }
 
 /**
+* @param {string} model_name
 * Placeholder function for updating the view.
+* Helix[model_name] must be an array
 */
 function updateHelixTable(model_name){
     console.log(Helix[model_name]);
@@ -348,7 +356,9 @@ function navigateWithParameters(param_obj, page){
 
 
 /**
+* @param {string} model_name
 * Placeholder function for updating the view.
+* Helix[model_name] must be an object
 */
 function updateHelixList(model_name){
     console.log(Helix[model_name]);
