@@ -44,7 +44,7 @@ this.addEventListener('fetch', function(event) {
     event.request.url = event_params_obj.event_url;
     param_string = event_params_obj.param_string;
     
-    console.log(event);
+    console.log(event.request.url);
     console.log(param_string);
     event.respondWith(caches.match(event.request).catch(function() {
         return fetch(event.request);
