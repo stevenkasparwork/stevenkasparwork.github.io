@@ -391,8 +391,10 @@ function initializePage(){
                 return false;
 
             });
+            break;
         case 'detail.html':
             console.log('detail');
+            break;
 
             
     }
