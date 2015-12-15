@@ -71,7 +71,7 @@ function addResource(evt) {
 
 };
 function getResource(){
-    return return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         
         /*$.ajax({
             url: "//li617-242.members.linode.com/cgi-bin/controllers/getResources.php",
@@ -91,7 +91,7 @@ function getResource(){
     });
 }
 function getActivities(){
-    return return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         
         /*$.ajax({
             url: "//li617-242.members.linode.com/cgi-bin/controllers/getResources.php",
