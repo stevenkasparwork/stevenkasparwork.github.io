@@ -338,50 +338,69 @@ function updateHelixModel(model_name){
     
 }
 
-/* 
+function getPage(){
+    var path = window.location.pathname;
+    var page = path.split("/").pop();
+    return page;
+}
 
-openDB() 
--> getResource() 
--> addResourceToIndexedDb() 
--> getActivities() 
--> addObjectsToIndexedDB() 
--> getActivitiesFromIndexedDb() 
--> updateHelixModel('activities')
+function initializePage(){
+    var page = getPage();
+    switch(page){
+        case 'index.html':
+            console.log('index');
+            /* 
+            openDB() 
+            -> getResource() 
+            -> addResourceToIndexedDb() 
+            -> getActivities() 
+            -> addObjectsToIndexedDB() 
+            -> getActivitiesFromIndexedDb() 
+            -> updateHelixModel('activities')
+            */
+            openDb().then(function(evt){
 
-*/
-openDb().then(function(evt){
-    
-    console.log(evt);
-    return getResource();
-    
-}).then(function(resource) {
-    
-    console.log(resource);
-    addResourceToIndexedDB(resource);
-    
-    return getActivities();
-    
-}).then(function(activities) {
-    
-    console.log(activities);
-    return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
-    
-}).then(function(msg) {
-    
-    console.log(msg);
-    return getActivitiesFromIndexedDb();
-    
-}).then(function(activities) {
-    updateHelixModel('activities');
-    return true;
-    
-}).catch(function(err) {
-    
-    console.log('error in initialization');
-    console.log(err);
-    return false;
-    
-});
+                console.log(evt);
+                return getResource();
+
+            }).then(function(resource) {
+
+                console.log(resource);
+                addResourceToIndexedDB(resource);
+
+                return getActivities();
+
+            }).then(function(activities) {
+
+                console.log(activities);
+                return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
+
+            }).then(function(msg) {
+
+                console.log(msg);
+                return getActivitiesFromIndexedDb();
+
+            }).then(function(activities) {
+                updateHelixModel('activities');
+                return true;
+
+            }).catch(function(err) {
+
+                console.log('error in initialization');
+                console.log(err);
+                return false;
+
+            });
+        case 'detail.html':
+            console.log('detail');
+
+            
+    }
+}
+
+initializePage();
+
+
 
 
 
