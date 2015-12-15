@@ -334,7 +334,7 @@ function updateHelixModel(model_name){
         return '<tr>'+item_string+'</tr>';
     }).join("");
     console.log(header_row);
-    $('[helix-model="'+model_name+'"]').html(header_row+items_string); 
+    $('[helix-model="'+model_name+'"]').html('<tr>'+header_row+'</tr>'+items_string); 
     
 }
 
