@@ -1,33 +1,36 @@
 
 const DB_NAME = 'helix-ofsc-mobility';
 const DB_VERSION = 1; // Use a long long for this value (don't use a float)
-const DB_STORE_NAME = 'activities';
+
+const DB_ACTIVITY_STORE_NAME = 'activities';
+const DB_RESOURCE_STORE_NAME = 'resources';
+
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
 
 function openDb() {
-    console.log("openDb ...");
-    var req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onsuccess = function (evt) {
-        // Better use "this" than "req" to get the result to avoid problems with
-        // garbage collection.
-        // db = req.result;
-        db = this.result;
-        console.log("openDb DONE");
-    };
-    req.onerror = function (evt) {
-        console.error("openDb:", evt.target.errorCode);
-    };
+    return new Promise(function(resolve, reject) {
+        console.log("openDb ...");
+        var req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onsuccess = function (evt) {
+            
+            db = this.result;
+            resolve(db);
+        };
+        req.onerror = function (evt) {
+            console.error("openDb:", evt.target.errorCode);
+            reject(evt);
+        };
 
-    req.onupgradeneeded = function (evt) {
-        console.log("openDb.onupgradeneeded");
-        var store = evt.currentTarget.result.createObjectStore(DB_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+        req.onupgradeneeded = function (evt) {
+            console.log("openDb.onupgradeneeded");
+            var store = evt.currentTarget.result.createObjectStore(DB_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+            resolve(this.result);
 
-        //store.createIndex('id', 'id', { unique: true });
-        //store.createIndex('address', 'address', { unique: false });
-        //store.createIndex('phone', 'address', { unique: false });
-    };
+
+        };
+    }
 }
 
 /**
@@ -114,18 +117,50 @@ function getActivities(){
         });
     });
 }
+function addResourceToIndexedDB(resource){
+    
+    var store = getObjectStore(DB_RESOURCE_STORE_NAME, 'readwrite');
+    var req, obj;
 
+    obj = {
+        external_id: resource.external_id,
+        name: resource.name,
+    };
+    
+    req = store.add(obj);
+    
+    req.onsuccess = function (evt) {
+        console.log("Resource insertion in DB successful");
+    };
+    req.onerror = function() {
+        console.error("add error", this.error);
+    };
+    }
+    
+}
 
-getResource().then(function(resource) {
+openDb().then(function(evt){
+    
+    console.log(evt);
+    return getResource();
+    
+}).then(function(resource) {
+    
     console.log(resource);
+    addResourceToIndexedDB(resource);
+    
     return getActivities();
-}).then(function(activites) {
-    console.log(activites);
-    console.log('open db');
-    return openDb();
+    
+}).then(function(activities) {
+    
+    console.log(activities);
+    return true;
+    
 }).catch(function(err) {
-    console.log('error in db');
+    
+    console.log('error in initialization');
     return false;
+    
 });
 
 
