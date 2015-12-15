@@ -138,8 +138,9 @@ function addResourceToIndexedDB(resource){
     }
     
 }
+var open_db = openDb();
 
-openDb().then(function(evt){
+open_db.then(function(evt){
     
     console.log(evt);
     return getResource();
