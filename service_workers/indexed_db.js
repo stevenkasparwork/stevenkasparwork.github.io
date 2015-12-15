@@ -293,7 +293,7 @@ function addActivitiesToIndexedDB(activities){
 function addObjectsToIndexedDB(store_name, obj_array){
     
     
-    localStorage.setItem('local_indexeddb_last_update', Date().getTime();
+    localStorage.setItem('local_indexeddb_last_update', Date().getTime() );
                          
     return new Promise(function(resolve, reject){
 
