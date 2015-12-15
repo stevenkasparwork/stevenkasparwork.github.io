@@ -28,6 +28,9 @@ function openDb() {
             //var store = evt.currentTarget.result.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'id', autoIncrement: false });
             var store = evt.currentTarget.result.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'appt_number', autoIncrement: false });
             
+            //store.createIndex('id', 'id', { unique: true });
+            //store.createIndex('address', 'address', { unique: false });
+            
             resolve(this.result);
 
 
@@ -44,8 +47,8 @@ function getObjectStore(store_name, mode) {
     return tx.objectStore(store_name);
 }
 
-function clearResourceStore() {
-    var store = getObjectStore(DB_RESOURCE_STORE_NAME, 'readwrite');
+function clearObjectStore(db_name) {
+    var store = getObjectStore(db_name, 'readwrite');
     var req = store.clear();
     req.onsuccess = function(evt) {
         console.log(evt);
@@ -109,14 +112,32 @@ function getActivities(){
         }).error(function(error){
             console.log(error);
         });*/
+        var date_string = Date().getFullYear()+"-"+Date().getMonth()+"-"+Date().getDate();
         resolve([{
-            id: '555555',
-            appt_number: '333333',
+            id: '0',
+            date: '',
+            appt_number: '333',
             address: '374 N Highland St',
             zip: '38122',
             state: 'Tennessee',
             time_from: '08:00:00',
             time_to: '11:00:00'
+        }],[{
+            id: '1',
+            appt_number: '444',
+            address: '374 N Highland St',
+            zip: '38122',
+            state: 'Tennessee',
+            time_from: '11:30:00',
+            time_to: '12:45:00'
+        }],[{
+            id: '2',
+            appt_number: '555',
+            address: '374 N Highland St',
+            zip: '38122',
+            state: 'Tennessee',
+            time_from: '14:00:00',
+            time_to: '16:00:00'
         }]);
     });
 }
