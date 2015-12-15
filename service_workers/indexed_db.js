@@ -97,15 +97,25 @@ function clearObjectStore(store_name) {
 * @param {obj} evt
 * NOT IN USE
 */
-function addResource(evt) {
+function addActivity(evt) {
     console.log("add ...");
-    var external_id = document.getElementById('external_id').value;
-    var name = document.getElementById('name').value;
 
+    var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
+    
+    var d = new Date();
+    var date_string = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
 
-    var obj = { external_id: external_id, name: name };
-    var store = getObjectStore(DB_STORE_NAME, 'readwrite');
-    var req;
+    var obj = {
+        id: '0',
+        date: date_string,
+        appt_number: '333',
+        address: '374 N Highland St',
+        zip: '38122',
+        state: 'Tennessee',
+        time_from: '08:00:00',
+        time_to: '11:00:00',
+        status: 'completed'
+    };
 
     req = store.add(obj);
     req.onsuccess = function (evt) {
