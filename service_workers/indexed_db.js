@@ -12,7 +12,9 @@ var Helix = {
     activities: [],
     resource: {}
 }
-
+Helix.activities.watch(function(e){
+    console.log(e);
+})
 
 function openDb() {
     return new Promise(function(resolve, reject) {
@@ -265,6 +267,7 @@ function getActivitiesFromIndexedDb(){
             }
             else {
                 console.log(activities);
+                Helix.activities = activities;
                 resolve(activities);
             }
         };
@@ -272,6 +275,20 @@ function getActivitiesFromIndexedDb(){
     
 }
 
+function updateHelixModel(model_name){
+    
+    var items_string = Helix[model_name].map(function(item){
+        var item_string = '';
+        for(var i in item){
+            item_string += '<td>'+item[i]+'</td>';
+        }
+        return '<tr>'+items_string+'</tr>';
+    }).join("");
+    
+    console.log(items_string);
+    $('[helix-model="'+model_name+'"]').html(items_string); 
+    
+}
 
 openDb().then(function(evt){
     
@@ -296,16 +313,7 @@ openDb().then(function(evt){
     return getActivitiesFromIndexedDb();
     
 }).then(function(activities) {
-    var activities_string = activities.map(function(activity){
-        var activity_string = '';
-        for(var i in activity){
-            activity_string += '<td>'+activity[i]+'</td>';
-        }
-        return '<tr>'+activity_string+'</tr>';
-    }).join("");
-    
-    console.log(activities_string);
-    $('[helix-model="activities"]').html(activities_string); 
+    updateHelixModel('activities');
     
 }).catch(function(err) {
     
@@ -314,6 +322,61 @@ openDb().then(function(evt){
     return false;
     
 });
+
+/*
+ * object.watch polyfill
+ *
+ * 2012-04-03
+ *
+ * By Eli Grey, http://eligrey.com
+ * Public Domain.
+ * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+ */
+
+// object.watch
+if (!Object.prototype.watch) {
+	Object.defineProperty(Object.prototype, "watch", {
+		  enumerable: false
+		, configurable: true
+		, writable: false
+		, value: function (prop, handler) {
+			var
+			  oldval = this[prop]
+			, newval = oldval
+			, getter = function () {
+				return newval;
+			}
+			, setter = function (val) {
+				oldval = newval;
+				return newval = handler.call(this, prop, oldval, val);
+			}
+			;
+			
+			if (delete this[prop]) { // can't watch constants
+				Object.defineProperty(this, prop, {
+					  get: getter
+					, set: setter
+					, enumerable: true
+					, configurable: true
+				});
+			}
+		}
+	});
+}
+
+// object.unwatch
+if (!Object.prototype.unwatch) {
+	Object.defineProperty(Object.prototype, "unwatch", {
+		  enumerable: false
+		, configurable: true
+		, writable: false
+		, value: function (prop) {
+			var val = this[prop];
+			delete this[prop]; // remove accessors
+			this[prop] = val;
+		}
+	});
+}
 
 
 
