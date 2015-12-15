@@ -68,6 +68,7 @@ function cleanRequest(url){
     event_params_obj.event_url = url.split('?')[0];
     event_params_obj.param_string = url.split('?')[1];
     
+    console.log(event_params_obj);
     return event_params_obj;
 }
 
