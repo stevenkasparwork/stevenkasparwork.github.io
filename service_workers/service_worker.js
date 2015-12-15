@@ -39,6 +39,12 @@ this.addEventListener('fetch', function(event) {
     console.log('fetch (service_worker)');
     console.log(event);
     
+    var event_params_obj = cleanRequest(event);
+    
+    event = event_params_obj.event;
+    param_string = event_params_obj.param_string;
+    
+    console.log(event);
     event.respondWith(caches.match(event.request).catch(function() {
         return fetch(event.request);
     }).then(function(response) {
@@ -52,6 +58,17 @@ this.addEventListener('fetch', function(event) {
         return caches.match('/service_workers/index.html');
     }));
 });
+
+function cleanRequest(event){
+    var event_params_obj = {
+        event: null,
+        param_string: ''
+    };
+    event_params_obj.event = event.request.url.split('?')[0];
+    event_params_obj.param_string = event.request.url.split('?')[1];
+    
+    return event_params_obj;
+}
 
 
 
