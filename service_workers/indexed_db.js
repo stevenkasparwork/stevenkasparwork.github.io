@@ -113,7 +113,7 @@ function getActivities(){
             console.log(error);
         });*/
         var d = new Date();
-        var date_string = d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate();
+        var date_string = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
         resolve([{
             id: '0',
             date: date_string,
@@ -173,6 +173,7 @@ function addActivitiesToIndexedDB(activities){
     var req, obj;
 
     for(var i in activities){
+        console.log(activities[i]);
         obj = {
             id: activities[i].id,
             date: activities[i].date,
