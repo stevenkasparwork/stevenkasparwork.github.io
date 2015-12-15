@@ -201,13 +201,13 @@ function addObjectsToIndexedDB(store_name, obj_array){
 
         req.onsuccess = function (evt) {
             console.log(obj_array);
-            addObjectsToIndexedDB(store, obj_array.splice(1));
+            addObjectsToIndexedDB(store_name, obj_array.splice(1));
         };
         req.onerror = function(evt) {
             console.log(evt);
             console.log(this);
             
-            addObjectsToIndexedDB(store, obj_array.splice(1))
+            addObjectsToIndexedDB(store_name, obj_array.splice(1))
         };
     }
     
