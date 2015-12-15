@@ -159,7 +159,7 @@ function getActivities(){
         });*/
         var d = new Date();
         var date_string = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
-        resolve([{
+        resolve([/*{
             id: '0',
             date: date_string,
             appt_number: '333',
@@ -219,7 +219,7 @@ function getActivities(){
             time_from: '14:00:00',
             time_to: '16:00:00',
             status: 'pending'
-        }]);
+        }*/]);
     });
 }
 
@@ -420,6 +420,10 @@ function updateHelixList(model_name, editable){
 
 function updateActivity(event){
     console.log(event);
+    Helix.activity_details[event.target.id] = event.target.value;
+    
+    addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [Helix.activity_details]);
+    
 }
 
 function getIndexedDBActivityByApptNumber(appt_number){
