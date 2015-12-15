@@ -370,7 +370,7 @@ function getIndexedDBActivityByApptNumber(appt_number){
             
             resolve(req.result);
         };
-    }
+    });
 }
 
 function getUrlParam(param) {
