@@ -39,10 +39,10 @@ this.addEventListener('fetch', function(event) {
     console.log('fetch (service_worker)');
    
     event.respondWith(caches.match(event.request).catch(function(e) {
-        //console.log(e);
+        console.log(e);
         return fetch(event.request);
     }).then(function(response) {
-        //console.log(response);
+        console.log(response);
         if(response){
             caches.open('v1').then(function(cache) {
                 cache.put(event.request, response);
@@ -50,7 +50,7 @@ this.addEventListener('fetch', function(event) {
             return response.clone();
         }
     }).catch(function(e) {
-        //console.log(e);
+        console.log(e);
         return caches.match('/service_workers/index.html');
     }));
 });
