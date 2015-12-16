@@ -160,11 +160,15 @@ function getActivities(){
             type: 'POST'
         }).success(function(response) {
             response = JSON.parse(response);
-            console.log(response);
-            
             resolve(response.data.activities);
         }).error(function(error){
-            console.log(error);
+            //console.log(error);
+            console.warn('need to get activities straight from indexedDB');
+            
+            var p = getActivitiesFromIndexedDb();
+            p.then(function(response){
+                updateHelixTable('activities');
+            });
         });
         
         //var d = new Date();

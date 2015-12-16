@@ -54,11 +54,8 @@ this.addEventListener('fetch', function(event) {
                 return response;
                 
             }).catch(function(error) {
-                
+                // not in cache and we do not have connection
                 console.warn('Fetching failed:', error);
-                console.warn('Need to access IndexedDB');
-                
-                
                 
             });
         })
