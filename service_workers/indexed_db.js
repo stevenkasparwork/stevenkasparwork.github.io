@@ -153,7 +153,7 @@ function getActivities(){
     return new Promise(function(resolve, reject) {
         
         $.ajax({
-            url: "//helixsxd.com/controllers/getActivities.php",
+            url: "//helixsxd.com/service_workers/controllers/getActivities.php",
             data: {
                 api_key: OFSC_API_KEY
             },
