@@ -57,7 +57,9 @@ this.addEventListener('fetch', function(event) {
                 
                 console.warn('Fetching failed:', error);
                 console.warn('Need to access IndexedDB');
-
+                
+                
+                
             });
         })
     );
