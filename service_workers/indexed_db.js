@@ -162,7 +162,7 @@ function getActivities(){
             response = JSON.parse(response);
             console.log(response);
             
-            resolve(response.data);
+            resolve(response.data.activities);
         }).error(function(error){
             console.log(error);
         });
