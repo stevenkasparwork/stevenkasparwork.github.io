@@ -152,20 +152,22 @@ function getResource(){
 function getActivities(){
     return new Promise(function(resolve, reject) {
         
-        /*$.ajax({
-            url: "//li617-242.members.linode.com/cgi-bin/controllers/getResources.php",
+        $.ajax({
+            url: "//helixsxd.com/controllers/getActivities.php",
             data: {
                 api_key: OFSC_API_KEY
             },
             type: 'POST'
         }).success(function(data) {
             console.log(data);
+            resolve([]);
         }).error(function(error){
             console.log(error);
-        });*/
-        var d = new Date();
-        var date_string = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
-        resolve([/*{
+        });
+        
+        //var d = new Date();
+        //var date_string = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+        /*resolve([{
             id: '0',
             date: date_string,
             appt_number: '333',
@@ -225,7 +227,7 @@ function getActivities(){
             time_from: '14:00:00',
             time_to: '16:00:00',
             status: 'pending'
-        }*/]);
+        }]);*/
     });
 }
 
@@ -293,7 +295,6 @@ function addActivitiesToIndexedDB(activities){
 function addObjectsToIndexedDB(store_name, obj_array){
     
     
-    localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                          
     return new Promise(function(resolve, reject){
 
@@ -307,6 +308,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
 
             req.onsuccess = function (evt) {
                 resolve(evt);
+                localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                 addObjectsToIndexedDB(store_name, obj_array.splice(1));
             };
             req.onerror = function(evt) {
