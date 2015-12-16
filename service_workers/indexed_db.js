@@ -158,9 +158,11 @@ function getActivities(){
                 api_key: OFSC_API_KEY
             },
             type: 'POST'
-        }).success(function(data) {
-            console.log(data);
-            resolve([]);
+        }).success(function(response) {
+            response = JSON.parse(response);
+            console.log(response);
+            
+            resolve(response.data);
         }).error(function(error){
             console.log(error);
         });
