@@ -248,6 +248,27 @@ function addActivitiesToIndexedDB(activities){
 function addObjectsToIndexedDB(store_name, obj_array){
     console.log('...add objects to local db...');
     
+    return Promise.all(obj_array).then(function(obj){
+        
+        // need to get the transaction and store for adding to the db
+        var store = getObjectStore(store_name, 'readwrite'), req;
+        
+        // using put instead of add because put will update if the key index exists
+        req = store.put(obj);
+
+        req.onsuccess = function (evt) {
+            localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+            return true;
+        };
+        req.onerror = function(evt) {
+            console.log(evt);
+            console.log(this);
+
+            return false;
+        };
+    })
+    
+    /*
     return new Promise(function(resolve, reject){
 
         // need to get the transaction and store for adding to the db
@@ -274,7 +295,8 @@ function addObjectsToIndexedDB(store_name, obj_array){
             resolve('obj_array empty');
         }
         
-    });
+    });*/
+    
     
 }
 
