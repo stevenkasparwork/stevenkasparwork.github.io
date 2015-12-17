@@ -142,7 +142,7 @@ function addActivity(evt) {
         state: 'Tennessee',
         time_from: '08:00:00',
         time_to: '11:00:00',
-        status: 'completed'
+        status: 'complete'
     };
 
     addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [obj]);
