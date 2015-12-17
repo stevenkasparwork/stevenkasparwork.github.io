@@ -275,8 +275,6 @@ function addObjectsToIndexedDB(store_name, obj_array){
                             tmp_activity.properties = local_activity;
                             // set the activity_id so that the api knows which activity to update
                             tmp_activity.activity_id = local_activity.id;
-                            //remove the activity_id from the properties because the Activity API won't like that
-                            //delete tmp_activity.properties.id;
 
                             console.log(tmp_activity);
 
@@ -527,8 +525,6 @@ function updateActivity(event) {
         tmp_activity.properties = activity;
         // set the activity_id so that the api knows which activity to update
         tmp_activity.activity_id = activity.id;
-        //remove the activity_id from the properties because the Activity API won't like that
-        //delete tmp_activity.properties.id;
         
         return updateActivityInOFSC(tmp_activity);
     }).catch(function(response){
