@@ -303,7 +303,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
                         var store = getObjectStore(store_name, 'readwrite'), req;
 
                         // using put instead of add because put will update if the key index exists
-                        req = store.put(obj_array[i]);
+                        req = store.put(obj);
 
                         req.onsuccess = function (evt) {
                             localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
