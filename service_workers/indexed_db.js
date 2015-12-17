@@ -77,6 +77,12 @@ function openDb() {
             //store.createIndex('id', 'id', { unique: true });
             //store.createIndex('address', 'address', { unique: false });
             
+            db.onversionchange = function(event) {
+                alert('Your app has been updated please refresh the page');
+            };
+            
+            
+            
             resolve(this.result);
 
 
