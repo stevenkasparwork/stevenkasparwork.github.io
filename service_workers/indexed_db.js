@@ -549,7 +549,7 @@ function updateActivity(event) {
 
 function updateActivityInLocalDB(activity){
     console.log('...update activity in local db...');
-    
+    console.log(activity);
     return new Promise(function(resolve, reject){
         
         var add_to_local_db = addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [activity]);
