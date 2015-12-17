@@ -602,25 +602,29 @@ function startActivity(){
     console.log( Helix.activity_details );
     
     var d = new Date();
-    var start_time_string = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    var date_string = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+    var time_string = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    var date_time_string = date_string + " " + time_string;
     
     // update the start time of the activity locally
     // update the start time of the activity in ofsc
     Helix.activity_details.status = 'started';
-    Helix.activity_details.start_time = start_time_string;
+    Helix.activity_details.start_time = date_time_string;
     // add a dirty bit so we know it is not in sync
     Helix.activity_details['dirty'] = 1;
     
     var update_local_db = updateActivityInLocalDB(Helix.activity_details);
     update_local_db.then(function(activity){
         
-        var tmp_activity = {};
-        // put in properties object 
-        tmp_activity.properties = activity;
-        // set the activity_id so that the api knows which activity to update
-        tmp_activity.activity_id = activity.id;
+        var start_object = {
+            status: 'started',
+            activity_id: activity.id,
+            date: date_string,
+            time: date_time_string
+        }
         
-        return updateActivityInOFSC(tmp_activity);
+        return updateStatusInOFSC(start_object);
+        
     }).catch(function(response){
         
         console.warn(response);
@@ -642,6 +646,29 @@ function startActivity(){
         
     });
 }
+
+function updateStatusInOFSC(status_object){
+    console.log('...update status in ofsc...');
+    return new Promise(function(resolve, reject) {
+        
+        $.ajax({
+            url: "//helixsxd.com/service_workers/controllers/statusActivity.php",
+            data: {
+                api_key: OFSC_API_KEY,
+                status_object: status_object
+            },
+            type: 'POST'
+        }).success(function(response) {
+            response = JSON.parse(response);
+            resolve(response);
+        }).error(function(error){
+            //console.log(error);
+            console.warn('activity did not update need to queue status update in localStorage');
+            reject(error);
+        });
+    });
+}
+
 
 function getIndexedDBActivityByID(id){
     console.log('...get activity from local db...');
