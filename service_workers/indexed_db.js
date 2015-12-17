@@ -89,14 +89,18 @@ function getObjectStore(store_name, mode) {
 */
 function clearObjectStore(store_name) {
     console.log("...clear object store: "+store_name+"...");
-    var store = getObjectStore(store_name, 'readwrite');
-    var req = store.clear();
-    req.onsuccess = function(evt) {
-        console.log(evt);
-    };
-    req.onerror = function (evt) {
-        console.log(evt);
-    };
+    return new Promise(function(resolve, reject){
+        
+        var store = getObjectStore(store_name, 'readwrite');
+        var req = store.clear();
+        req.onsuccess = function(evt) {
+            resolve(evt);
+        };
+        req.onerror = function (err) {
+            reject(err);
+        };
+        
+    });
 }
 
 
@@ -790,8 +794,10 @@ function sendStatusQueue(statuses){
 
             return Promise.all(promise_array).then(function(value){
                 //console.log(value);
-                console.log(promise_array);
-                resolve('updated all statuses to ofsc');
+                var clear_status_queue = clearObjectStore(DB_STATUS_QUEUE_STORE_NAME);
+                clear_status_queue.then(function(response){
+                    resolve('updated all statuses to ofsc and cleared local queue');
+                });
             },
                                                    function(err){
                 console.warn(err);
