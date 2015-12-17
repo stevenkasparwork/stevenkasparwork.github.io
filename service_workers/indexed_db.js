@@ -58,7 +58,7 @@ function openDb() {
             alert("openDb.onupgradeneeded");
             console.log(evt);
             db = evt.target.result;
-            
+            console.log(db.objectStoreNames);
             if(db.objectStoreNames.indexOf(DB_RESOURCE_STORE_NAME) > -1){
                 db.deleteObjectStore(DB_RESOURCE_STORE_NAME);
             } 
