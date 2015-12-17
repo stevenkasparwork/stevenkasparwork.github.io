@@ -59,20 +59,20 @@ function openDb() {
             console.log(evt);
             db = evt.target.result;
             console.log(db.objectStoreNames);
-            if(db.objectStoreNames.indexOf(DB_RESOURCE_STORE_NAME) > -1){
+            if(db.objectStoreNames.contains(DB_RESOURCE_STORE_NAME) > -1){
                 db.deleteObjectStore(DB_RESOURCE_STORE_NAME);
             } 
-            var store = evt.currentTarget.result.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'id', autoIncrement: false });
+            var store = db.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'id', autoIncrement: false });
             
-            if(evt.currentTarget.result.objectStoreNames.indexOf(DB_ACTIVITY_STORE_NAME) > -1){
-                evt.currentTarget.result.deleteObjectStore(DB_ACTIVITY_STORE_NAME);
+            if(db.objectStoreNames.contains(DB_ACTIVITY_STORE_NAME) > -1){
+                db.deleteObjectStore(DB_ACTIVITY_STORE_NAME);
             } 
-            var store = evt.currentTarget.result.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'id', autoIncrement: false });
+            var store = db.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'id', autoIncrement: false });
             
-            if(evt.currentTarget.result.objectStoreNames.indexOf(DB_STATUS_QUEUE_STORE_NAME) > -1){
-                evt.currentTarget.result.deleteObjectStore(DB_STATUS_QUEUE_STORE_NAME);
+            if(db.objectStoreNames.contains(DB_STATUS_QUEUE_STORE_NAME) > -1){
+                db.deleteObjectStore(DB_STATUS_QUEUE_STORE_NAME);
             } 
-            var store = evt.currentTarget.result.createObjectStore(DB_STATUS_QUEUE_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+            var store = db.createObjectStore(DB_STATUS_QUEUE_STORE_NAME, { keyPath: 'id', autoIncrement: true });
             
             //store.createIndex('id', 'id', { unique: true });
             //store.createIndex('address', 'address', { unique: false });
