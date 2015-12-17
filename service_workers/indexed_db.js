@@ -279,6 +279,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
                         var update_ofsc_activity = updateActivityInOFSC(tmp_activity);
                         update_ofsc_activity.then(function(response){
                             console.log(response);
+                            resolve();
                         });
                     }
                     else {
