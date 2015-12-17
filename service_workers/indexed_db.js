@@ -853,6 +853,10 @@ function initializePage(){
                 //console.log(resource);
                 return getActivities();
 
+            }).catch(function(err) {
+
+                return getActivitiesFromIndexedDb();
+
             }).then(function(activities) { // add the activities to the local db
 
                 //console.log(activities);
