@@ -554,8 +554,16 @@ function updateActivity(event) {
         
         return updateActivityInLocalDB(Helix.activity_details);
         
+    }).catch(function(response){
+        
+        console.warn(response);
+        
     }).then(function(response){
         console.log('activity has been updated locally and in ofsc');
+    }).catch(function(response){
+        
+        console.warn(response);
+        
     });
 }
 
