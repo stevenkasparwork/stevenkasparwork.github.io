@@ -336,31 +336,31 @@ function removeDirtyBitFromLocalDBObject(store_name, key){
     return new Promise(function(resolve, reject){
         // need to get the transaction and store for adding to the local db
         var store = getObjectStore(store_name, 'readwrite');
-        var req = store.get(key);
+        var get_object_from_store = store.get(key);
         
-        req.onerror = function(err) {
+        get_object_from_store.onerror = function(err) {
             // Handle errors!
             console.warn(err);
             reject(err);
         };
-        req.onsuccess = function(event) {
+        get_object_from_store.onsuccess = function(event) {
             // Do something with the request.result!
-            req.result.dirty = 0;
+            get_object_from_store.result.dirty = 0;
             
-            store = getObjectStore(store_name, 'readwrite');
-            req = store.get(key);
+            // necessary because the way onsuccess works
+            var store_1 = getObjectStore(store_name, 'readwrite');
+            var put_object_in_store_1 = store_1.put(get_object_from_store.result);
             
-            // using put instead of add because put will update if the key index exists
-            req = store.put(req.result);
+            put_object_in_store_1.onerror = function(err) {
+                // Handle errors!
+                console.warn(err);
+                reject(err);
+            };
+            put_object_in_store_1.onsuccess = function(event) {
 
-            req.onsuccess = function (evt) {
                 console.log('.dirty bit set to 0.');
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
-                resolve(evt);
-            };
-            req.onerror = function(evt) {
-                console.warn(evt);
-                reject('could not add to local db');
+                resolve(event);
             };
             
         };
