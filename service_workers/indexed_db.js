@@ -41,8 +41,8 @@ var Helix = {
     This also will check to see if we are needing to upgradethe db
 */
 function openDb() {
+        console.log("...open local db...");
     return new Promise(function(resolve, reject) {
-        console.log("openDb ...");
         var req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onsuccess = function (evt) {
             console.log(evt);
@@ -74,6 +74,7 @@ function openDb() {
 * @param {string} mode either "readonly" or "readwrite"
 */
 function getObjectStore(store_name, mode) {
+    console.log("...get object store: "+store_name+"...");
     var tx = db.transaction(store_name, mode);
     return tx.objectStore(store_name);
 }
@@ -84,6 +85,7 @@ function getObjectStore(store_name, mode) {
 * be carefull with this
 */
 function clearObjectStore(store_name) {
+    console.log("...clear object store: "+store_name+"...");
     var store = getObjectStore(store_name, 'readwrite');
     var req = store.clear();
     req.onsuccess = function(evt) {
@@ -99,7 +101,7 @@ function clearObjectStore(store_name) {
 * @param {obj} evt
 */
 function addActivity(evt) {
-    console.log("add ...");
+    console.log("...add activity...");
 
     var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
     
@@ -126,6 +128,7 @@ function addActivity(evt) {
 * Placeholder for the API call that will get resource information from an external system
 */
 function getResource(){
+    console.log('...add resource from ofsc (dummy)...');
     return new Promise(function(resolve, reject) {
         
         /*$.ajax({
@@ -153,6 +156,7 @@ function getResource(){
 * Placeholder for the API call that will get activity information from an external system
 */
 function getActivities(){
+    console.log('...add activities from ofsc...');
     return new Promise(function(resolve, reject) {
         
         $.ajax({
@@ -181,8 +185,10 @@ function getActivities(){
 /**
 * @param {string} resource
 * Puts a single resource object to the db.DB_RESOURCE_STORE_NAME
+* NOT USING ANYMORE BECAUSE WE ARE GOING TO USE LOCAL STORAGE
 */
 function addResourceToIndexedDB(resource){
+    console.log('...add resource to local db...');
     
     var store = getObjectStore(DB_RESOURCE_STORE_NAME, 'readwrite');
     var req, obj;
@@ -212,6 +218,7 @@ function addResourceToIndexedDB(resource){
 * This isn't really necessary now but could be in the future
 */
 function addActivitiesToIndexedDB(activities){
+    console.log('...add activities to local db...');
     
     var activity_array = [];
 
@@ -239,9 +246,8 @@ function addActivitiesToIndexedDB(activities){
 * recursively adds all objects in the obj_array to the db.store_name
 */
 function addObjectsToIndexedDB(store_name, obj_array){
+    console.log('...add objects to local db...');
     
-    
-                         
     return new Promise(function(resolve, reject){
 
         // need to get the transaction and store for adding to the db
@@ -276,6 +282,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
 * gets all activities from the local IndexedDB
 */
 function getActivitiesFromIndexedDb(){
+    console.log('...get activities from indexed db...');
     return new Promise(function(resolve, reject){
 
         var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
@@ -288,7 +295,6 @@ function getActivitiesFromIndexedDb(){
                 cursor.continue();
             }
             else {
-                console.log(activities);
                 Helix.activities = activities;
                 resolve(activities);
             }
@@ -303,7 +309,7 @@ function getActivitiesFromIndexedDb(){
 * Helix[model_name] must be an array
 */
 function updateHelixTable(model_name){
-    console.log(Helix[model_name]);
+    console.log('...update helix table...');
     var header_cells = '';
     
     var items_string = Helix[model_name].map(function(item, index){
@@ -338,7 +344,7 @@ function navigateWithParameters(param_obj, page){
 * Helix[model_name] must be an object
 */
 function updateHelixList(model_name, editable){
-    console.log(Helix[model_name]);
+    console.log('...update helix list...');
     if(!editable){editable = '';}
     console.log(editable);
     
@@ -377,6 +383,7 @@ function updateHelixList(model_name, editable){
 }
 
 function updateActivity(event){
+    console.log('...update activity...');
     console.log(event);
     Helix.activity_details[event.target.id] = event.target.value;
     
@@ -386,6 +393,7 @@ function updateActivity(event){
 }
 
 function getIndexedDBActivityByApptNumber(appt_number){
+    console.log('...get activity from local db...');
     return new Promise(function(resolve, reject){
         
         var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
@@ -403,6 +411,7 @@ function getIndexedDBActivityByApptNumber(appt_number){
 }
 
 function getUrlParam(param) {
+    console.log('...get url param: '+param+'...');
     var urlParamString = location.search.split(param + "=");
     if (urlParamString.length <= 1) return false;
     else {
@@ -422,7 +431,7 @@ function initializePage(){
     
     switch(page){
         case 'index.html':
-            console.log('on index page');
+            console.log('..on index page..');
             /* 
             openDB() 
             -> getResource() 
@@ -465,7 +474,7 @@ function initializePage(){
             });
             break;
         case 'detail.html':
-            console.log('on detail page');
+            console.log('..on detail page..');
             var appt_number = localStorage.getItem('appt_number');
             console.log(appt_number);
             if(appt_number) {
