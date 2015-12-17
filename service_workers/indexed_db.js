@@ -249,7 +249,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
     console.log('...add objects to local db...');
     
     return Promise.all(obj_array).then(function(obj){
-        
+        console.log(obj);
         // need to get the transaction and store for adding to the db
         var store = getObjectStore(store_name, 'readwrite'), req;
         
