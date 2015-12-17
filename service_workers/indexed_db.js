@@ -257,6 +257,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
             promise_array[i] = new Promise(function(resolve, reject){
 
                 // first we need to check if the object in the local db is dirty and out of sync
+                console.log(obj_array[i]);
                 var dirty_check_promise = checkIfObjectIsDirty(store_name, obj_array[i].id); 
                 
                 dirty_check_promise.then(function(id){
@@ -287,7 +288,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
                             return getIndexedDBActivityByID( response.data.activity_id );
                             
                         }).then(function(activity){
-                            console.warn('activity being ')
+                            
                             return removeDirtyBitFromLocalDBObject(store_name, activity.id);
                             
                         }).then(function(response){
@@ -359,8 +360,6 @@ function removeDirtyBitFromLocalDBObject(store_name, key){
                 reject(err);
             };
             put_object_in_store_1.onsuccess = function(event) {
-
-                console.log('.dirty bit set to 0.');
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                 resolve(event);
             };
