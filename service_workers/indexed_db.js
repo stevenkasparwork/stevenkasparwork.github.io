@@ -59,17 +59,17 @@ function openDb() {
             console.log(evt);
             db = evt.target.result;
             console.log(db.objectStoreNames);
-            if(db.objectStoreNames.contains(DB_RESOURCE_STORE_NAME) > -1){
+            if(db.objectStoreNames.contains(DB_RESOURCE_STORE_NAME)){
                 db.deleteObjectStore(DB_RESOURCE_STORE_NAME);
             } 
             var store = db.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'id', autoIncrement: false });
             
-            if(db.objectStoreNames.contains(DB_ACTIVITY_STORE_NAME) > -1){
+            if(db.objectStoreNames.contains(DB_ACTIVITY_STORE_NAME)){
                 db.deleteObjectStore(DB_ACTIVITY_STORE_NAME);
             } 
             var store = db.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'id', autoIncrement: false });
             
-            if(db.objectStoreNames.contains(DB_STATUS_QUEUE_STORE_NAME) > -1){
+            if(db.objectStoreNames.contains(DB_STATUS_QUEUE_STORE_NAME)){
                 db.deleteObjectStore(DB_STATUS_QUEUE_STORE_NAME);
             } 
             var store = db.createObjectStore(DB_STATUS_QUEUE_STORE_NAME, { keyPath: 'id', autoIncrement: true });
