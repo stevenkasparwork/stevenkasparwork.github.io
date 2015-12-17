@@ -261,13 +261,13 @@ function addObjectsToIndexedDB(store_name, obj_array){
             req.onsuccess = function (evt) {
                 resolve(evt);
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
-                addObjectsToIndexedDB(store_name, obj_array.splice(1));
+                return addObjectsToIndexedDB(store_name, obj_array.splice(1));
             };
             req.onerror = function(evt) {
                 console.log(evt);
                 console.log(this);
 
-                addObjectsToIndexedDB(store_name, obj_array.splice(1))
+                return addObjectsToIndexedDB(store_name, obj_array.splice(1))
             };
         }
         else {
