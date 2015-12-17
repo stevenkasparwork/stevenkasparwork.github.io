@@ -570,6 +570,7 @@ function updateActivityInLocalDB(activity){
             resolve(activity);
             
         }).catch(function(err){
+            console.warn(err);
             reject(err);
         });
         
