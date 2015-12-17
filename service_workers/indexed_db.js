@@ -609,8 +609,8 @@ function initializePage(){
         case 'detail.html':
             console.log('..on detail page..');
             var id = localStorage.getItem('id');
-            console.log(appt_number);
-            if(appt_number) {
+            console.log(id);
+            if(id) {
                 openDb().then(function(evt){
                     return getIndexedDBActivityByID( id );
                 }).then(function(activity){
@@ -619,7 +619,7 @@ function initializePage(){
                 });
             }
             else {
-                console.warn('No appt_number in url');
+                console.warn('No id in local storage');
             }
             
             break;
