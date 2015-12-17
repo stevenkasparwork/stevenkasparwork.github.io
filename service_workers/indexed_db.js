@@ -368,7 +368,7 @@ function updateHelixTable(model_name){
         }
         
         
-        return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'appt_number\':'+item.appt_number+'},\'detail.html\');">'+item_string+'</tr>';
+        return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'id\':'+item.id+'},\'detail.html\');">'+item_string+'</tr>';
     }).join("");
     
     $('[helix-model="'+model_name+'"]').html('<tr>'+header_cells+'</tr>'+items_string); 
