@@ -652,8 +652,14 @@ function statusActivity(status){
     console.log( Helix.activity_details );
     
     var d = new Date();
+    
+    var hours = d.getHours();
+    var minutes = d.getMinutes();
+    var seconds = (d.getSeconds() < 2) ? '0'+d.getSeconds().toString() : d.getSeconds();
+    
+    
     var date_string = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
-    var time_string = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    var time_string = hours + ":" + minutes + ":" + seconds;
     var date_time_string = date_string + " " + time_string;
     
     // update the start time of the activity locally
