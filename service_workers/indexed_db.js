@@ -596,57 +596,6 @@ function updateActivityInOFSC(activity){
     });
 }
 
-
-function startActivity(){
-    console.log('...start activity...');
-    console.log( Helix.activity_details );
-    
-    var d = new Date();
-    var date_string = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
-    var time_string = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-    var date_time_string = date_string + " " + time_string;
-    
-    // update the start time of the activity locally
-    // update the start time of the activity in ofsc
-    Helix.activity_details.status = 'started';
-    Helix.activity_details.start_time = date_time_string;
-    // add a dirty bit so we know it is not in sync
-    Helix.activity_details['dirty'] = 1;
-    
-    var update_local_db = updateActivityInLocalDB(Helix.activity_details);
-    update_local_db.then(function(activity){
-        
-        var start_object = {
-            status: 'started',
-            activity_id: activity.id,
-            date: date_string,
-            time: date_time_string
-        }
-        
-        return updateStatusInOFSC(start_object);
-        
-    }).catch(function(response){
-        
-        console.warn(response);
-        
-    }).then(function(response){
-        console.log(response);
-        // set dirty bit to 0 since we just updated ofsc
-        Helix.activity_details['dirty'] = 0;
-        
-        return updateActivityInLocalDB(Helix.activity_details);
-        
-    }).then(function(response){
-        
-        console.log('activity has been updated locally and in ofsc');
-        
-    }).catch(function(response){
-        
-        console.warn(response);
-        
-    });
-}
-
 function statusActivity(status){
     console.log('...status activity: '+status+'...');
     console.log( Helix.activity_details );
@@ -667,8 +616,7 @@ function statusActivity(status){
     var time_string = hours + ":" + minutes + ":" + seconds;
     var date_time_string = date_string + " " + time_string;
     
-    // update the start time of the activity locally
-    // update the start time of the activity in ofsc
+    
     Helix.activity_details.status = status;
     Helix.activity_details.start_time = date_time_string;
     // add a dirty bit so we know it is not in sync
