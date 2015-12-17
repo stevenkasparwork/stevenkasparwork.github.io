@@ -74,7 +74,7 @@ function openDb() {
 * @param {string} mode either "readonly" or "readwrite"
 */
 function getObjectStore(store_name, mode) {
-    console.log("...get object store: "+store_name+"...");
+    console.log("...get store object: "+store_name+"...");
     var tx = db.transaction(store_name, mode);
     return tx.objectStore(store_name);
 }
