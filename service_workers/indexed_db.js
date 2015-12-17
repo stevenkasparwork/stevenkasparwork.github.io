@@ -282,10 +282,12 @@ function addObjectsToIndexedDB(store_name, obj_array){
                             return updateActivityInOFSC(tmp_activity);
                             
                         }).then(function(response){
+                            
                             console.log(response);
                             return getIndexedDBActivityByID( response.data.activity_id );
+                            
                         }).then(function(activity){
-                            console.log(activity);
+                            console.warn('activity being ')
                             return removeDirtyBitFromLocalDBObject(store_name, activity.id);
                             
                         }).then(function(response){
@@ -331,7 +333,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
 }
 
 function removeDirtyBitFromLocalDBObject(store_name, key){
-    console.log('...update activity...');
+    console.log('...remoce diry bit from local db object: '+key+'...');
     
     return new Promise(function(resolve, reject){
         // need to get the transaction and store for adding to the local db
