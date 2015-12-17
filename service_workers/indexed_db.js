@@ -254,11 +254,12 @@ function addObjectsToIndexedDB(store_name, obj_array){
         for(var i in obj_array){
             // create an array of promises. Each item to insert gets its own promise.
             // the array of promises will be evaluated as a group below in Promise.all()
-            promise_array[i] = new Promise(function(resolve, reject){
+            var temp_i = i;
+            promise_array[temp_i] = new Promise(function(resolve, reject){
 
                 // first we need to check if the object in the local db is dirty and out of sync
-                console.log(obj_array[i]);
-                var dirty_check_promise = checkIfObjectIsDirty(store_name, obj_array[i].id); 
+                console.log(obj_array[temp_i]);
+                var dirty_check_promise = checkIfObjectIsDirty(store_name, obj_array[temp_i].id); 
                 
                 dirty_check_promise.then(function(id){
 
