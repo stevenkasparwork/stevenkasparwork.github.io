@@ -391,8 +391,13 @@ function checkIfObjectIsDirty(store_name, key){
         };
         req.onsuccess = function(event) {
             // Do something with the request.result!
-            if(req.result.dirty === 1){
-                resolve(req.result.id);
+            if(req.result){
+                if(req.result.dirty === 1){
+                    resolve(req.result.id);
+                }
+                else {
+                    resolve(false);
+                }
             }
             else {
                 resolve(false);
