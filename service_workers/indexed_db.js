@@ -886,7 +886,7 @@ function initializePage(){
                     return getIndexedDBActivityByID( id );
                 }).then(function(activity){
                     Helix.activity_details = activity;
-                    updateHelixList('activity_details', 'status,address,name');
+                    updateHelixList('activity_details', 'address,name');
                 });
             }
             else {
