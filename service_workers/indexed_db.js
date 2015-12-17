@@ -283,6 +283,13 @@ function addObjectsToIndexedDB(store_name, obj_array){
                             
                         }).then(function(response){
                             console.log(response);
+                            return getIndexedDBActivityByID( response.data.activity_id );
+                        }).then(function(activity){
+                            tmp_activity = activity;
+                            tmp_activity['dirty'] = 0;
+                            return updateActivityInLocalDB(activity);
+                        }).then(function(response){
+                            console.log('dirty object has been update in ofsc and local db dirty bit removed');
                             resolve();
                         });
                         
@@ -459,8 +466,16 @@ function updateHelixList(model_name, editable){
 
 function updateActivity(event) {
     console.log('...update activity...');
-    var update_local_db = updateActivityInLocalDB(event);
+    
+    
+    // changed the updated field
+    Helix.activity_details[event.target.id] = event.target.value;
+    // add a dirty bit so we know it is not in sync
+    Helix.activity_details['dirty'] = 1;
+    
+    var update_local_db = updateActivityInLocalDB(Helix.activity_details);
     update_local_db.then(function(activity){
+        
         var tmp_activity = {};
         // put in properties object 
         tmp_activity.properties = activity;
@@ -472,26 +487,26 @@ function updateActivity(event) {
         return updateActivityInOFSC(tmp_activity);
     }).then(function(response){
         console.log(response);
+        // set dirty bit to 0 since we just updated ofsc
+        Helix.activity_details['dirty'] = 0;
+        
+        return updateActivityInLocalDB(Helix.activity_details);
+        
+    }).then(function(response){
+        console.log('activity has been updated locally and in ofsc');
     });
 }
 
 
-function updateActivityInLocalDB(event){
+function updateActivityInLocalDB(activity){
     console.log('...update activity...');
     
     return new Promise(function(resolve, reject){
         
-        // changed the updated field
-        Helix.activity_details[event.target.id] = event.target.value;
-        // add a dirty bit so we know it is not in sync
-        Helix.activity_details['dirty'] = 1;
-
-        var add_to_local_db = addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [Helix.activity_details]);
+        var add_to_local_db = addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [activity]);
         add_to_local_db.then(function(response){
-            
-            delete Helix.activity_details['dirty'];
-            
-            resolve(Helix.activity_details);
+            console.log(response);
+            resolve(activity);
             
         }).catch(function(err){
             reject(err);
