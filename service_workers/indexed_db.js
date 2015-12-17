@@ -305,9 +305,9 @@ function checkIfObjectIsDirty(store_name, key){
         };
         req.onsuccess = function(event) {
             // Do something with the request.result!
-            console.log(request.result);
-            console.log(request.result.dirty);
-            resolve(request.result.dirty);
+            console.log(req.result);
+            console.log(req.result.dirty);
+            resolve(req.result.dirty);
         };
     });
     
