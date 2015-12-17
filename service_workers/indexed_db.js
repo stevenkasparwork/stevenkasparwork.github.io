@@ -258,8 +258,11 @@ function addObjectsToIndexedDB(store_name, obj_array){
                 // first we need to check if the object in the local db is dirty and out of sync
                 var dirty_check_promise = checkIfObjectIsDirty(store_name, obj_array[i].id); 
                 
-                dirty_check_promise.then(function(response){
+                dirty_check_promise.then(function(is_dirty){
 
+                    if(is_dirty){
+                        console.warn('object is dirty');
+                    }
                     // need to get the transaction and store for adding to the local db
                     var store = getObjectStore(store_name, 'readwrite'), req;
 
@@ -310,10 +313,10 @@ function checkIfObjectIsDirty(store_name, key){
         req.onsuccess = function(event) {
             // Do something with the request.result!
             if(req.result.dirty === 1){
-                reject();
+                resolve(true);
             }
             else {
-                resolve(req.result.dirty);
+                resolve(false);
             }
         };
     });
@@ -427,10 +430,15 @@ function updateHelixList(model_name, editable){
 function updateActivity(event){
     console.log('...update activity...');
     console.log(event);
+    // changed the updated field
     Helix.activity_details[event.target.id] = event.target.value;
+    // add a dirty bit so we know it is not in sync
+    Helix.activity_details['dirty'] = 1;
     
-    addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [Helix.activity_details]);
-    console.log(Helix.activity_details);
+    var add_to_local_db = addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [Helix.activity_details]);
+    add_to_local_db.then(function(response){
+        console.log(response);
+    });
     
 }
 
