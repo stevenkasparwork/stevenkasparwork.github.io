@@ -285,9 +285,9 @@ function addObjectsToIndexedDB(store_name, obj_array){
                             console.log(response);
                             return getIndexedDBActivityByID( response.data.activity_id );
                         }).then(function(activity){
-                            tmp_activity = activity;
-                            tmp_activity['dirty'] = 0;
-                            return updateActivityInLocalDB(activity);
+                            
+                            return removeDirtyBitFromLocalDBObject(store_name, activity.id);
+                            
                         }).then(function(response){
                             console.log('dirty object has been update in ofsc and local db dirty bit removed');
                             resolve();
@@ -329,6 +329,47 @@ function addObjectsToIndexedDB(store_name, obj_array){
         });
     });
 }
+
+function removeDirtyBitFromLocalDBObject(store_name, key){
+    console.log('...update activity...');
+    
+    return new Promise(function(resolve, reject){
+        // need to get the transaction and store for adding to the local db
+        var store = getObjectStore(store_name, 'readwrite');
+        var req = store.get(key);
+        
+        req.onerror = function(err) {
+            // Handle errors!
+            console.warn(err);
+            reject(err);
+        };
+        req.onsuccess = function(event) {
+            // Do something with the request.result!
+            req.result.dirty = 0;
+            
+            store = getObjectStore(store_name, 'readwrite');
+            req = store.get(key);
+            
+            // using put instead of add because put will update if the key index exists
+            req = store.put(req.result);
+
+            req.onsuccess = function (evt) {
+                console.log('.dirty bit set to 0.');
+                localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+                resolve(evt);
+            };
+            req.onerror = function(evt) {
+                console.warn(evt);
+                reject('could not add to local db');
+            };
+            
+        };
+        
+    })
+    
+}
+
+
 /**
 * @param {string} store_name
 * @param {string} key
@@ -496,7 +537,6 @@ function updateActivity(event) {
         console.log('activity has been updated locally and in ofsc');
     });
 }
-
 
 function updateActivityInLocalDB(activity){
     console.log('...update activity...');
