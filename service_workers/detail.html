@@ -7,6 +7,9 @@
     <!--link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'-->
     <style>
         body { font-family: 'Open Sans', sans-serif; box-sizing: border-box;}
+        ul li:nth-child(even){
+            background: #eee;
+        }
     </style>
 </head>
 
@@ -14,7 +17,7 @@
     <a href="index.html">Index</a>
     
     <ul helix-model="activity_details"></ul>
-    
+    <button onclick="startActivity();">Start Activity</button>
     
     <script src="jquery.js"></script>
     <script src="service_worker.js"></script>
