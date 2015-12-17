@@ -518,7 +518,7 @@ function updateActivity(event) {
     Helix.activity_details[event.target.id] = event.target.value;
     // add a dirty bit so we know it is not in sync
     Helix.activity_details['dirty'] = 1;
-    
+    console.log(Helix.activity_details);
     var update_local_db = updateActivityInLocalDB(Helix.activity_details);
     update_local_db.then(function(activity){
         
