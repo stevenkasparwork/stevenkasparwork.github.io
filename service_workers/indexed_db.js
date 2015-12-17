@@ -248,65 +248,40 @@ function addActivitiesToIndexedDB(activities){
 function addObjectsToIndexedDB(store_name, obj_array){
     console.log('...add objects to local db...');
     var promise_array = [];
-    
-    for(var i in obj_array){
-        
-        promise_array[i] = new Promise(function(resolve, reject){
+    return new Promise(function(resolve, reject){
+        for(var i in obj_array){
 
-            // need to get the transaction and store for adding to the local db
-            var store = getObjectStore(store_name, 'readwrite'), req;
+            promise_array[i] = new Promise(function(resolve, reject){
 
-            // using put instead of add because put will update if the key index exists
-            req = store.put(obj_array[i]);
+                // need to get the transaction and store for adding to the local db
+                var store = getObjectStore(store_name, 'readwrite'), req;
 
-            req.onsuccess = function (evt) {
-                localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
-                resolve(evt);
-            };
-            req.onerror = function(evt) {
-                console.warn(evt);
-                reject('could not add to local db');
-            };
+                // using put instead of add because put will update if the key index exists
+                req = store.put(obj_array[i]);
 
+                req.onsuccess = function (evt) {
+                    localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+                    resolve(evt);
+                };
+                req.onerror = function(evt) {
+                    console.warn(evt);
+                    reject('could not add to local db');
+                };
+
+            });
+
+        }
+
+        return Promise.all(promise_array).then(function(value){
+            console.log(value);
+            resolve('finished adding to local db');
+        },
+                                              function(err){
+            console.warn(err);
+            reject(err);
         });
-        
-    }
-    
-    return Promise.all(promise_array).then(function(value){
-        console.log(value);
-    },
-                                          function(err){
-        console.warn(err);
     });
     
-    /*
-    return new Promise(function(resolve, reject){
-
-        // need to get the transaction and store for adding to the db
-        var store = getObjectStore(store_name, 'readwrite'), req;
-
-        if(obj_array.length > 0){
-
-            // using put instead of add because put will update if the key index exists
-            req = store.put(obj_array[0]);
-
-            req.onsuccess = function (evt) {
-                resolve(evt);
-                localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
-                return addObjectsToIndexedDB(store_name, obj_array.splice(1));
-            };
-            req.onerror = function(evt) {
-                console.log(evt);
-                console.log(this);
-
-                return addObjectsToIndexedDB(store_name, obj_array.splice(1))
-            };
-        }
-        else {
-            resolve('obj_array empty');
-        }
-        
-    });*/
     
     
 }
