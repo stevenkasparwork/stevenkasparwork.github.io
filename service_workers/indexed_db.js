@@ -602,7 +602,7 @@ function startActivity(){
     console.log( Helix.activity_details );
     
     var d = new Date();
-    var start_time_string = d.getFullYear() + (d.getMonth+1) + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() ":" + d.getSeconds();
+    var start_time_string = d.getFullYear() + (d.getMonth()+1) + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
     
     // update the start time of the activity locally
     // update the start time of the activity in ofsc
