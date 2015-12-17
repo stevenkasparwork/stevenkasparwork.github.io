@@ -146,7 +146,7 @@ function getResource(){
         });*/
         var resource = {
             name: 'Kevin Sherwood',
-            external_id: 'KEVINSHERWOOD'
+            external_id: 'skaspar'
         };
         localStorage.setItem('resource_id', resource.external_id );
         resolve(resource);
