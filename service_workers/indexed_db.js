@@ -128,7 +128,7 @@ function addActivity(evt) {
 * Placeholder for the API call that will get resource information from an external system
 */
 function getResource(){
-    console.log('...add resource from ofsc (dummy)...');
+    console.log('...get resource from ofsc (dummy)...');
     return new Promise(function(resolve, reject) {
         
         /*$.ajax({
@@ -156,7 +156,7 @@ function getResource(){
 * Placeholder for the API call that will get activity information from an external system
 */
 function getActivities(){
-    console.log('...add activities from ofsc...');
+    console.log('...get activities from ofsc...');
     return new Promise(function(resolve, reject) {
         
         $.ajax({
