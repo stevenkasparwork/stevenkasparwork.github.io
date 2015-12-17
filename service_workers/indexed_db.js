@@ -273,7 +273,9 @@ function addObjectsToIndexedDB(store_name, obj_array){
                         tmp_activity.activity_id = local_activity.id;
                         //remove the activity_id from the properties because the Activity API won't like that
                         delete tmp_activity.properties.activity_id;
-
+                        
+                        console.log(tmp_activity);
+                        
                         var update_ofsc_activity = updateActivityInOFSC(tmp_activity);
                         update_ofsc_activity.then(function(response){
                             console.log(response);
