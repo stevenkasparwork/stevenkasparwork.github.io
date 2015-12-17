@@ -45,7 +45,7 @@ function openDb() {
     return new Promise(function(resolve, reject) {
         var req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onsuccess = function (evt) {
-            console.log(evt);
+            //console.log(evt);
             db = this.result;
             resolve(db);
         };
@@ -274,7 +274,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
         }
 
         return Promise.all(promise_array).then(function(value){
-            console.log(value);
+            //console.log(value);
             resolve('finished adding to local db');
         },
                                               function(err){
