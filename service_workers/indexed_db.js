@@ -1,8 +1,9 @@
 
 const DB_NAME = 'helix-ofsc-mobility';
-const DB_VERSION = 3; // Use a long long for this value (don't use a float)
+const DB_VERSION = 4; // Use a long long for this value (don't use a float)
 
 const DB_ACTIVITY_STORE_NAME = 'activities';
+const DB_STATUS_QUEUE_STORE_NAME = 'status_queue';
 const DB_RESOURCE_STORE_NAME = 'resources';
 
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
@@ -57,8 +58,10 @@ function openDb() {
         req.onupgradeneeded = function (evt) {
             alert("openDb.onupgradeneeded");
             //var store = evt.currentTarget.result.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'id', autoIncrement: false });
-            evt.currentTarget.result.deleteObjectStore(DB_ACTIVITY_STORE_NAME);
-            var store = evt.currentTarget.result.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'id', autoIncrement: false });
+            //evt.currentTarget.result.deleteObjectStore(DB_ACTIVITY_STORE_NAME);
+            //var store = evt.currentTarget.result.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'id', autoIncrement: false });
+            //evt.currentTarget.result.deleteObjectStore(DB_ACTIVITY_STORE_NAME);
+            var store = evt.currentTarget.result.createObjectStore(DB_STATUS_QUEUE_STORE_NAME, { keyPath: 'id', autoIncrement: true });
             
             //store.createIndex('id', 'id', { unique: true });
             //store.createIndex('address', 'address', { unique: false });
@@ -543,20 +546,12 @@ function updateActivity(event) {
         tmp_activity.activity_id = activity.id;
         
         return updateActivityInOFSC(tmp_activity);
-    }).catch(function(response){
-        
-        console.warn(response);
-        
     }).then(function(response){
         console.log(response);
         // set dirty bit to 0 since we just updated ofsc
         Helix.activity_details['dirty'] = 0;
         
         return updateActivityInLocalDB(Helix.activity_details);
-        
-    }).catch(function(response){
-        
-        console.warn(response);
         
     }).then(function(response){
         
@@ -664,7 +659,7 @@ function statusActivity(status){
     }).catch(function(response){
         
         console.warn(response);
-        
+        // need to queue the status_object for when we get connection back
     });
 }
 function updateStatusInOFSC(status_object){
