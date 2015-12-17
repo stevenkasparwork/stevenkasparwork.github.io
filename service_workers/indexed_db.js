@@ -263,24 +263,30 @@ function addObjectsToIndexedDB(store_name, obj_array){
 
                     if(is_dirty){
                         console.warn('object is dirty');
+                        var local_activity = {}, tmp_activity = {};
+                        
                         // get the local dirty copy and copy it over so we can send it to ofsc
-                        var local_activity = getIndexedDBActivityByID( obj_array[i].id );
-                        
-                        var tmp_activity = {};
-                        // put in properties object 
-                        tmp_activity.properties = local_activity;
-                        // set the activity_id so that the api knows which activity to update
-                        tmp_activity.activity_id = local_activity.id;
-                        //remove the activity_id from the properties because the Activity API won't like that
-                        delete tmp_activity.properties.activity_id;
-                        
-                        console.log(tmp_activity);
-                        
-                        var update_ofsc_activity = updateActivityInOFSC(tmp_activity);
-                        update_ofsc_activity.then(function(response){
+                        var get_local_dirty_activity = getIndexedDBActivityByID( obj_array[i].id );
+                        get_local_dirty_activity.then(function(activity){
+                            local_activity = activity;
+                            
+                            // put in properties object 
+                            tmp_activity.properties = local_activity;
+                            // set the activity_id so that the api knows which activity to update
+                            tmp_activity.activity_id = local_activity.id;
+                            //remove the activity_id from the properties because the Activity API won't like that
+                            delete tmp_activity.properties.activity_id;
+
+                            console.log(tmp_activity);
+
+                            return updateActivityInOFSC(tmp_activity);
+                            
+                        }).then(function(response){
                             console.log(response);
                             resolve();
                         });
+                        
+                        
                     }
                     else {
                         // need to get the transaction and store for adding to the local db
