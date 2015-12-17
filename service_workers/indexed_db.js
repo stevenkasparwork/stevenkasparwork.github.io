@@ -282,7 +282,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
 
                             return updateActivityInOFSC(tmp_activity);
                             
-                        }).then(function(response){
+                        }).then(function(response){ 
                             
                             console.log(response);
                             return getIndexedDBActivityByID( response.data.activity_id );
