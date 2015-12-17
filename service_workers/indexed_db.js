@@ -525,7 +525,7 @@ function initializePage(){
             break;
         case 'detail.html':
             console.log('..on detail page..');
-            var appt_number = localStorage.getItem('appt_number');
+            var appt_number = localStorage.getItem('id');
             console.log(appt_number);
             if(appt_number) {
                 openDb().then(function(evt){
