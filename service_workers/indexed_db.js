@@ -263,8 +263,21 @@ function addObjectsToIndexedDB(store_name, obj_array){
 
                     if(is_dirty){
                         console.warn('object is dirty');
-                        // need to update with ofsc
-                        resolve();
+                        // get the local dirty copy and copy it over so we can send it to ofsc
+                        var local_activity = getIndexedDBActivityByID( obj_array[i].id );
+                        
+                        var tmp_activity = {};
+                        // put in properties object 
+                        tmp_activity.properties = local_activity;
+                        // set the activity_id so that the api knows which activity to update
+                        tmp_activity.activity_id = local_activity.id;
+                        //remove the activity_id from the properties because the Activity API won't like that
+                        delete tmp_activity.properties.activity_id;
+
+                        var update_ofsc_activity = updateActivityInOFSC(tmp_activity);
+                        update_ofsc_activity.then(function(response){
+                            console.log(response);
+                        });
                     }
                     else {
                         // need to get the transaction and store for adding to the local db
@@ -503,13 +516,13 @@ function updateActivityInOFSC(activity){
     });
 }
 
-function getIndexedDBActivityByApptNumber(appt_number){
+function getIndexedDBActivityByID(id){
     console.log('...get activity from local db...');
     return new Promise(function(resolve, reject){
         
         var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
 
-        var req = store.get(appt_number);
+        var req = store.get(id);
 
         req.onsuccess = function(event) {
             console.log(event);
@@ -586,11 +599,11 @@ function initializePage(){
             break;
         case 'detail.html':
             console.log('..on detail page..');
-            var appt_number = localStorage.getItem('id');
+            var id = localStorage.getItem('id');
             console.log(appt_number);
             if(appt_number) {
                 openDb().then(function(evt){
-                    return getIndexedDBActivityByApptNumber( appt_number );
+                    return getIndexedDBActivityByID( id );
                 }).then(function(activity){
                     Helix.activity_details = activity;
                     updateHelixList('activity_details', 'status,address');
