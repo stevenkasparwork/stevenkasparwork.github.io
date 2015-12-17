@@ -264,7 +264,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
                     if(is_dirty){
                         console.warn('object is dirty');
                         // need to update with ofsc
-                        
+                        resolve();
                     }
                     else {
                         // need to get the transaction and store for adding to the local db
