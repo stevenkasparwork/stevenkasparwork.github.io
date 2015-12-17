@@ -814,7 +814,7 @@ function initializePage(){
 
             });
             
-            console.log(isStatusQueue);
+            console.log(isStatusQueue());
             
             
             break;
