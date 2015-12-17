@@ -9,7 +9,6 @@ const DB_RESOURCE_STORE_NAME = 'resources';
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
-
 var Helix = {
     activities: [],
     resource: {},
@@ -741,6 +740,27 @@ function getUrlParam(param) {
     }
 }
 
+var isStatusQueue = function(){
+    console.log('...check status queue...');
+    return new Promise(function(resolve, reject){
+
+        var store = getObjectStore(DB_STATUS_QUEUE_STORE_NAME, 'readwrite');
+        var statuses = [];
+
+        store.openCursor().onsuccess = function(event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                statuses.push(cursor.value);
+                cursor.continue();
+            }
+            else {
+                resolve(statuses);
+            }
+        };
+    });
+}
+
+
 /**
 * Since we are loading all javascript files FOR NOW, we need to differentiate 
 * by getting what page we are on
@@ -793,6 +813,10 @@ function initializePage(){
                 return false;
 
             });
+            
+            console.log(isStatusQueue);
+            
+            
             break;
         case 'detail.html':
             console.log('..on detail page..');
@@ -815,6 +839,9 @@ function initializePage(){
             
     }
 }
+
+
+
 
 initializePage();
 
