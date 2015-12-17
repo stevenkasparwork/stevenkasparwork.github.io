@@ -97,7 +97,6 @@ function clearObjectStore(store_name) {
 
 /**
 * @param {obj} evt
-* NOT IN USE
 */
 function addActivity(evt) {
     console.log("add ...");
@@ -136,14 +135,18 @@ function getResource(){
             },
             type: 'POST'
         }).success(function(data) {
+        
+            localStorage.setItem('resource_id', data.resource.external_id );
             console.log(data);
         }).error(function(error){
             console.log(error);
         });*/
-        resolve({
-            name: 'Steven Kaspar',
-            external_id: 'STEVENKASPAR'
-        });
+        var resource = {
+            name: 'Kevin Sherwood',
+            external_id: 'KEVINSHERWOOD'
+        };
+        localStorage.setItem('resource_id', resource.external_id );
+        resolve(resource);
     });
 }
 /**
@@ -155,7 +158,8 @@ function getActivities(){
         $.ajax({
             url: "//helixsxd.com/service_workers/controllers/getActivities.php",
             data: {
-                api_key: OFSC_API_KEY
+                api_key: OFSC_API_KEY,
+                resource_id: localStorage.getItem('resource_id')
             },
             type: 'POST'
         }).success(function(response) {
@@ -170,70 +174,6 @@ function getActivities(){
                 updateHelixTable('activities');
             });
         });
-        
-        //var d = new Date();
-        //var date_string = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
-        /*resolve([{
-            id: '0',
-            date: date_string,
-            appt_number: '333',
-            address: '374 N Highland St',
-            zip: '38122',
-            state: 'Tennessee',
-            time_from: '08:00:00',
-            time_to: '11:00:00',
-            status: 'completed'
-        },{
-            id: '1',
-            date: date_string,
-            appt_number: '444',
-            address: '374 N Highland St',
-            zip: '38122',
-            state: 'Tennessee',
-            time_from: '11:30:00',
-            time_to: '12:45:00',
-            status: 'pending'
-        },{
-            id: '2',
-            date: date_string,
-            appt_number: '555',
-            address: '374 N Highland St',
-            zip: '38122',
-            state: 'Tennessee',
-            time_from: '14:00:00',
-            time_to: '16:00:00',
-            status: 'pending'
-        },{
-            id: '3',
-            date: date_string,
-            appt_number: '667',
-            address: '333 N Highland St',
-            zip: '38122',
-            state: 'Tennessee',
-            time_from: '14:00:00',
-            time_to: '16:00:00',
-            status: 'pending'
-        },{
-            id: '4',
-            date: date_string,
-            appt_number: '777',
-            address: '333 N Highland St',
-            zip: '38122',
-            state: 'Tennessee',
-            time_from: '14:00:00',
-            time_to: '16:00:00',
-            status: 'pending'
-        },{
-            id: '5',
-            date: date_string,
-            appt_number: '888',
-            address: '321 N Highland St',
-            zip: '38122',
-            state: 'Tennessee',
-            time_from: '14:00:00',
-            time_to: '16:00:00',
-            status: 'pending'
-        }]);*/
     });
 }
 
@@ -492,29 +432,27 @@ function initializePage(){
             -> getActivitiesFromIndexedDb() 
             -> updateHelixTable('activities')
             */
-            openDb().then(function(evt){
+            openDb().then(function(evt){ // get resource from ofsc
 
                 console.log(evt);
                 return getResource();
 
-            }).then(function(resource) {
+            }).then(function(msg) { // get the activities using the resource from local storage
 
-                console.log(resource);
-                addResourceToIndexedDB(resource);
-
+                console.log(msg);
                 return getActivities();
 
-            }).then(function(activities) {
+            }).then(function(activities) { // add the activities to the local db
 
                 console.log(activities);
                 return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
 
-            }).then(function(msg) {
+            }).then(function(msg) { // get the activities from the local db
 
                 console.log(msg);
                 return getActivitiesFromIndexedDb();
 
-            }).then(function(activities) {
+            }).then(function(activities) { // update the view
                 updateHelixTable('activities');
                 return true;
 

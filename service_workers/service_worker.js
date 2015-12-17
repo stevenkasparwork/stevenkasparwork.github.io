@@ -36,7 +36,7 @@ this.addEventListener('install', function(event) {
 });
 
 this.addEventListener('fetch', function(event) {
-    console.log('Handling fetch event for', event.request.url);
+    //console.log('Handling fetch event for', event.request.url);
 
     event.respondWith(
         caches.match(event.request).then(function(response) {
@@ -46,7 +46,7 @@ this.addEventListener('fetch', function(event) {
                 
             }
             
-            console.log('No response found in cache. About to fetch from network...');
+            //console.log('No response found in cache. About to fetch from network...');
 
             return fetch(event.request).then(function(response) {
                 
