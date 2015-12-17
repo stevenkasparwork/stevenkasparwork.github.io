@@ -56,9 +56,11 @@ function openDb() {
 
         req.onupgradeneeded = function (evt) {
             alert("openDb.onupgradeneeded");
+            console.log(evt);
+            console.log(this);
+            console.log(req);
             
-            
-            if(evt.currentTarget.result.objectStoreNames.indexOf(DB_RESOURCE_STORE_NAME) > -1){
+            if(req.result.objectStoreNames.indexOf(DB_RESOURCE_STORE_NAME) > -1){
                 evt.currentTarget.result.deleteObjectStore(DB_RESOURCE_STORE_NAME);
             } 
             var store = evt.currentTarget.result.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'id', autoIncrement: false });
