@@ -439,8 +439,18 @@ function updateActivity(event) {
     console.log('...update activity...');
     var update_local_db = updateActivityInLocalDB(event);
     update_local_db.then(function(activity){
-        var update_ofsc = updateActivityInOFSC(activity);
-    })
+        var tmp_activity = {};
+        // put in properties object 
+        tmp_activity.properties = activity;
+        // set the activity_id so that the api knows which activity to update
+        tmp_activity.activity_id = activity.id;
+        //remove the activity_id from the properties because the Activity API won't like that
+        delete tmp_activity.properties.activity_id;
+        
+        return updateActivityInOFSC(tmp_activity);
+    }).then(function(response){
+        console.log(response);
+    });
 }
 
 
@@ -473,7 +483,7 @@ function updateActivityInLocalDB(event){
 * update OFSC with activity fields that have been changed
 */
 function updateActivityInOFSC(activity){
-    console.log('...get activities from ofsc...');
+    console.log('...update activity in ofsc...');
     return new Promise(function(resolve, reject) {
         
         $.ajax({
