@@ -285,6 +285,11 @@ function addObjectsToIndexedDB(store_name, obj_array){
                             console.log(response);
                             return getIndexedDBActivityByID( response.data.activity_id );
                             
+                        }).catch(function(response){ 
+                            
+                            console.warn(response);
+                            reject('failed to update activity in ofsc');
+                            
                         }).then(function(activity){
                             
                             return removeDirtyBitFromLocalDBObject(store_name, activity.id);
