@@ -740,7 +740,7 @@ function getUrlParam(param) {
     }
 }
 
-var isStatusQueue = function(){
+function isStatusQueue(){
     console.log('...check status queue...');
     return new Promise(function(resolve, reject){
 
@@ -814,8 +814,10 @@ function initializePage(){
 
             });
             
-            console.log(isStatusQueue());
-            
+            var check_status_queue = isStatusQueue();
+            check_status_queue.then(function(response){
+                console.log(response);
+            });
             
             break;
         case 'detail.html':
