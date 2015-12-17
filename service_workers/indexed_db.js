@@ -258,20 +258,24 @@ function addObjectsToIndexedDB(store_name, obj_array){
                 // first we need to check if the object in the local db is dirty and out of sync
                 var dirty_check_promise = checkIfObjectIsDirty(store_name, obj_array[i].id); 
                 
-                // need to get the transaction and store for adding to the local db
-                var store = getObjectStore(store_name, 'readwrite'), req;
-                
-                // using put instead of add because put will update if the key index exists
-                req = store.put(obj_array[i]);
+                dirty_check_promise.then(function(response){
 
-                req.onsuccess = function (evt) {
-                    localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
-                    resolve(evt);
-                };
-                req.onerror = function(evt) {
-                    console.warn(evt);
-                    reject('could not add to local db');
-                };
+                    // need to get the transaction and store for adding to the local db
+                    var store = getObjectStore(store_name, 'readwrite'), req;
+
+                    // using put instead of add because put will update if the key index exists
+                    req = store.put(obj_array[i]);
+
+                    req.onsuccess = function (evt) {
+                        localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+                        resolve(evt);
+                    };
+                    req.onerror = function(evt) {
+                        console.warn(evt);
+                        reject('could not add to local db');
+                    };
+                    
+                });
 
             });
 
