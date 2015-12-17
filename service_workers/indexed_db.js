@@ -632,16 +632,17 @@ function statusActivity(status){
     Helix.activity_details.start_time = date_time_string;
     // add a dirty bit so we know it is not in sync
     Helix.activity_details['dirty'] = 1;
+    var status_object = {};
     
     var update_local_db = updateActivityInLocalDB(Helix.activity_details);
     update_local_db.then(function(activity){
         
-        var status_object = {
+        status_object = {
             status: status,
             activity_id: activity.id,
             date: date_string,
             time: date_time_string
-        }
+        };
         
         return updateStatusInOFSC(status_object);
         
@@ -659,9 +660,36 @@ function statusActivity(status){
     }).catch(function(response){
         
         console.warn(response);
+        
         // need to queue the status_object for when we get connection back
+        var add_to_status_queue = addStatusObjectToQueue(status_object);
+        add_to_status_queue.then(function(response){
+            console.log(response);
+        }).catch(function(response){
+            console.warn(response);
+        });
+        
     });
 }
+
+function addStatusObjectToQueue(status_object) {
+    console.log('...add status to local db queue...');
+    return new Promise(function(resolve, reject){
+        var store = getObjectStore(DB_STATUS_QUEUE_STORE_NAME, 'readwrite');
+
+        var req = store.put(status_object);
+
+        req.onsuccess = function (evt) {
+            resolve(evt);
+        };
+        req.onerror = function(err) {
+            reject(err);
+        };
+    });
+}
+
+
+
 function updateStatusInOFSC(status_object){
     console.log('...update status in ofsc...');
     return new Promise(function(resolve, reject) {
