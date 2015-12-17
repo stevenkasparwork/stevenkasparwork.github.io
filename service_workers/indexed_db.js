@@ -653,12 +653,17 @@ function statusActivity(status){
     
     var d = new Date();
     
-    var hours = d.getHours();
-    var minutes = d.getMinutes();
-    var seconds = (d.getSeconds() < 2) ? '0'+d.getSeconds().toString() : d.getSeconds();
+    var year = d.getFullYear();
+    var month = d.getMonth() + 1;
+    month = (month.length < 2) ? '0'+month.toString() : month;
+    var date = (d.getDate().length < 2) ? '0'+d.getDate().toString() : d.getDate();
+    
+    var hours = (d.getHours().length < 2) ? '0'+d.getHours().toString() : d.getHours();
+    var minutes = (d.getMinutes().length < 2) ? '0'+d.getMinutes().toString() : d.getMinutes();
+    var seconds = (d.getSeconds().length < 2) ? '0'+d.getSeconds().toString() : d.getSeconds();
     
     
-    var date_string = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+    var date_string = year + "-" + month + "-" + date;
     var time_string = hours + ":" + minutes + ":" + seconds;
     var date_time_string = date_string + " " + time_string;
     
