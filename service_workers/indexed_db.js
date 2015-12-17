@@ -783,9 +783,16 @@ function initializePage(){
             -> updateHelixTable('activities')
             */
             openDb().then(function(evt){ // get resource from ofsc
-
+                
                 //console.log(evt);
-                return getResource();
+                return isStatusQueue();
+
+            }).then(function(response) { // get the activities using the resource from local storage
+
+                console.log(response);
+                
+                //console.log(resource);
+                return getActivities();
 
             }).then(function(resource) { // get the activities using the resource from local storage
 
@@ -814,10 +821,6 @@ function initializePage(){
 
             });
             
-            var check_status_queue = isStatusQueue();
-            check_status_queue.then(function(response){
-                console.log(response);
-            });
             
             break;
         case 'detail.html':
