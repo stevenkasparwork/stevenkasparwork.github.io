@@ -1,6 +1,6 @@
 
 const DB_NAME = 'helix-ofsc-mobility';
-const DB_VERSION = 2; // Use a long long for this value (don't use a float)
+const DB_VERSION = 3; // Use a long long for this value (don't use a float)
 
 const DB_ACTIVITY_STORE_NAME = 'activities';
 const DB_RESOURCE_STORE_NAME = 'resources';
@@ -57,7 +57,7 @@ function openDb() {
         req.onupgradeneeded = function (evt) {
             alert("openDb.onupgradeneeded");
             //var store = evt.currentTarget.result.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'id', autoIncrement: false });
-            var store = evt.currentTarget.result.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'appt_number', autoIncrement: false });
+            var store = evt.currentTarget.result.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'id', autoIncrement: false });
             
             //store.createIndex('id', 'id', { unique: true });
             //store.createIndex('address', 'address', { unique: false });
@@ -254,9 +254,12 @@ function addObjectsToIndexedDB(store_name, obj_array){
             // the array of promises will be evaluated as a group below in Promise.all()
             promise_array[i] = new Promise(function(resolve, reject){
 
+                // first we need to check if the object in the local db is dirty and out of sync
+                var dirty_check_promise = checkIfObjectIsDirty(store_name, obj_array[i].id); 
+                
                 // need to get the transaction and store for adding to the local db
                 var store = getObjectStore(store_name, 'readwrite'), req;
-
+                
                 // using put instead of add because put will update if the key index exists
                 req = store.put(obj_array[i]);
 
@@ -282,8 +285,30 @@ function addObjectsToIndexedDB(store_name, obj_array){
             reject(err);
         });
     });
-    
-    
+}
+/**
+* check to see if object is dirty
+*/
+function checkIfObjectIsDirty(store_name, key){
+    console.log('...check if object is dirty...');
+    return new Promise(function(resolve, reject){
+
+        var store = getObjectStore(store_name, 'readwrite');
+        
+        var req = store.get(key);
+        
+        req.onerror = function(err) {
+            // Handle errors!
+            console.warn(err);
+            reject(err);
+        };
+        req.onsuccess = function(event) {
+            // Do something with the request.result!
+            console.log(request.result);
+            console.log(request.result.dirty);
+            resolve(request.result.dirty);
+        };
+    });
     
 }
 
