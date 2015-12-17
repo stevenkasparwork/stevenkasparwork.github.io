@@ -259,14 +259,14 @@ function addObjectsToIndexedDB(store_name, obj_array){
                 // first we need to check if the object in the local db is dirty and out of sync
                 var dirty_check_promise = checkIfObjectIsDirty(store_name, obj_array[i].id); 
                 
-                dirty_check_promise.then(function(is_dirty){
+                dirty_check_promise.then(function(id){
 
-                    if(is_dirty){
+                    if(id){
                         console.warn('object is dirty');
                         var local_activity = {}, tmp_activity = {};
                         
                         // get the local dirty copy and copy it over so we can send it to ofsc
-                        var get_local_dirty_activity = getIndexedDBActivityByID( obj_array[i].id );
+                        var get_local_dirty_activity = getIndexedDBActivityByID( id );
                         get_local_dirty_activity.then(function(activity){
                             local_activity = activity;
                             
@@ -343,7 +343,7 @@ function checkIfObjectIsDirty(store_name, key){
         req.onsuccess = function(event) {
             // Do something with the request.result!
             if(req.result.dirty === 1){
-                resolve(true);
+                resolve(req.result.id);
             }
             else {
                 resolve(false);
