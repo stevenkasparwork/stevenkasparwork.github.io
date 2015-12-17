@@ -241,7 +241,7 @@ function addActivitiesToIndexedDB(activities){
     } 
     addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
 }
-
+var up_coint = 0;
 /**
 * @param {string} store_name
 * @param {array} obj_array
@@ -324,6 +324,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
 
         return Promise.all(promise_array).then(function(value){
             //console.log(value);
+            console.log(promise_array);
             resolve('finished adding to local db');
         },
                                               function(err){
