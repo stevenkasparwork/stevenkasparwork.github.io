@@ -154,7 +154,7 @@ function getResource(){
     });
 }
 /**
-* Placeholder for the API call that will get activity information from an external system
+* gets activity info from helixsxd.com using the local storage resource_id
 */
 function getActivities(){
     console.log('...get activities from ofsc...');
@@ -181,6 +181,7 @@ function getActivities(){
         });
     });
 }
+
 
 
 /**
@@ -262,21 +263,26 @@ function addObjectsToIndexedDB(store_name, obj_array){
 
                     if(is_dirty){
                         console.warn('object is dirty');
+                        // need to update with ofsc
+                        
                     }
-                    // need to get the transaction and store for adding to the local db
-                    var store = getObjectStore(store_name, 'readwrite'), req;
+                    else {
+                        // need to get the transaction and store for adding to the local db
+                        var store = getObjectStore(store_name, 'readwrite'), req;
 
-                    // using put instead of add because put will update if the key index exists
-                    req = store.put(obj_array[i]);
+                        // using put instead of add because put will update if the key index exists
+                        req = store.put(obj_array[i]);
 
-                    req.onsuccess = function (evt) {
-                        localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
-                        resolve(evt);
-                    };
-                    req.onerror = function(evt) {
-                        console.warn(evt);
-                        reject('could not add to local db');
-                    };
+                        req.onsuccess = function (evt) {
+                            localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+                            resolve(evt);
+                        };
+                        req.onerror = function(evt) {
+                            console.warn(evt);
+                            reject('could not add to local db');
+                        };
+                        
+                    }
                     
                 });
 
@@ -295,6 +301,8 @@ function addObjectsToIndexedDB(store_name, obj_array){
     });
 }
 /**
+* @param {string} store_name
+* @param {string} key
 * check to see if object is dirty
 */
 function checkIfObjectIsDirty(store_name, key){
@@ -427,19 +435,62 @@ function updateHelixList(model_name, editable){
     
 }
 
-function updateActivity(event){
+function updateActivity(event) {
     console.log('...update activity...');
-    console.log(event);
-    // changed the updated field
-    Helix.activity_details[event.target.id] = event.target.value;
-    // add a dirty bit so we know it is not in sync
-    Helix.activity_details['dirty'] = 1;
+    var update_local_db = updateActivityInLocalDB(event);
+    update_local_db.then(function(activity){
+        var update_ofsc = updateActivityInOFSC(activity);
+    })
+}
+
+
+function updateActivityInLocalDB(event){
+    console.log('...update activity...');
     
-    var add_to_local_db = addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [Helix.activity_details]);
-    add_to_local_db.then(function(response){
-        console.log(response);
+    return new Promise(function(resolve, reject){
+        
+        // changed the updated field
+        Helix.activity_details[event.target.id] = event.target.value;
+        // add a dirty bit so we know it is not in sync
+        Helix.activity_details['dirty'] = 1;
+
+        var add_to_local_db = addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, [Helix.activity_details]);
+        add_to_local_db.then(function(response){
+            
+            delete Helix.activity_details['dirty'];
+            
+            resolve(Helix.activity_details);
+            
+        }).catch(function(err){
+            reject(err);
+        });
+        
+    })
+    
+}
+
+/**
+* update OFSC with activity fields that have been changed
+*/
+function updateActivityInOFSC(activity){
+    console.log('...get activities from ofsc...');
+    return new Promise(function(resolve, reject) {
+        
+        $.ajax({
+            url: "//helixsxd.com/service_workers/controllers/updateActivity.php",
+            data: {
+                api_key: OFSC_API_KEY,
+                activity: activity
+            },
+            type: 'POST'
+        }).success(function(response) {
+            response = JSON.parse(response);
+            resolve(response);
+        }).error(function(error){
+            console.warn(error);
+            reject('call to update activity was unsuccesfull');
+        });
     });
-    
 }
 
 function getIndexedDBActivityByApptNumber(appt_number){
