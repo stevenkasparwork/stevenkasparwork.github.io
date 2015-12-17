@@ -330,6 +330,11 @@ function addObjectsToIndexedDB(store_name, obj_array){
     });
 }
 
+/**
+* @param {string} store_name
+* @param {string} key
+* set the local object's dirty bit to 0
+*/
 function removeDirtyBitFromLocalDBObject(store_name, key){
     console.log('...remoce diry bit from local db object: '+key+'...');
     
@@ -456,6 +461,12 @@ function updateHelixTable(model_name){
     
 }
 
+/**
+* @param {obj} param_obj
+* @param {string} page
+* Sets localStorage(param_obj.key, param_obj.value), then
+* navigates to page
+*/
 function navigateWithParameters(param_obj, page){
     for(var i in param_obj){
         localStorage.setItem(i, param_obj[i]);
@@ -583,6 +594,12 @@ function updateActivityInOFSC(activity){
             reject('call to update activity was unsuccesfull');
         });
     });
+}
+
+
+function startActivity(){
+    console.log('...start activity...');
+    console.log( Helix.activity_details );
 }
 
 function getIndexedDBActivityByID(id){
