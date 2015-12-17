@@ -527,6 +527,10 @@ function updateActivity(event) {
         delete tmp_activity.properties.id;
         
         return updateActivityInOFSC(tmp_activity);
+    }).catch(function(response){
+        
+        console.warn(response);
+        
     }).then(function(response){
         console.log(response);
         // set dirty bit to 0 since we just updated ofsc
