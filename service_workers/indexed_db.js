@@ -41,7 +41,7 @@ var Helix = {
     This also will check to see if we are needing to upgradethe db
 */
 function openDb() {
-        console.log("...open local db...");
+    console.log("...open local db...");
     return new Promise(function(resolve, reject) {
         var req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onsuccess = function (evt) {
