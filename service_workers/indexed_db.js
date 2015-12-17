@@ -760,51 +760,48 @@ function isStatusQueue(){
     });
 }
 
-function sendStatusQueue(){
+function sendStatusQueue(statuses){
     return new Promise(function(resolve, reject){
-        var is_status_queue = isStatusQueue();
-        is_status_queue.then(function(statuses){
-            var promise_array = [];
-            return new Promise(function(resolve, reject){
-                promise_array = statuses.map(function(obj){
+        if(statuses.length){
+            promise_array = statuses.map(function(obj){
 
-                    // create an array of promises. Each item to insert gets its own promise.
-                    // the array of promises will be evaluated as a group below in Promise.all()
-                    return new Promise(function(resolve, reject) {
+                // create an array of promises. Each item to insert gets its own promise.
+                // the array of promises will be evaluated as a group below in Promise.all()
+                return new Promise(function(resolve, reject) {
 
-                        $.ajax({
-                            url: "//helixsxd.com/service_workers/controllers/statusActivity.php",
-                            data: {
-                                api_key: OFSC_API_KEY,
-                                status_object: obj
-                            },
-                            type: 'POST'
-                        }).success(function(response) {
-                            response = JSON.parse(response);
-                            resolve(response);
-                        }).error(function(error){
-                            //console.log(error);
-                            console.warn('activity did not update need to queue status update in localStorage');
-                            reject(error);
-                        });
+                    $.ajax({
+                        url: "//helixsxd.com/service_workers/controllers/statusActivity.php",
+                        data: {
+                            api_key: OFSC_API_KEY,
+                            status_object: obj
+                        },
+                        type: 'POST'
+                    }).success(function(response) {
+                        response = JSON.parse(response);
+                        resolve(response);
+                    }).error(function(error){
+                        //console.log(error);
+                        console.warn('activity did not update need to queue status update in localStorage');
+                        reject(error);
                     });
-
                 });
 
-                return Promise.all(promise_array).then(function(value){
-                    //console.log(value);
-                    console.log(promise_array);
-                    resolve('updated all statuses to ofsc');
-                },
-                                                       function(err){
-                    console.warn(err);
-                    reject(err);
-                });
             });
-        });
+
+            return Promise.all(promise_array).then(function(value){
+                //console.log(value);
+                console.log(promise_array);
+                resolve('updated all statuses to ofsc');
+            },
+                                                   function(err){
+                console.warn(err);
+                reject(err);
+            });
+        }
+        else {
+            resolve('no statuses');
+        }
     });
-    
-    
 }
 
 
@@ -833,7 +830,12 @@ function initializePage(){
             openDb().then(function(evt){ // check status queue
                 
                 //console.log(evt);
-                return sendStatusQueue();
+                return isStatusQueue();
+
+            }).then(function(statuses) { // send statuses
+                
+                console.log(statuses);
+                return sendStatusQueue(statuses);
 
             }).then(function(response) { // get resource from ofsc
                 
