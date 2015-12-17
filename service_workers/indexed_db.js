@@ -57,6 +57,7 @@ function openDb() {
         req.onupgradeneeded = function (evt) {
             alert("openDb.onupgradeneeded");
             //var store = evt.currentTarget.result.createObjectStore(DB_RESOURCE_STORE_NAME, { keyPath: 'id', autoIncrement: false });
+            evt.currentTarget.result.deleteObjectStore(DB_ACTIVITY_STORE_NAME);
             var store = evt.currentTarget.result.createObjectStore(DB_ACTIVITY_STORE_NAME, { keyPath: 'id', autoIncrement: false });
             
             //store.createIndex('id', 'id', { unique: true });
