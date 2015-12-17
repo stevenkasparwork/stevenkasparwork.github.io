@@ -787,9 +787,10 @@ function initializePage(){
                 //console.log(evt);
                 return isStatusQueue();
 
-            }).then(function(response) { // get the activities using the resource from local storage
-
-                console.log(response);
+            }).then(function(queued_statuses) { // check status queue
+                if(queued_statuses.length){
+                    console.warn('statuses that need to be sent');
+                }
                 
                 //console.log(resource);
                 return getActivities();
