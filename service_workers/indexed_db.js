@@ -559,7 +559,9 @@ function updateActivity(event) {
         console.warn(response);
         
     }).then(function(response){
+        
         console.log('activity has been updated locally and in ofsc');
+        
     }).catch(function(response){
         
         console.warn(response);
@@ -648,20 +650,12 @@ function statusActivity(status){
         
         return updateStatusInOFSC(status_object);
         
-    }).catch(function(response){
-        
-        console.warn(response);
-        
     }).then(function(response){
         console.log(response);
         // set dirty bit to 0 since we just updated ofsc
         Helix.activity_details['dirty'] = 0;
         
         return updateActivityInLocalDB(Helix.activity_details);
-        
-    }).catch(function(response){
-        
-        console.warn(response);
         
     }).then(function(response){
         
