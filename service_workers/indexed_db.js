@@ -241,7 +241,7 @@ function addActivitiesToIndexedDB(activities){
     } 
     addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
 }
-var up_coint = 0;
+
 /**
 * @param {string} store_name
 * @param {array} obj_array
@@ -548,7 +548,7 @@ function updateActivity(event) {
 }
 
 function updateActivityInLocalDB(activity){
-    console.log('...update activity...');
+    console.log('...update activity in local db...');
     
     return new Promise(function(resolve, reject){
         
