@@ -250,7 +250,8 @@ function addObjectsToIndexedDB(store_name, obj_array){
     var promise_array = [];
     return new Promise(function(resolve, reject){
         for(var i in obj_array){
-
+            // create an array of promises. Each item to insert gets its own promise.
+            // the array of promises will be evaluated as a group below in Promise.all()
             promise_array[i] = new Promise(function(resolve, reject){
 
                 // need to get the transaction and store for adding to the local db
@@ -451,17 +452,17 @@ function initializePage(){
             */
             openDb().then(function(evt){ // get resource from ofsc
 
-                console.log(evt);
+                //console.log(evt);
                 return getResource();
 
-            }).then(function(msg) { // get the activities using the resource from local storage
+            }).then(function(resource) { // get the activities using the resource from local storage
 
-                console.log(msg);
+                //console.log(resource);
                 return getActivities();
 
             }).then(function(activities) { // add the activities to the local db
 
-                console.log(activities);
+                //console.log(activities);
                 return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
 
             }).then(function(msg) { // get the activities from the local db
