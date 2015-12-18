@@ -871,7 +871,9 @@ function initializePage(){
             }).then(function() { // get the activities using the resource from local storage
 
                 //console.log(resource);
-                return getActivitiesFromOFSC();
+                return getActivitiesFromOFSC().then(function(activities){
+                    return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
+                });
 
             }).catch(function(err) {
                 
@@ -879,17 +881,8 @@ function initializePage(){
                 
             }).then(function(activities) { // add the activities to the local db
 
-                //console.log(activities);
-                return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
-                
-            }).catch(function(err) {
-                
-                console.warn(err);
-                
-            }).then(function() { 
-
                 return getActivitiesFromIndexedDb();
-
+                
             }).then(function(activities) { // update the view
                 updateHelixTable('activities');
                 console.log('------ end of initialization -----');
