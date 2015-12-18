@@ -11,28 +11,7 @@ var db;
 
 var Helix = {
     activities: [],
-    resource: {},
-    activity_details: {},
-    options: {
-        status: [
-            {
-                label: 'pending',
-                value: 'pending'
-            },
-            {
-                label: 'started',
-                value: 'started'
-            }, 
-            {
-                label: 'cancelled',
-                value: 'cancelled'
-            }, 
-            {
-                label: 'completed',
-                value: 'completed'
-            }
-        ]
-    }
+    
 }
 
 /*
@@ -465,11 +444,11 @@ function getActivitiesFromIndexedDb(){
 * Placeholder function for updating the view.
 * Helix[model_name] must be an array
 */
-function updateHelixTable(model_name){
+function updateHelixTable(model_name, data){
     console.log('...update helix table...');
     var header_cells = '';
     
-    var items_string = Helix[model_name].map(function(item, index){
+    var items_string = data.map(function(item, index){
         var item_string = '';
         
         for(var i in item){
@@ -853,7 +832,7 @@ function sendStatusQueue(){
 * Since we are loading all javascript files FOR NOW, we need to differentiate 
 * by getting what page we are on
 */
-function initializePage(page){
+function initializeView(page){
     
     switch(page){
         case 'home':
@@ -884,7 +863,7 @@ function initializePage(page){
                 return getActivitiesFromIndexedDb(); // get the activities from the local db
                 
             }).then(function(activities) { // update the view
-                updateHelixTable('activities');
+                updateHelixTable('activities', activities);
                 console.log('------ end of initialization -----');
                 return true;
 

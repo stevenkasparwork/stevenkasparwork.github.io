@@ -10,7 +10,7 @@ if ('serviceWorker' in navigator) {
         console.log('...Service worker installed');
     } else if(reg.active) {
         console.log('...Service worker active');
-        openDb.then(function(){initializePage('home');});
+        openDb.then(function(){ initializeView('home'); });
     }
 
   }).catch(function(error) {
