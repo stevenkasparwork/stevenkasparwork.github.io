@@ -276,25 +276,11 @@ function syncLocalActivitiesWithOFSC(){
                         
                         updateActivityInOFSC(tmp_activity).then(function(response){ 
 
-                            return getIndexedDBActivityByID( response.data.activity_id );
+                            return removeDirtyBitFromLocalDBObject(store_name, response.data.activity_id);
                             
                         }).catch(function(response){ 
 
                             console.warn(response);
-                            reject_2('failed to update activity in ofsc');
-                            
-                        }).then(function(activity){
-
-                            return removeDirtyBitFromLocalDBObject(store_name, activity.id);
-
-                        }).then(function(response){
-                            
-                            resolve_2('dirty object has been updated in ofsc and local db dirty bit removed');
-                            
-                        }).catch(function(msg){ 
-
-                            console.warn(msg);
-                            
                             reject_2('failed to update activity in ofsc');
                             
                         });
