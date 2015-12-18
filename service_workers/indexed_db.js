@@ -831,7 +831,7 @@ function initializePage(){
                 //console.log(activities);
                 return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
                 
-            }).then(function(activities) { 
+            }).then(function() { 
 
                 return getActivitiesFromIndexedDb();
 
