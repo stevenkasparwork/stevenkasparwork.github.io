@@ -445,6 +445,21 @@ function checkIfObjectIsDirty(store_name, key){
     
 }
 
+function sortActivitiesByDate(activities){
+    activities.sort(function(a, b){
+        console.log(a);
+        if( new Date(a).getTime() > new Date(b).getTime() ) {
+            return -1
+        }
+        else {
+            return 1;
+        }
+        return 0;
+    });
+    return activities;
+}
+
+
 /**
 * gets all activities from the local IndexedDB
 */
@@ -462,7 +477,7 @@ function getActivitiesFromIndexedDb(){
                 cursor.continue();
             }
             else {
-                Helix.activities = activities;
+                activities = sortActivitiesByDate(activities);
                 resolve(activities);
             }
         };
