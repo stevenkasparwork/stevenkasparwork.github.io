@@ -192,8 +192,8 @@ function getActivities(){
             },
             type: 'POST'
         }).success(function(response) {
-            console.log(response);
             response = JSON.parse(response);
+            console.log(response.data.activities);
             resolve(response.data.activities);
         }).error(function(error){
             //console.log(error);
