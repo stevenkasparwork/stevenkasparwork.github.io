@@ -243,8 +243,8 @@ function syncLocalActivitiesWithOFSC(){
         var get_activities = getActivitiesFromIndexedDb();
         get_activities.then(function(activities){
             var promise_array = [];
-            return new Promise(function(resolve, reject){
-                promise_array = activities.map(function(obj){
+            promise_array = activities.map(function(obj){
+                return new Promise(function(resolve_2, reject_2){
                     // create an array of promises. Each item to insert gets its own promise.
                     // the array of promises will be evaluated as a group below in Promise.all()
                     console.log(obj);
@@ -262,7 +262,7 @@ function syncLocalActivitiesWithOFSC(){
                         }).catch(function(response){ 
 
                             console.warn(response);
-                            reject('failed to update activity in ofsc');
+                            reject_2('failed to update activity in ofsc');
                             
                         }).then(function(activity){
 
@@ -270,36 +270,30 @@ function syncLocalActivitiesWithOFSC(){
 
                         }).then(function(response){
                             
-                            resolve('dirty object has been updated in ofsc and local db dirty bit removed');
+                            resolve_2('dirty object has been updated in ofsc and local db dirty bit removed');
                             
                         }).catch(function(msg){ 
 
                             console.warn(msg);
                             
-                            reject('failed to update activity in ofsc');
+                            reject_2('failed to update activity in ofsc');
                             
                         });
                         
                         
                     }
                     else {
-                        resolve('clean object');
+                        resolve_2('clean object');
                     }
                 });
-                return Promise.all(promise_array).then(function(value){
-                    //console.log(value);
-                    //console.log(promise_array);
-                    resolve('local db is in sync with ofsc');
-                }).catch(function(err){
-                    reject(err);
-                });
             });
-        }).then(function(response){
-            console.log(response);
-            resolve(response);
-        }).catch(function(err){
-            console.log(err);
-            reject(err);
+            return Promise.all(promise_array).then(function(value){
+                //console.log(value);
+                //console.log(promise_array);
+                resolve('local db is in sync with ofsc');
+            }).catch(function(err){
+                reject(err);
+            });
         });
         
     });
