@@ -874,9 +874,9 @@ function initializePage(){
                 //console.log(resource);
                 return syncLocalActivitiesWithOFSC();
 
-            }).then(function() { // get the activities using the resource from local storage
+            }).then(function(msg) { // get the activities using the resource from local storage
 
-                //console.log(resource);
+                console.log(msg);
                 return getActivitiesFromOFSC().then(function(activities){
                     return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
                 });
