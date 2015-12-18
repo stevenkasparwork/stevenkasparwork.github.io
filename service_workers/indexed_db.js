@@ -58,7 +58,10 @@ function openDb() {
             //alert("openDb.onupgradeneeded");
             
             db = evt.target.result;
-            
+            db.onsuccess = function(e){
+                console.log(e);
+                
+            }
             if(db.objectStoreNames.contains(DB_RESOURCE_STORE_NAME)){
                 db.deleteObjectStore(DB_RESOURCE_STORE_NAME);
             } 
@@ -79,11 +82,11 @@ function openDb() {
             
             db.onversionchange = function(event) {
                 alert('Your app has been updated please refresh the page');
+                resolve(this.result);
             };
             
             
             
-            resolve(this.result);
 
 
         };
