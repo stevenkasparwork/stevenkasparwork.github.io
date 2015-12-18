@@ -768,6 +768,7 @@ function sendStatusQueue(){
                             type: 'POST'
                         }).success(function(response) {
                             response = JSON.parse(response);
+                            console.log(response);
                             resolve(response);
                         }).error(function(error){
                             //console.log(error);
