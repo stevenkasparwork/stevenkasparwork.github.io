@@ -123,9 +123,11 @@ function deleteObjectFromStore(store_name, key) {
         var store = getObjectStore(store_name, 'readwrite');
         var req = store.delete(key);
         req.onsuccess = function(evt) {
+            console.log('delete successful: '+ key);
             resolve(evt);
         };
         req.onerror = function (err) {
+            console.warn('delete unsuccessful: '+ key);
             reject(err);
         };
         
