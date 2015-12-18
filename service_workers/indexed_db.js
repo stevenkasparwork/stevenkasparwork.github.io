@@ -14,7 +14,12 @@ var Helix = {
     activities: [],
     
 }
-
+window.onload(function(){
+    console.log('--window loaded--');
+    for(var i in PAGE_SET){
+        $('#'+PAGE_SET[i]).hide();
+    }
+});
 /*
     opens up our IndexedDB and sets a global variable db
     so that we can access the Database later and make changes as necessary
