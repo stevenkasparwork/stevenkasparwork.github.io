@@ -236,7 +236,24 @@ function addActivitiesToIndexedDB(activities){
     } 
     addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
 }
+function shallowCopy( original )  
+{
+    // First create an empty object with
+    // same prototype of our original source
+    var clone = Object.create( Object.getPrototypeOf( original ) ) ;
 
+    var i , keys = Object.getOwnPropertyNames( original ) ;
+
+    for ( i = 0 ; i < keys.length ; i ++ )
+    {
+        // copy each property into the clone
+        Object.defineProperty( clone , keys[ i ] ,
+            Object.getOwnPropertyDescriptor( original , keys[ i ] )
+        ) ;
+    }
+
+    return clone ;
+}
 function syncLocalActivitiesWithOFSC(){
     console.log('...sync local activities...');
     return new Promise(function(resolve, reject){
@@ -248,12 +265,13 @@ function syncLocalActivitiesWithOFSC(){
                 return new Promise(function(resolve_2, reject_2){
                     // create an array of promises. Each item to insert gets its own promise.
                     // the array of promises will be evaluated as a group below in Promise.all()
-                    console.log(obj);
-                    if(obj.dirty){
+                    var tmp_obj = shallowCopy(obj);
+                    console.log(tmp_obj);
+                    if(tmp_obj.dirty){
                         console.warn('object is dirty');
                         var tmp_activity = {}; 
-                        tmp_activity.properties = obj.map(function(o){ return o; });
-                        tmp_activity.activity_id = obj.id;
+                        tmp_activity.properties = tmp_obj;
+                        tmp_activity.activity_id = tmp_obj.id;
                         console.log(tmp_activity);
                         
                         updateActivityInOFSC(tmp_activity).then(function(response){ 
