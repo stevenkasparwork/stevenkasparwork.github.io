@@ -294,14 +294,14 @@ function syncLocalActivitiesWithOFSC(){
                         
                     }
                     else {
-                        resolve_2('clean object');
+                        resolve_2('...clean object...');
                     }
                 });
             });
             return Promise.all(promise_array).then(function(value){
                 //console.log(value);
                 //console.log(promise_array);
-                resolve('local db is in sync with ofsc');
+                resolve('...local db is in sync with ofsc...');
             }).catch(function(err){
                 reject(err);
             });
@@ -643,7 +643,7 @@ function getDateTimeString(){
     return {
         time: hours + ":" + minutes + ":" + seconds,
         date: year + "-" + month + "-" + date,
-        date_time: date_string + " " + time_string
+        date_time: year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds
     };
 }
 
