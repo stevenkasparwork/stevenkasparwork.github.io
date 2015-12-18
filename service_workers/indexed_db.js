@@ -480,7 +480,7 @@ function updateHelixTable(model_name){
         }
         
         
-        return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'id\':'+item.id+'},\'detail.html\');">'+item_string+'</tr>';
+        return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'id\':'+item.id+'},\'activity_detail\');">'+item_string+'</tr>';
     }).join("");
     
     $('[helix-model="'+model_name+'"]').html('<tr>'+header_cells+'</tr>'+items_string); 
@@ -497,7 +497,15 @@ function navigateWithParameters(param_obj, page){
     for(var i in param_obj){
         localStorage.setItem(i, param_obj[i]);
     }
-    window.location.href = page;
+    for(var i in PAGE_SET){
+        if( page === PAGE_SET[i] ){
+            $('#'+PAGE_SET[i]).show();
+        }
+        else {
+            $('#'+PAGE_SET[i]).hide();
+        }
+    }
+    initializeView(page);
 }
 
 
@@ -845,43 +853,35 @@ function sendStatusQueue(){
 * Since we are loading all javascript files FOR NOW, we need to differentiate 
 * by getting what page we are on
 */
-function initializePage(){
-    
-    var path = window.location.pathname;
-    var page = path.split("/").pop();
+function initializePage(page){
     
     switch(page){
-        case 'index.html':
+        case 'home':
             console.log('------ begin initialization -----');
-            openDb().then(function(evt){ // send statuses
-                
-                console.log();
-                return sendStatusQueue();
-
-            }).then(function(response) { // get resource from ofsc
+            sendStatusQueue().then(function(response) { // send statuses queue
                 
                 console.log(response);
-                return getResource();
+                return getResource(); // get resource and save id to localStorage
 
-            }).then(function(resource) { // sync activities
+            }).then(function(resource) { 
 
                 //console.log(resource);
-                return syncLocalActivitiesWithOFSC();
+                return syncLocalActivitiesWithOFSC();// sync activities
 
-            }).then(function(msg) { // get the activities using the resource from local storage
+            }).then(function(msg) { 
 
                 console.log(msg);
-                return getActivitiesFromOFSC().then(function(activities){
-                    return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
+                return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
+                    return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
                 });
 
             }).catch(function(err) {
                 
                 console.warn(err);
                 
-            }).then(function(activities) { // add the activities to the local db
+            }).then(function(activities) { 
 
-                return getActivitiesFromIndexedDb();
+                return getActivitiesFromIndexedDb(); // get the activities from the local db
                 
             }).then(function(activities) { // update the view
                 updateHelixTable('activities');
@@ -891,14 +891,12 @@ function initializePage(){
             });
             
             break;
-        case 'detail.html':
-            console.log('..on detail page..');
+        case 'activity_detail':
+            console.log('..on activity_detail page..');
             var id = localStorage.getItem('id');
             console.log(id);
             if(id) {
-                openDb().then(function(evt){
-                    return getIndexedDBActivityByID( id );
-                }).then(function(activity){
+                getIndexedDBActivityByID( id ).then(function(activity){
                     updateHelixList('activity_details', activity,'address,name');
                 });
             }
