@@ -544,7 +544,28 @@ function updateActivity(event) {
         activity[event.target.id] = event.target.value;
         activity['dirty'] = 1;
         
-        return updateActivityInLocalDB(activity);
+        //return updateActivityInLocalDB(activity);
+        
+        return new Promise(function(resolve, reject){
+
+             // need to get the transaction and store for adding to the local db
+            var store = getObjectStore(store_name, 'readwrite'), req;
+
+            // using put instead of add because put will update if the key index exists
+            req = store.put(activity);
+
+            req.onsuccess = function (evt) {
+                console.log(activity);
+                console.log('PUT OBJECT');
+                localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+                resolve(evt);
+            };
+            req.onerror = function(evt) {
+                console.warn(evt);
+                reject('could not add to local db');
+            };
+
+        });
     }).then(function(local_db_activity){
         
         var tmp_activity = {};
