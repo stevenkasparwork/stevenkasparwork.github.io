@@ -876,12 +876,13 @@ function sendStatusQueue(tries){
                             console.log(response);
                             
                             if(response.result_code === 0){
-                                deleteObjectFromStore(DB_ACTIVITY_STORE_NAME, obj.id);
-                                resolve(response);
+                                deleteObjectFromStore(DB_STATUS_QUEUE_STORE_NAME, obj.id).then(function(){
+                                    resolve(response);
+                                });
+                                
                             }
                             else {
                                 console.warn('need to retry');
-                                console.warn(response);
                                 reject(response);
                             }
                             
