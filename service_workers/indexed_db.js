@@ -821,6 +821,7 @@ function statusActivity(status){
     }).then(function(response){
         
         console.log('activity has been updated locally and in ofsc');
+        updateHelixFeedback('activity has been updated locally and in ofsc');
         
     }).catch(function(msg){
         
@@ -833,6 +834,7 @@ function statusActivity(status){
             time: time_strings.date_time
         }).then(function(response){
             console.warn(msg);
+            updateHelixFeedback(msg);
         });
     });
 }
