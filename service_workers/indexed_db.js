@@ -289,6 +289,7 @@ function syncLocalActivitiesWithOFSC(){
                             
                         }).then(function(response){
                             console.log(response);
+                            resolve_2('...object has been cleaned...');
                         });
                         
                         
