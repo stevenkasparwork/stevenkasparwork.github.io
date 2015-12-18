@@ -720,7 +720,7 @@ function getIndexedDBActivityByID(id){
         };
         req.onerror = function(err) {
             reject(err);
-        };
+        }; 
     });
 }
 
