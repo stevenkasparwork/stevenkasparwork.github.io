@@ -6,7 +6,7 @@ const DB_ACTIVITY_STORE_NAME = 'activities';
 const DB_STATUS_QUEUE_STORE_NAME = 'status_queue';
 const DB_RESOURCE_STORE_NAME = 'resources';
 const PAGE_SET = ['home', 'activity_detail']
-
+const VISIBLE_ACTIVITY_FIELDS = ['id','date','name','address','address','zip','state','start_time','end_time'];
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
@@ -500,12 +500,14 @@ function updateHelixTable(model_name, data){
     
     var items_string = data.map(function(item, index){
         var item_string = '';
-        
         for(var i in item){
-            if(index === 0){
-                header_cells += '<th>'+i+'</th>';
+            
+            if(VISIBLE_ACTIVITY_FIELDS.indexOf(i) > -1){
+                if(index === 0){
+                    header_cells += '<th>'+i+'</th>';
+                }
+                item_string += '<td>'+item[i]+'</td>';
             }
-            item_string += '<td>'+item[i]+'</td>';
         }
         
         
