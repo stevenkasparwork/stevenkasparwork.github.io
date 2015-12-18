@@ -193,7 +193,7 @@ function getActivities(){
             type: 'POST'
         }).success(function(response) {
             response = JSON.parse(response);
-            console.log(response.data.activities);
+            //console.log(response.data.activities);
             resolve(response.data.activities);
         }).error(function(error){
             //console.log(error);
@@ -827,7 +827,7 @@ function initializePage(){
                 //console.log(resource);
                 return getActivities();
 
-            }).then(function(err) { // add the activities to the local db
+            }).then(function(activities) { // add the activities to the local db
 
                 //console.log(activities);
                 return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
