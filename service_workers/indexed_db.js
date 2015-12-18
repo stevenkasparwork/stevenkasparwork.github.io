@@ -488,7 +488,51 @@ function getActivitiesFromIndexedDb(){
     });
     
 }
+/**
+* @param {string} model_name
+* Placeholder function for updating the view.
+* data must be an object
+*/
+function updateHelixList(model_name, data, editable){
+    console.log('...update helix list...');
+    if(!editable){editable = '';}
+    console.log(editable);
+    
+    var item_string = '';
+    
+    for(var i in data){
+        if(VISIBLE_ACTIVITY_FIELDS.indexOf(i) > -1){
+            var li_content = '';
+            if(editable.indexOf(i) > -1 ){
+                /*if(Helix.options[i]){
+                    li_content += '<select onchange="updateActivity(event);" id="'+i+'">'+Helix.options[i].map(function(option){
+                        if(option.value === data[i]){
+                            return '<option value="'+option.value+'" selected> '+option.label+'</option>';
+                        }
+                        else {
+                            return '<option value="'+option.value+'" > '+option.label+'</option>';
+                        }
 
+
+                    }).join('')+'</select>';
+                }
+                else {*/
+                    li_content += '<input value="'+data[i]+'" onblur="updateActivity(event);" id="'+i+'">';
+                //}
+            }
+            else {
+                li_content = data[i];
+            }
+
+
+            item_string += '<li>'+i+': '+li_content+'</li>';
+        }
+    }
+        
+    
+    $('[helix-model="'+model_name+'"]').html(item_string); 
+    
+}
 /**
 * @param {string} model_name
 * Placeholder function for updating the view.
@@ -535,49 +579,7 @@ function navigateWithParameters(param_obj, page){
 }
 
 
-/**
-* @param {string} model_name
-* Placeholder function for updating the view.
-* data must be an object
-*/
-function updateHelixList(model_name, data, editable){
-    console.log('...update helix list...');
-    if(!editable){editable = '';}
-    console.log(editable);
-    
-    var item_string = '';
-    
-    for(var i in data){
-        var li_content = '';
-        if(editable.indexOf(i) > -1 ){
-            /*if(Helix.options[i]){
-                li_content += '<select onchange="updateActivity(event);" id="'+i+'">'+Helix.options[i].map(function(option){
-                    if(option.value === data[i]){
-                        return '<option value="'+option.value+'" selected> '+option.label+'</option>';
-                    }
-                    else {
-                        return '<option value="'+option.value+'" > '+option.label+'</option>';
-                    }
-                    
-                    
-                }).join('')+'</select>';
-            }
-            else {*/
-                li_content += '<input value="'+data[i]+'" onblur="updateActivity(event);" id="'+i+'">';
-            //}
-        }
-        else {
-            li_content = data[i];
-        }
-        
-        
-        item_string += '<li>'+i+': '+li_content+'</li>';
-    }
-        
-    
-    $('[helix-model="'+model_name+'"]').html(item_string); 
-    
-}
+
 
 function updateActivity(event) {
     console.log('...update activity...');
