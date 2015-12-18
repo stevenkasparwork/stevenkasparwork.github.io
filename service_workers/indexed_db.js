@@ -657,10 +657,12 @@ function updateActivity(event) {
     }).then(function(response){
         
         console.log('activity has been updated locally and in ofsc');
+        $('[helix-model="feedback"]').html('activity has been updated locally and in ofsc'); 
         
     }).catch(function(response){
         
         console.warn(response);
+        $('[helix-model="feedback"]').html( response.toString() ); 
         
     });
 }
@@ -1081,6 +1083,7 @@ function initializeView(page, reload_activities_from_ofsc){
             }).catch(function(err) {
                 
                 console.warn(err);
+                $('[helix-model="feedback"]').html( err );
                 
             }).then(function(activities) { 
 
