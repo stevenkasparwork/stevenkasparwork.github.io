@@ -650,43 +650,30 @@ function getDateTimeString(){
 }
 
 function statusActivity(status){
-    console.log('...status activity: '+status+'...');
-    console.log( Helix.activity_details );
-    
+    console.log('...update activity...');
+    var activity;
     var time_strings = getDateTimeString();
     
-    Helix.activity_details.status = status;
-    Helix.activity_details.start_time = time_strings.date_time;
-    // add a dirty bit so we know it is not in sync
-    Helix.activity_details['dirty'] = 1;
-    
-    var update_local_db = updateActivityInLocalDB(Helix.activity_details);
-    update_local_db.then(function(activity){
-        getIndexedDBActivityByID(activity.id).then(function(activity){
-            console.log(activity);
-            
-            return updateStatusInOFSC({
-                status: status,
-                activity_id: activity.id,
-                date: time_strings.date,
-                time: time_strings.date_time
-            });
-            
+    getIndexedDBActivityByID( localStorage.getItem('id') ).then(function(local_db_activity){
+        activity = shallowCopy(local_db_activity);
+        activity.status = status;
+        activity.dirty = 1;
+        activity.start_time = time_strings.date_time;
+        return updateActivityInLocalDB(activity);
+    }).then(function(local_db_activity){
+        
+        return updateStatusInOFSC({
+            status: status,
+            activity_id: local_db_activity.id,
+            date: time_strings.date,
+            time: time_strings.date_time
         });
         
     }).then(function(response){
+        
         console.log(response);
-        // set dirty bit to 0 since we just updated ofsc
-        Helix.activity_details['dirty'] = 0;
-        
-        console.log(Helix.activity_details);
-        return updateActivityInLocalDB(Helix.activity_details);
-        
-    }).catch(function(status_object){
-        
-        console.warn(status_object);
-        // need to queue the status_object for when we get connection back
-        return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, status_object.activity_id);
+        console.log(activity.id);
+        return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
         
     }).then(function(response){
         
@@ -694,8 +681,11 @@ function statusActivity(status){
         
     }).catch(function(msg){
         
-        console.warn(msg);
-        
+        console.warn('queueing status object');
+        // need to queue the status_object for when we get connection back
+        addStatusObjectToQueue(status_object).then(function(response){
+            console.warn(msg);
+        });
     });
 }
 
