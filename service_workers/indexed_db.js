@@ -566,13 +566,13 @@ function updateActivity(event) {
             };
 
         });
-    }).then(function(local_db_activity){
+    }).then(function(evt){
         
         var tmp_activity = {};
         // put in properties object 
-        tmp_activity.properties = local_db_activity;
+        tmp_activity.properties = shallowCopy(activity);
         // set the activity_id so that the api knows which activity to update
-        tmp_activity.activity_id = local_db_activity.id;
+        tmp_activity.activity_id = tmp_activity.properties.id;
         
         console.log(tmp_activity);
         
