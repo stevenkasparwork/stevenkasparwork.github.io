@@ -180,7 +180,7 @@ function getResource(){
 /**
 * gets activity info from helixsxd.com using the local storage resource_id
 */
-function getActivities(){
+function getActivitiesFromOFSC(){
     console.log('...get activities from ofsc...');
     return new Promise(function(resolve, reject) {
         
@@ -198,11 +198,8 @@ function getActivities(){
         }).error(function(error){
             //console.log(error);
             console.warn('need to get activities straight from indexedDB');
+            reject('no internet connection');
             
-            var p = getActivitiesFromIndexedDb();
-            p.then(function(response){
-                updateHelixTable('activities');
-            });
         });
     });
 }
@@ -825,12 +822,16 @@ function initializePage(){
             }).then(function(resource) { // get the activities using the resource from local storage
 
                 //console.log(resource);
-                return getActivities();
+                return getActivitiesFromOFSC();
 
             }).then(function(activities) { // add the activities to the local db
 
                 //console.log(activities);
                 return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
+                
+            }).catch(function(err) {
+                
+                console.warn(err);
                 
             }).then(function() { 
 
@@ -841,10 +842,6 @@ function initializePage(){
                 console.log('------ end of initialization -----');
                 return true;
 
-            }).catch(function(err) {
-                
-                console.warn(err);
-                
             });
             
             break;
