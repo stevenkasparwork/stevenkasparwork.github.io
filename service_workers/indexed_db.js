@@ -196,8 +196,7 @@ function getActivitiesFromOFSC(){
             //console.log(response.data.activities);
             resolve(response.data.activities);
         }).error(function(error){
-            //console.log(error);
-            console.warn('need to get activities straight from indexedDB');
+            //console.warn('need to get activities straight from indexedDB');
             reject('no internet connection');
             
         });
@@ -312,11 +311,9 @@ function addObjectsToIndexedDB(store_name, obj_array){
         });
         return Promise.all(promise_array).then(function(value){
             //console.log(value);
-            console.log(promise_array);
+            //console.log(promise_array);
             resolve('finished adding to local db');
-        },
-                                              function(err){
-            console.warn(err);
+        }).catch(function(err){
             reject(err);
         });
     });
@@ -559,7 +556,7 @@ function updateActivityInLocalDB(activity){
             resolve(activity);
             
         }).catch(function(err){
-            console.warn(err);
+            //console.warn(err);
             reject(err);
         });
         
