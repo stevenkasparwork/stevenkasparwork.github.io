@@ -111,6 +111,27 @@ function clearObjectStore(store_name) {
     });
 }
 
+/**
+* @param {string} store_name
+* will empty the contents of the indexedDb.DB_NAME.store_name
+* be carefull with this
+*/
+function deleteObjectFromStore(store_name, key) {
+    console.log("...delete from object store: "+store_name+"...");
+    return new Promise(function(resolve, reject){
+        
+        var store = getObjectStore(store_name, 'readwrite');
+        var req = store.delete(key);
+        req.onsuccess = function(evt) {
+            resolve(evt);
+        };
+        req.onerror = function (err) {
+            reject(err);
+        };
+        
+    });
+}
+
 
 /**
 * @param {obj} evt
@@ -826,6 +847,9 @@ function isStatusQueue(){
 }
 
 function sendStatusQueue(){
+    var max_tries = 10;
+    tries || (tries = 0);
+    
     return new Promise(function(resolve, reject){
         
         var check_status_queue = isStatusQueue();
@@ -848,7 +872,17 @@ function sendStatusQueue(){
                         }).success(function(response) {
                             response = JSON.parse(response);
                             console.log(response);
-                            resolve(response);
+                            
+                            if(response.result_code === 0){
+                                deleteObjectFromStore(DB_ACTIVITY_STORE_NAME, obj.id);
+                                resolve(response);
+                            }
+                            else {
+                                console.warn('need to retry');
+                                console.warn(response);
+                                reject(response);
+                            }
+                            
                         }).error(function(error){
                             //console.log(error);
                             console.warn('activity did not update need to queue status update in localStorage');
@@ -867,9 +901,17 @@ function sendStatusQueue(){
                     });
                     
                 }).catch(function(err){
-                    
                     console.warn(err);
-                    reject(err);
+                    console.warn('TRIES: '+tries);
+                    tries++;
+                    if(tries > max_tries){
+                        throw err;
+                        reject(err);
+                    }
+                    else {
+                        reject('trying to send statuses again');
+                        return sendStatusQueue();
+                    }
                     
                 });
             }
