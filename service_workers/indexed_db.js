@@ -483,14 +483,9 @@ function navigateWithParameters(param_obj, page){
         localStorage.setItem(i, param_obj[i]);
     }
     for(var i in PAGE_SET){
-        if( page === PAGE_SET[i] ){
-            $('#'+PAGE_SET[i]).show();
-        }
-        else {
-            $('#'+PAGE_SET[i]).hide();
-        }
+        $('#'+PAGE_SET[i]).hide();
     }
-    initializeView(page);
+    initializeView(page); // this will show the page we need
 }
 
 
@@ -874,7 +869,6 @@ function initializeView(page){
                 return true;
 
             });
-            
             break;
         case 'activity_detail':
             console.log('..on activity_detail page..');
@@ -890,9 +884,8 @@ function initializeView(page){
             }
             
             break;
-
-            
     }
+    $('#'+page).show();
 }
 
 
