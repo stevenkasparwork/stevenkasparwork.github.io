@@ -47,6 +47,7 @@ function openDb() {
         req.onsuccess = function (evt) {
             //console.log(evt);
             db = this.result;
+            console.log(db);
             resolve(db);
         };
         req.onerror = function (evt) {
