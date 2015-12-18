@@ -59,10 +59,7 @@ function openDb() {
             //alert("openDb.onupgradeneeded");
             
             db = evt.target.result;
-            db.onsuccess = function(e){
-                console.log(e);
-                
-            }
+            
             if(db.objectStoreNames.contains(DB_RESOURCE_STORE_NAME)){
                 db.deleteObjectStore(DB_RESOURCE_STORE_NAME);
             } 
@@ -85,6 +82,10 @@ function openDb() {
                 alert('Your app has been updated please refresh the page');
                 resolve(this.result);
             };
+            db.onsuccess = function(e){
+                console.log(e);
+                
+            }
             
             
             
@@ -236,10 +237,81 @@ function addActivitiesToIndexedDB(activities){
     addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
 }
 
+function syncLocalActivitiesWithOFSC(){
+    return new Promise(function(resolve, reject){
+        
+        var get_activities = getActivitiesFromIndexedDb();
+        get_activities.then(function(activities){
+            var promise_array = [];
+            return new Promise(function(resolve, reject){
+                promise_array = obj_array.map(function(obj){
+                    // create an array of promises. Each item to insert gets its own promise.
+                    // the array of promises will be evaluated as a group below in Promise.all()
+                    console.log(obj);
+                    if(obj.dirty){
+                        console.warn('object is dirty');
+                        var tmp_activity = {}; 
+                        tmp_activity.properties = obj.map(function(o){ return o; });
+                        tmp_activity.activity_id = obj.id;
+                        console.log(tmp_activity);
+                        
+                        updateActivityInOFSC(tmp_activity).then(function(response){ 
+
+                            return getIndexedDBActivityByID( response.data.activity_id );
+                            
+                        }).catch(function(response){ 
+
+                            console.warn(response);
+                            reject('failed to update activity in ofsc');
+                            
+                        }).then(function(activity){
+
+                            return removeDirtyBitFromLocalDBObject(store_name, activity.id);
+
+                        }).then(function(response){
+                            
+                            resolve('dirty object has been updated in ofsc and local db dirty bit removed');
+                            
+                        }).catch(function(msg){ 
+
+                            console.warn(msg);
+                            
+                            reject('failed to update activity in ofsc');
+                            
+                        });
+                        
+                        
+                    }
+                    else {
+                        resolve('clean object');
+                    }
+                });
+                return Promise.all(promise_array).then(function(value){
+                    //console.log(value);
+                    //console.log(promise_array);
+                    resolve('local db is in sync with ofsc');
+                }).catch(function(err){
+                    reject(err);
+                });
+            });
+        }).then(function(response){
+            console.log(response);
+            resolve(response);
+        }).catch(function(err){
+            console.log(err);
+            reject(err);
+        });
+        
+    });
+    
+}
+                             
+
+
 /**
 * @param {string} store_name
 * @param {array} obj_array
-* recursively adds all objects in the obj_array to the db.store_name
+* adds all objects in the obj_array to the db.store_name
 */
 function addObjectsToIndexedDB(store_name, obj_array){
     console.log('...add objects to local db...');
@@ -250,64 +322,21 @@ function addObjectsToIndexedDB(store_name, obj_array){
             // create an array of promises. Each item to insert gets its own promise.
             // the array of promises will be evaluated as a group below in Promise.all()
              return new Promise(function(resolve, reject){
+                    
+                 // need to get the transaction and store for adding to the local db
+                    var store = getObjectStore(store_name, 'readwrite'), req;
 
-                // first we need to check if the object in the local db is dirty and out of sync
-                var dirty_check_promise = checkIfObjectIsDirty(store_name, obj.id); 
-                
-                dirty_check_promise.then(function(id){
+                    // using put instead of add because put will update if the key index exists
+                    req = store.put(obj);
 
-                    if(id){
-                        console.warn('object is dirty');
-                        var local_activity = {}, tmp_activity = {};
-                        
-                        // get the local dirty copy and copy it over so we can send it to ofsc
-                        var get_local_dirty_activity = getIndexedDBActivityByID( id );
-                        get_local_dirty_activity.then(function(activity){
-                            local_activity = activity;
-                            
-                            // put in properties object 
-                            tmp_activity.properties = local_activity;
-                            // set the activity_id so that the api knows which activity to update
-                            tmp_activity.activity_id = local_activity.id;
-
-                            return updateActivityInOFSC(tmp_activity);
-                            
-                        }).then(function(response){ 
-                            
-                            return getIndexedDBActivityByID( response.data.activity_id );
-                            
-                        }).catch(function(response){ 
-                            
-                            console.warn(response);
-                            reject('failed to update activity in ofsc');
-                            
-                        }).then(function(activity){
-                            
-                            return removeDirtyBitFromLocalDBObject(store_name, activity.id);
-                            
-                        }).then(function(response){
-                            resolve('dirty object has been updated in ofsc and local db dirty bit removed');
-                        });
-                        
-                        
-                    }
-                    else {
-                        // need to get the transaction and store for adding to the local db
-                        var store = getObjectStore(store_name, 'readwrite'), req;
-
-                        // using put instead of add because put will update if the key index exists
-                        req = store.put(obj);
-
-                        req.onsuccess = function (evt) {
-                            localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
-                            resolve(evt);
-                        };
-                        req.onerror = function(evt) {
-                            console.warn(evt);
-                            reject('could not add to local db');
-                        };
-                        
-                    }
+                    req.onsuccess = function (evt) {
+                        localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+                        resolve(evt);
+                    };
+                    req.onerror = function(evt) {
+                        console.warn(evt);
+                        reject('could not add to local db');
+                    };
                     
                 });
 
@@ -597,10 +626,7 @@ function formatTime(n){
     return n > 9 ? "" + n: "0" + n;
 }
 
-function statusActivity(status){
-    console.log('...status activity: '+status+'...');
-    console.log( Helix.activity_details );
-    
+function getDateTimeString(){
     var d = new Date();
     
     var year = d.getFullYear();
@@ -611,14 +637,21 @@ function statusActivity(status){
     var minutes = formatTime(d.getMinutes());
     var seconds = formatTime(d.getSeconds());
     
+    return {
+        time: hours + ":" + minutes + ":" + seconds,
+        date: year + "-" + month + "-" + date,
+        date_time: date_string + " " + time_string
+    };
+}
+
+function statusActivity(status){
+    console.log('...status activity: '+status+'...');
+    console.log( Helix.activity_details );
     
-    var date_string = year + "-" + month + "-" + date;
-    var time_string = hours + ":" + minutes + ":" + seconds;
-    var date_time_string = date_string + " " + time_string;
-    
+    var time_strings = getDateTimeString();
     
     Helix.activity_details.status = status;
-    Helix.activity_details.start_time = date_time_string;
+    Helix.activity_details.start_time = time_strings.date_time;
     // add a dirty bit so we know it is not in sync
     Helix.activity_details['dirty'] = 1;
     var status_object = {};
@@ -629,8 +662,8 @@ function statusActivity(status){
         status_object = {
             status: status,
             activity_id: activity.id,
-            date: date_string,
-            time: date_time_string
+            date: time_strings.date,
+            time: time_strings.date_time
         };
         
         return updateStatusInOFSC(status_object);
@@ -642,21 +675,19 @@ function statusActivity(status){
         
         return updateActivityInLocalDB(Helix.activity_details);
         
+    }).catch(function(status_object){
+        
+        console.warn(status_object);
+        // need to queue the status_object for when we get connection back
+        return = addStatusObjectToQueue(status_object);
+        
     }).then(function(response){
         
         console.log('activity has been updated locally and in ofsc');
         
-    }).catch(function(response){
+    }).catch(function(msg){
         
-        console.warn(response);
-        
-        // need to queue the status_object for when we get connection back
-        var add_to_status_queue = addStatusObjectToQueue(status_object);
-        add_to_status_queue.then(function(response){
-            console.log(response);
-        }).catch(function(response){
-            console.warn(response);
-        });
+        console.warn(msg);
         
     });
 }
@@ -669,7 +700,8 @@ function addStatusObjectToQueue(status_object) {
         var req = store.put(status_object);
 
         req.onsuccess = function (evt) {
-            resolve(evt);
+            console.log(status_object);
+            resolve('...status_object has been added to status queue...');
         };
         req.onerror = function(err) {
             reject(err);
@@ -696,8 +728,9 @@ function updateStatusInOFSC(status_object){
             resolve(response);
         }).error(function(error){
             //console.log(error);
-            console.warn('activity did not update need to queue status update in localStorage');
-            reject(error);
+            console.warn(error);
+            // rejecting with status_object so that we can add it to the queue cleaner
+            reject(status_object);
         });
     });
 }
@@ -788,14 +821,18 @@ function sendStatusQueue(){
                 });
 
                 return Promise.all(promise_array).then(function(value){
-                    //console.log(value);
+                    
                     var clear_status_queue = clearObjectStore(DB_STATUS_QUEUE_STORE_NAME);
+                    
                     clear_status_queue.then(function(response){
-                        resolve('updated all statuses to ofsc and cleared local queue');
+                        resolve('...updated all statuses to ofsc and cleared local queue...');
                     });
+                    
                 }).catch(function(err){
+                    
                     console.warn(err);
                     reject(err);
+                    
                 });
             }
             else {
@@ -829,7 +866,12 @@ function initializePage(){
                 console.log(response);
                 return getResource();
 
-            }).then(function(resource) { // get the activities using the resource from local storage
+            }).then(function(resource) { // sync activities
+
+                //console.log(resource);
+                return syncLocalActivitiesWithOFSC();
+
+            }).then(function() { // get the activities using the resource from local storage
 
                 //console.log(resource);
                 return getActivitiesFromOFSC();
