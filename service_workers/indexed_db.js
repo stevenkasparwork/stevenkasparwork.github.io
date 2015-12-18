@@ -10,20 +10,25 @@ const VISIBLE_ACTIVITY_FIELDS = ['id','date','name','address','address','zip','s
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
+/* this is not used for anything but can be used for storing options if */
+/* agents are allowed to change other fields that need select lists */
 var Helix = {
-    activities: [],
+    options: [],
     
 }
+/* initially hide all of the views */
+/* the home will be shown when the service worker is ready */
 window.onload = function(){
     console.log('--window loaded--');
     for(var i in PAGE_SET){
         $('#'+PAGE_SET[i]).hide();
     }
 };
-/*
-    opens up our IndexedDB and sets a global variable db
-    so that we can access the Database later and make changes as necessary
-    This also will check to see if we are needing to upgradethe db
+
+/**
+* opens up our IndexedDB and sets a global variable db
+* so that we can access the Database later and make changes as necessary
+* This also will check to see if we are needing to upgrade the db
 */
 function openDb() {
     console.log("...open local db...");
@@ -83,11 +88,12 @@ function openDb() {
 /**
 * @param {string} store_name
 * @param {string} mode either "readonly" or "readwrite"
+* gets an object store so that we can do something with the indexedDB
 */
 function getObjectStore(store_name, mode) {
     console.log("...get store object: "+store_name+"...");
-    var tx = db.transaction(store_name, mode);
-    return tx.objectStore(store_name);
+    var transaction = db.transaction(store_name, mode);
+    return transaction.objectStore(store_name);
 }
 
 /**
@@ -113,8 +119,8 @@ function clearObjectStore(store_name) {
 
 /**
 * @param {string} store_name
-* will empty the contents of the indexedDb.DB_NAME.store_name
-* be carefull with this
+* @param {string} key
+* removes the entry in store_name with key == key
 */
 function deleteObjectFromStore(store_name, key) {
     console.log("...delete from object store: "+store_name+"...");
@@ -137,6 +143,7 @@ function deleteObjectFromStore(store_name, key) {
 
 /**
 * @param {obj} evt
+* --NOT IN USE--
 */
 function addActivity(evt) {
     console.log("...add activity...");
@@ -244,6 +251,12 @@ function addActivitiesToIndexedDB(activities){
     } 
     addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
 }
+/**
+* @param {obj} original
+* this will return a shollow copy or clone of the passed in object
+* prevents from changing referenced variables
+*/
+
 function shallowCopy( original )  
 {
     // First create an empty object with
@@ -413,6 +426,7 @@ function removeDirtyBitFromLocalDBObject(store_name, key){
 * @param {string} store_name
 * @param {string} key
 * check to see if object is dirty
+* -- NOT IN USE --
 */
 function checkIfObjectIsDirty(store_name, key){
     console.log('...check if object is dirty...');
@@ -445,6 +459,12 @@ function checkIfObjectIsDirty(store_name, key){
     
 }
 
+/**
+* @param {array} array
+* @param {int} order
+* sorts the activites on the home page by the start_time
+* -- should be implemented to sort more dynamically --
+*/
 function sortArrayOfObjects(array, order){
     
     order || (order = 1);
@@ -490,8 +510,11 @@ function getActivitiesFromIndexedDb(){
 }
 /**
 * @param {string} model_name
-* Placeholder function for updating the view.
-* data must be an object
+* @param {array} data
+* @param {string} editable
+* updates the element specified by model name as a list with data
+* if the items id is in the editable string then it will be presented as an input
+* updating locally and to OFSC when blurred or changed
 */
 function updateHelixList(model_name, data, editable){
     console.log('...update helix list...');
@@ -504,7 +527,7 @@ function updateHelixList(model_name, data, editable){
         if(VISIBLE_ACTIVITY_FIELDS.indexOf(i) > -1){
             var li_content = '';
             if(editable.indexOf(i) > -1 ){
-                /*if(Helix.options[i]){
+                if(Helix.options[i]){
                     li_content += '<select onchange="updateActivity(event);" id="'+i+'">'+Helix.options[i].map(function(option){
                         if(option.value === data[i]){
                             return '<option value="'+option.value+'" selected> '+option.label+'</option>';
@@ -516,9 +539,9 @@ function updateHelixList(model_name, data, editable){
 
                     }).join('')+'</select>';
                 }
-                else {*/
+                else {
                     li_content += '<input value="'+data[i]+'" onblur="updateActivity(event);" id="'+i+'">';
-                //}
+                }
             }
             else {
                 li_content = data[i];
@@ -535,8 +558,8 @@ function updateHelixList(model_name, data, editable){
 }
 /**
 * @param {string} model_name
-* Placeholder function for updating the view.
-* Helix[model_name] must be an array
+* @param {array} data
+* updates the element specified by model name as a table with data
 */
 function updateHelixTable(model_name, data){
     console.log('...update helix table...');
@@ -565,8 +588,8 @@ function updateHelixTable(model_name, data){
 /**
 * @param {obj} param_obj
 * @param {string} page
-* Sets localStorage(param_obj.key, param_obj.value), then
-* navigates to page
+* Sets localStorage(param_obj.key, param_obj.value), 
+* then initializes the right view
 */
 function navigateWithParameters(param_obj, page){
     for(var i in param_obj){
@@ -578,14 +601,15 @@ function navigateWithParameters(param_obj, page){
     initializeView(page); // this will show the page we need
 }
 
-
-
-
+/**
+* @param {click_event} event
+* updates and activity in local db -> update in OFSC [x-> leave dirty bit as 1 so we know to update]
+*/
 function updateActivity(event) {
     console.log('...update activity...');
     var activity;
     
-    getIndexedDBActivityByID( localStorage.getItem('id') ).then(function(local_db_activity){
+    getIndexedDBEntry(DB_ACTIVITY_STORE_NAME, localStorage.getItem('id') ).then(function(local_db_activity){
         activity = shallowCopy(local_db_activity);
         activity[event.target.id] = event.target.value;
         activity['dirty'] = 1;
@@ -641,6 +665,11 @@ function updateActivity(event) {
     });
 }
 
+/**
+* @param {int} activity
+* sends an activity to addObjectToIndexedDB 
+* -- should probably be removed or redone to not call addObjects function. Do add here --
+*/
 function updateActivityInLocalDB(activity){
     console.log('...update activity in local db...');
     console.log(activity);
@@ -661,7 +690,12 @@ function updateActivityInLocalDB(activity){
 }
 
 /**
-* update OFSC with activity fields that have been changed
+* @param {int} activity
+* updates OFSC with activity object of form
+{
+api_key: OFSC_API_KEY,
+activity: {activity}
+}
 */
 function updateActivityInOFSC(activity){
     console.log('...update activity in ofsc...');
@@ -685,10 +719,22 @@ function updateActivityInOFSC(activity){
 }
 
 
+/**
+* @param {int} n
+* formats n so that it is a string with a length of at least 2
+*/
 function formatTime(n){
     return n > 9 ? "" + n: "0" + n;
 }
 
+/**
+* returns a obj 
+{
+time: hh:mm:ss,
+date: yyyy-mm-dd,
+date_time: yyyy-mm-dd hh:mm:ss
+}
+*/
 function getDateTimeString(){
     var d = new Date();
     
@@ -707,12 +753,16 @@ function getDateTimeString(){
     };
 }
 
+/**
+* @param {string} status
+* updates the local db -> sends to ofsc [x-> queues in local db ]
+*/
 function statusActivity(status){
     console.log('...update activity...');
     var activity;
     var time_strings = getDateTimeString();
     
-    getIndexedDBActivityByID( localStorage.getItem('id') ).then(function(local_db_activity){
+    getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, localStorage.getItem('id') ).then(function(local_db_activity){
         activity = shallowCopy(local_db_activity);
         activity.status = status;
         activity.dirty = 1;
@@ -776,6 +826,19 @@ function statusActivity(status){
     });
 }
 
+/**
+* @param {obj} status_object
+* queues (simple store) a status_object 
+*status_object = {
+    status: ,
+    date: ,
+    time: ,
+    activity_id: [,
+    properties: [{name: value}] ]
+}
+in the local db so that we can send in later to OFSC
+*
+*/
 function addStatusObjectToQueue(status_object) {
     console.log('...add status to local db queue...');
     return new Promise(function(resolve, reject){
@@ -793,8 +856,18 @@ function addStatusObjectToQueue(status_object) {
     });
 }
 
-
-
+/**
+* @param {obj} status_object
+* sends an object to OFSC with 
+*status_object = {
+    status: ,
+    date: ,
+    time: ,
+    activity_id: [,
+    properties: [{name: value}] ]
+}
+*
+*/
 function updateStatusInOFSC(status_object){
     console.log('...update status in ofsc...');
     return new Promise(function(resolve, reject) {
@@ -819,14 +892,17 @@ function updateStatusInOFSC(status_object){
     });
 }
 
-
-function getIndexedDBActivityByID(id){
-    console.log('...get activity from local db...');
+/**
+* @param {string} key
+* returns the local db entry specified by key
+*/
+function getIndexedDBEntry(store_name, key){
+    console.log('...get entry from local db...');
     return new Promise(function(resolve, reject){
         
-        var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
+        var store = getObjectStore(store_name, 'readwrite');
 
-        var req = store.get(id);
+        var req = store.get(key);
 
         req.onsuccess = function(event) {
             console.log(event);
@@ -841,6 +917,11 @@ function getIndexedDBActivityByID(id){
     });
 }
 
+/**
+* @param {string} param
+* gets a url parameter
+* ---- not using url parameters ----
+*/
 function getUrlParam(param) {
     console.log('...get url param: '+param+'...');
     var urlParamString = location.search.split(param + "=");
@@ -851,6 +932,9 @@ function getUrlParam(param) {
     }
 }
 
+/**
+* resolves the statuses in the status_queue
+*/
 function isStatusQueue(){
     console.log('...check status queue...');
     return new Promise(function(resolve, reject){
@@ -871,15 +955,21 @@ function isStatusQueue(){
     });
 }
 
+/**
+* @param {int} tries (initially empty)
+* this will send the status queue to update ofsc
+* On a failed update, it will try up to 5 times
+*/
 function sendStatusQueue(tries){
+    // limiting the number of retries for our status queue.
+    // this should probably be done in middle-ware but for now this will do
     var max_tries = 5;
+    // if tries is not defined then it is the first loop so set it to 0
     tries || (tries = 0);
     
     return new Promise(function(resolve, reject){
         
-        var check_status_queue = isStatusQueue();
-        
-        check_status_queue.then(function(statuses){
+        isStatusQueue().then(function(statuses){
             if(statuses.length){
                 promise_array = statuses.map(function(obj){
 
@@ -898,14 +988,16 @@ function sendStatusQueue(tries){
                             response = JSON.parse(response);
                             console.log(response);
                             
+                            // if the update was succesful then remove the status object from the queue
                             if(response.result_code === 0){
                                 deleteObjectFromStore(DB_STATUS_QUEUE_STORE_NAME, obj.id).then(function(){
                                     resolve(response);
                                 });
                                 
                             }
+                            // if we get a response code of 8 it most likely means that our requests were
+                            // just received out of order so we need to retry them
                             else {
-                                console.warn('need to retry');
                                 reject(response);
                             }
                             
@@ -927,7 +1019,6 @@ function sendStatusQueue(tries){
                     });
                     
                 }).catch(function(err){
-                    console.warn(err);
                     console.warn('TRIES: '+tries);
                     tries++;
                     if(tries > max_tries){
@@ -970,8 +1061,12 @@ function initializeView(page, reload_activities_from_ofsc){
                 return syncLocalActivitiesWithOFSC();// sync activities
 
             }).then(function(msg) { 
-                //return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, []);
-                console.log(msg);
+                // only reload the activites if specified.
+                // couple reasons: 
+                // it is more efficient than reloading every view change
+                // OFSC doesn't update very quickly so if we send something there and then call back to it right away
+                // might not get back what we wanted and the view will be displaying incorrect info even though all
+                // the information is correct in OFSC
                 if(reload_activities_from_ofsc){
                     return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
                         console.warn('adding activities to local db');
@@ -995,15 +1090,16 @@ function initializeView(page, reload_activities_from_ofsc){
                 updateHelixTable('activities', activities);
                 console.log('------ end of initialization -----');
                 return true;
-
             });
+            
             break;
+            
         case 'activity_detail':
             console.log('..on activity_detail page..');
             var id = localStorage.getItem('id');
             console.log(id);
             if(id) {
-                getIndexedDBActivityByID( id ).then(function(activity){
+                getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
                     updateHelixList('activity_details', activity,'address,name');
                 });
             }
