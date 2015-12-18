@@ -238,6 +238,7 @@ function addActivitiesToIndexedDB(activities){
 }
 
 function syncLocalActivitiesWithOFSC(){
+    console.log('...sync local activities...');
     return new Promise(function(resolve, reject){
         
         var get_activities = getActivitiesFromIndexedDb();
