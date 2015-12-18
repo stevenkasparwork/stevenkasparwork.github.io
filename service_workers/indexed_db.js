@@ -871,7 +871,7 @@ function initializePage(){
 
 
 
-initializePage();
+//initializePage();
 
 
 
