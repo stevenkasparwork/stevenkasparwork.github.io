@@ -24,12 +24,11 @@ if ('serviceWorker' in navigator) {
 this.addEventListener('install', function(event) {
     console.log('...install event');
     event.waitUntil(
-        caches.open('v2').then(function(cache) {
+        caches.open('v3').then(function(cache) {
             //console.log(cache);
             return cache.addAll([
                 '/service_workers/',
                 '/service_workers/index.html',
-                '/service_workers/detail.html',
                 '/service_workers/indexed_db.js',
                 '/service_workers/jquery.js'
             ]);

@@ -10,20 +10,35 @@
         table tbody tr:nth-child(even){
             background: #eee;
         }
+        ul li:nth-child(even){
+            background: #eee;
+        }
     </style>
 </head>
 
 <body>
-    <button onclick="clearObjectStore(DB_RESOURCE_STORE_NAME);">Clear Resources Store</button>
-    <button onclick="clearObjectStore(DB_ACTIVITY_STORE_NAME);">Clear Activity Store</button>
-    <button onclick="addActivity(event);">Add Activity</button>
-    <button onclick="getActivities(event);">Get Activities</button>
+    <!------ home page ------------->
+    <div id="homePage">
+        <button onclick="clearObjectStore(DB_RESOURCE_STORE_NAME);">Clear Resources Store</button>
+        <button onclick="clearObjectStore(DB_ACTIVITY_STORE_NAME);">Clear Activity Store</button>
+        <button onclick="addActivity(event);">Add Activity</button>
+        <button onclick="getActivities(event);">Get Activities</button>
+        <br/>
+        <table>
+            <tbody helix-model="activities"></tbody>
+        </table>
+    </div>
+    
+    <!------ activity detail page ------------->
+    <button onclick="statusActivity('started');">Start Activity</button>
+    <button onclick="statusActivity('complete');">Complete Activity</button><br/>
     <br/>
-    <table>
-        <tbody helix-model="activities"></tbody>
-    </table>
+    
+    <ul helix-model="activity_details"></ul>
     
     
+    
+    <!------ scripts ------------->
     <script src="jquery.js"></script>
     <script src="service_worker.js"></script>
     <script src="indexed_db.js"></script>
