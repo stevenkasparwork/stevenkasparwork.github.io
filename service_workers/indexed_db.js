@@ -846,7 +846,7 @@ function isStatusQueue(){
     });
 }
 
-function sendStatusQueue(){
+function sendStatusQueue(tries){
     var max_tries = 10;
     tries || (tries = 0);
     
@@ -905,7 +905,6 @@ function sendStatusQueue(){
                     console.warn('TRIES: '+tries);
                     tries++;
                     if(tries > max_tries){
-                        delete tries;
                         throw err;
                         reject(err);
                     }
