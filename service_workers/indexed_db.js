@@ -1,6 +1,6 @@
 
 const DB_NAME = 'helix-ofsc-mobility';
-const DB_VERSION = 6; // Use a long long for this value (don't use a float)
+const DB_VERSION = 7; // Use a long long for this value (don't use a float)
 
 const DB_ACTIVITY_STORE_NAME = 'activities';
 const DB_STATUS_QUEUE_STORE_NAME = 'status_queue';
