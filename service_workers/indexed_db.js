@@ -661,15 +661,18 @@ function statusActivity(status){
     
     var update_local_db = updateActivityInLocalDB(Helix.activity_details);
     update_local_db.then(function(activity){
-        
-        status_object = {
-            status: status,
-            activity_id: activity.id,
-            date: time_strings.date,
-            time: time_strings.date_time
-        };
-        
-        return updateStatusInOFSC(status_object);
+        getIndexedDBActivityByID(activity.id).then(activity){
+            console.log(activity);
+            status_object = {
+                status: status,
+                activity_id: activity.id,
+                date: time_strings.date,
+                time: time_strings.date_time
+            };
+
+            return updateStatusInOFSC(status_object);
+            
+        }
         
     }).then(function(response){
         console.log(response);
