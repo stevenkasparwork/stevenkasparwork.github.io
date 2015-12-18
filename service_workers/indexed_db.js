@@ -55,10 +55,10 @@ function openDb() {
         };
 
         req.onupgradeneeded = function (evt) {
-            alert("openDb.onupgradeneeded");
-            console.log(evt);
+            //alert("openDb.onupgradeneeded");
+            
             db = evt.target.result;
-            console.log(db.objectStoreNames);
+            
             if(db.objectStoreNames.contains(DB_RESOURCE_STORE_NAME)){
                 db.deleteObjectStore(DB_RESOURCE_STORE_NAME);
             } 
@@ -207,37 +207,6 @@ function getActivities(){
 }
 
 
-
-/**
-* @param {string} resource
-* Puts a single resource object to the db.DB_RESOURCE_STORE_NAME
-* NOT USING ANYMORE BECAUSE WE ARE GOING TO USE LOCAL STORAGE
-*/
-function addResourceToIndexedDB(resource){
-    console.log('...add resource to local db...');
-    
-    var store = getObjectStore(DB_RESOURCE_STORE_NAME, 'readwrite');
-    var req, obj;
-
-    obj = {
-        external_id: resource.external_id,
-        name: resource.name,
-    };
-    
-    req = store.put(obj);
-    
-    req.onsuccess = function (evt) {
-        console.log("Resource insertion in DB successful");
-    };
-    req.onerror = function() {
-        // a constraint error can be thrown when duplicating an insert, so for now we will ignore it
-        if(this.error.name !== "ConstraintError"){
-            console.error("add error", this.error);
-        }
-    };
-    
-}
-
 /**
 * @param {array} activites
 * Builds out an array of activities to be added to the store
@@ -249,7 +218,7 @@ function addActivitiesToIndexedDB(activities){
     var activity_array = [];
 
     for(var i in activities){
-        console.log(activities[i]);
+        //console.log(activities[i]);
         
         activity_array.push({
             id: activities[i].id,
@@ -300,13 +269,10 @@ function addObjectsToIndexedDB(store_name, obj_array){
                             // set the activity_id so that the api knows which activity to update
                             tmp_activity.activity_id = local_activity.id;
 
-                            console.log(tmp_activity);
-
                             return updateActivityInOFSC(tmp_activity);
                             
                         }).then(function(response){ 
                             
-                            console.log(response);
                             return getIndexedDBActivityByID( response.data.activity_id );
                             
                         }).catch(function(response){ 
@@ -319,8 +285,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
                             return removeDirtyBitFromLocalDBObject(store_name, activity.id);
                             
                         }).then(function(response){
-                            console.log('dirty object has been update in ofsc and local db dirty bit removed');
-                            resolve();
+                            resolve('dirty object has been updated in ofsc and local db dirty bit removed');
                         });
                         
                         
