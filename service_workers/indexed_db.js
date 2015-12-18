@@ -684,6 +684,7 @@ function updateStatusInOFSC(status_object){
             type: 'POST'
         }).success(function(response) {
             response = JSON.parse(response);
+            console.log(response);
             resolve(response);
         }).error(function(error){
             //console.log(error);
@@ -708,6 +709,9 @@ function getIndexedDBActivityByID(id){
             console.log(req.result);
             
             resolve(req.result);
+        };
+        req.onerror = function(err) {
+            reject(err);
         };
     });
 }
