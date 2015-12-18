@@ -279,7 +279,7 @@ function syncLocalActivitiesWithOFSC(){
                                 return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, response.data.activity_id);
                             }
                             else {
-                                reject_2(response.response);
+                                reject_2(response.data.response);
                             }
                             
                         }).catch(function(response){ 
