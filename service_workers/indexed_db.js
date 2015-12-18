@@ -671,12 +671,36 @@ function statusActivity(status){
         activity.status = status;
         activity.dirty = 1;
         activity.start_time = time_strings.date_time;
-        return updateActivityInLocalDB(activity);
-    }).then(function(local_db_activity){
+        
+        //return updateActivityInLocalDB(activity);
+        
+        return new Promise(function(resolve, reject){
+
+             // need to get the transaction and store for adding to the local db
+            var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite');
+            var req;
+
+            // using put instead of add because put will update if the key index exists
+            req = store.put(activity);
+
+            req.onsuccess = function (evt) {
+                console.log(activity);
+                console.log('PUT OBJECT');
+                localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+                resolve(evt);
+            };
+            req.onerror = function(evt) {
+                console.warn(evt);
+                reject('could not add to local db');
+            };
+
+        });
+        
+    }).then(function(evt){
         
         return updateStatusInOFSC({
             status: status,
-            activity_id: local_db_activity.id,
+            activity_id: activity.id,
             date: time_strings.date,
             time: time_strings.date_time
         });
@@ -695,7 +719,12 @@ function statusActivity(status){
         
         console.warn('queueing status object');
         // need to queue the status_object for when we get connection back
-        addStatusObjectToQueue(status_object).then(function(response){
+        addStatusObjectToQueue({
+            status: status,
+            activity_id: activity.id,
+            date: time_strings.date,
+            time: time_strings.date_time
+        }).then(function(response){
             console.warn(msg);
         });
     });
