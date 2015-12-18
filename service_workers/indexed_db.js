@@ -324,21 +324,19 @@ function addObjectsToIndexedDB(store_name, obj_array){
              return new Promise(function(resolve, reject){
                     
                  // need to get the transaction and store for adding to the local db
-                    var store = getObjectStore(store_name, 'readwrite'), req;
+                var store = getObjectStore(store_name, 'readwrite'), req;
 
-                    // using put instead of add because put will update if the key index exists
-                    req = store.put(obj);
+                // using put instead of add because put will update if the key index exists
+                req = store.put(obj);
 
-                    req.onsuccess = function (evt) {
-                        localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
-                        resolve(evt);
-                    };
-                    req.onerror = function(evt) {
-                        console.warn(evt);
-                        reject('could not add to local db');
-                    };
-                    
-                });
+                req.onsuccess = function (evt) {
+                    localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
+                    resolve(evt);
+                };
+                req.onerror = function(evt) {
+                    console.warn(evt);
+                    reject('could not add to local db');
+                };
 
             });
         });
