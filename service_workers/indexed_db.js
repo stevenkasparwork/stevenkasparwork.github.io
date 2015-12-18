@@ -451,7 +451,7 @@ function sortArrayOfObjects(array, order){
     
     
     array.sort(function(a, b){
-        console.log(a.start_time);
+        
         if( new Date(a.start_time).getTime() > new Date(b.start_time).getTime() ) {
             return 1 * order;
         }
