@@ -910,7 +910,7 @@ function sendStatusQueue(tries){
                     }
                     else {
                         reject('trying to send statuses again');
-                        return sendStatusQueue();
+                        return sendStatusQueue(tries);
                     }
                     
                 });
