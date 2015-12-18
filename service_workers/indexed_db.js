@@ -276,7 +276,7 @@ function syncLocalActivitiesWithOFSC(){
                         
                         updateActivityInOFSC(tmp_activity).then(function(response){ 
 
-                            return removeDirtyBitFromLocalDBObject(store_name, response.data.activity_id);
+                            return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, response.data.activity_id);
                             
                         }).catch(function(response){ 
 
