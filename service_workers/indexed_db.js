@@ -552,9 +552,9 @@ function updateActivity(event) {
         activity = shallowCopy(local_db_activity);
         activity[event.target.id] = event.target.value;
         activity['dirty'] = 1;
-    });
-    
-    updateActivityInLocalDB(activity).then(function(local_db_activity){
+        
+        return updateActivityInLocalDB(activity);
+    }).then(function(local_db_activity){
         
         var tmp_activity = {};
         // put in properties object 
