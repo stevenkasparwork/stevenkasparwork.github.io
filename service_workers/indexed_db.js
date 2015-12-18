@@ -588,6 +588,11 @@ function updateActivityInOFSC(activity){
     });
 }
 
+
+function formatTime(n){
+    return n > 9 ? "" + n: "0" + n;
+}
+
 function statusActivity(status){
     console.log('...status activity: '+status+'...');
     console.log( Helix.activity_details );
@@ -595,13 +600,12 @@ function statusActivity(status){
     var d = new Date();
     
     var year = d.getFullYear();
-    var month = d.getMonth() + 1;
-    month = (month.length < 2) ? '0'+month.toString() : month;
-    var date = (d.getDate().length < 2) ? '0'+d.getDate().toString() : d.getDate();
+    var month = formatTime( d.getMonth() + 1 );
+    var date = formatTime(d.getDate());
     
-    var hours = (d.getHours().length < 2) ? '0'+d.getHours().toString() : d.getHours();
-    var minutes = (d.getMinutes().length < 2) ? '0'+d.getMinutes().toString() : d.getMinutes();
-    var seconds = (d.getSeconds().length < 2) ? '0'+d.getSeconds().toString() : d.getSeconds();
+    var hours = formatTime(d.getHours());
+    var minutes = formatTime(d.getMinutes());
+    var seconds = formatTime(d.getSeconds());
     
     
     var date_string = year + "-" + month + "-" + date;
