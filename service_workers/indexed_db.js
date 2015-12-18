@@ -905,6 +905,7 @@ function sendStatusQueue(){
                     console.warn('TRIES: '+tries);
                     tries++;
                     if(tries > max_tries){
+                        delete tries;
                         throw err;
                         reject(err);
                     }
