@@ -661,7 +661,7 @@ function statusActivity(status){
     
     var update_local_db = updateActivityInLocalDB(Helix.activity_details);
     update_local_db.then(function(activity){
-        getIndexedDBActivityByID(activity.id).then(activity){
+        getIndexedDBActivityByID(activity.id).then(function(activity){
             console.log(activity);
             status_object = {
                 status: status,
@@ -672,7 +672,7 @@ function statusActivity(status){
 
             return updateStatusInOFSC(status_object);
             
-        }
+        });
         
     }).then(function(response){
         console.log(response);
