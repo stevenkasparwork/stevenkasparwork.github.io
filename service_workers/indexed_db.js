@@ -585,6 +585,15 @@ function updateHelixTable(model_name, data){
     
 }
 
+function updateHelixFeedback(feedback){
+    $('[helix-model="feedback"]').html(feedback);
+    setTimeout(function(){
+        $('[helix-model="feedback"]').html('---');
+    }, 3000);
+}
+
+
+
 /**
 * @param {obj} param_obj
 * @param {string} page
