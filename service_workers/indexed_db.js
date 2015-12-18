@@ -677,7 +677,7 @@ function statusActivity(status){
         
         console.warn(status_object);
         // need to queue the status_object for when we get connection back
-        return = addStatusObjectToQueue(status_object);
+        return addStatusObjectToQueue(status_object);
         
     }).then(function(response){
         
