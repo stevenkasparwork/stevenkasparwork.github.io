@@ -16,7 +16,6 @@ if ('serviceWorker' in navigator) {
   }).catch(function(error) {
     // registration failed
     console.log('Registration failed with ' + error);
-      window.location.reload();
   });
 };
 
