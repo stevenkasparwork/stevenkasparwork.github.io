@@ -876,6 +876,8 @@ function initializeView(page){
 
                 console.log(msg);
                 return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
+                    console.warn('adding activities to local db');
+                    console.log(activities);
                     return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
                 });
 
