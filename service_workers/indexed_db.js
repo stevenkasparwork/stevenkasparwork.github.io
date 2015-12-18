@@ -266,7 +266,6 @@ function syncLocalActivitiesWithOFSC(){
                     // create an array of promises. Each item to insert gets its own promise.
                     // the array of promises will be evaluated as a group below in Promise.all()
                     var tmp_obj = shallowCopy(obj);
-                    console.log(tmp_obj);
                     if(tmp_obj.dirty){
                         console.warn('object is dirty');
                         var tmp_activity = {}; 
