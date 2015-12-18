@@ -873,14 +873,14 @@ function initializePage(){
                 //console.log(resource);
                 return getActivitiesFromOFSC();
 
+            }).catch(function(err) {
+                
+                console.warn(err);
+                
             }).then(function(activities) { // add the activities to the local db
 
                 //console.log(activities);
                 return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
-                
-            }).catch(function(err) {
-                
-                console.warn(err);
                 
             }).then(function() { 
 
