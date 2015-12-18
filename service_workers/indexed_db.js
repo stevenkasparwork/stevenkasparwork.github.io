@@ -321,6 +321,8 @@ function addObjectsToIndexedDB(store_name, obj_array){
                 req = store.put(obj);
 
                 req.onsuccess = function (evt) {
+                    console.log(obj);
+                    console.log('PUT OBJECT');
                     localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                     resolve(evt);
                 };
