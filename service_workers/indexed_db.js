@@ -849,7 +849,7 @@ function isStatusQueue(){
 }
 
 function sendStatusQueue(tries){
-    var max_tries = 10;
+    var max_tries = 5;
     tries || (tries = 0);
     
     return new Promise(function(resolve, reject){
