@@ -244,7 +244,7 @@ function syncLocalActivitiesWithOFSC(){
         get_activities.then(function(activities){
             var promise_array = [];
             return new Promise(function(resolve, reject){
-                promise_array = obj_array.map(function(obj){
+                promise_array = activities.map(function(obj){
                     // create an array of promises. Each item to insert gets its own promise.
                     // the array of promises will be evaluated as a group below in Promise.all()
                     console.log(obj);
