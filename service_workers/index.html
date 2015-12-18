@@ -30,13 +30,14 @@
     </div>
     
     <!------ activity detail page ------------->
-    <button onclick="navigateWithParameters([],'home');">back to activity list</button>
-    <button onclick="statusActivity('started');">Start Activity</button>
-    <button onclick="statusActivity('complete');">Complete Activity</button><br/>
-    <br/>
-    
-    <ul helix-model="activity_details"></ul>
-    
+    <div id="activity_details">
+        <button onclick="navigateWithParameters([],'home');">back to activity list</button>
+        <button onclick="statusActivity('started');">Start Activity</button>
+        <button onclick="statusActivity('complete');">Complete Activity</button><br/>
+        <br/>
+
+        <ul helix-model="activity_details"></ul>
+    </div>
     
     
     <!------ scripts ------------->
