@@ -504,7 +504,7 @@ function updateHelixList(model_name, data, editable){
     for(var i in data){
         var li_content = '';
         if(editable.indexOf(i) > -1 ){
-            if(Helix.options[i]){
+            /*if(Helix.options[i]){
                 li_content += '<select onchange="updateActivity(event);" id="'+i+'">'+Helix.options[i].map(function(option){
                     if(option.value === data[i]){
                         return '<option value="'+option.value+'" selected> '+option.label+'</option>';
@@ -516,9 +516,9 @@ function updateHelixList(model_name, data, editable){
                     
                 }).join('')+'</select>';
             }
-            else {
+            else {*/
                 li_content += '<input value="'+data[i]+'" onblur="updateActivity(event);" id="'+i+'">';
-            }
+            //}
         }
         else {
             li_content = data[i];
