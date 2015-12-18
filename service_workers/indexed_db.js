@@ -445,18 +445,22 @@ function checkIfObjectIsDirty(store_name, key){
     
 }
 
-function sortActivitiesByDate(activities){
-    activities.sort(function(a, b){
+function sortArrayOfObjects(array, order){
+    
+    order || (order = 1);
+    
+    
+    array.sort(function(a, b){
         console.log(a.start_time);
         if( new Date(a.start_time).getTime() > new Date(b.start_time).getTime() ) {
-            return -1
+            return 1 * order;
         }
         else {
-            return 1;
+            return -1 * order;
         }
         return 0;
     });
-    return activities;
+    return array;
 }
 
 
@@ -477,7 +481,7 @@ function getActivitiesFromIndexedDb(){
                 cursor.continue();
             }
             else {
-                activities = sortActivitiesByDate(activities);
+                activities = sortArrayOfObjects(activities);
                 resolve(activities);
             }
         };
