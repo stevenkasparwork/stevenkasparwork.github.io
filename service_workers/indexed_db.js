@@ -549,7 +549,7 @@ function updateActivity(event) {
         return new Promise(function(resolve, reject){
 
              // need to get the transaction and store for adding to the local db
-            var store = getObjectStore(store_name, 'readwrite'), req;
+            var store = getObjectStore(DB_ACTIVITY_STORE_NAME, 'readwrite'), req;
 
             // using put instead of add because put will update if the key index exists
             req = store.put(activity);
