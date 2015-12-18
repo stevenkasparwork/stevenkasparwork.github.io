@@ -447,8 +447,8 @@ function checkIfObjectIsDirty(store_name, key){
 
 function sortActivitiesByDate(activities){
     activities.sort(function(a, b){
-        console.log(a);
-        if( new Date(a).getTime() > new Date(b).getTime() ) {
+        console.log(a.start_time);
+        if( new Date(a.start_time).getTime() > new Date(b.start_time).getTime() ) {
             return -1
         }
         else {
