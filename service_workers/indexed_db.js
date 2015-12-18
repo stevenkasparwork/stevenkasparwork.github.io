@@ -503,21 +503,21 @@ function navigateWithParameters(param_obj, page){
 /**
 * @param {string} model_name
 * Placeholder function for updating the view.
-* Helix[model_name] must be an object
+* data must be an object
 */
-function updateHelixList(model_name, editable){
+function updateHelixList(model_name, data, editable){
     console.log('...update helix list...');
     if(!editable){editable = '';}
     console.log(editable);
     
     var item_string = '';
     
-    for(var i in Helix[model_name]){
+    for(var i in data){
         var li_content = '';
         if(editable.indexOf(i) > -1 ){
             if(Helix.options[i]){
                 li_content += '<select onchange="updateActivity(event);" id="'+i+'">'+Helix.options[i].map(function(option){
-                    if(option.value === Helix[model_name][i]){
+                    if(option.value === data[i]){
                         return '<option value="'+option.value+'" selected> '+option.label+'</option>';
                     }
                     else {
@@ -528,11 +528,11 @@ function updateHelixList(model_name, editable){
                 }).join('')+'</select>';
             }
             else {
-                li_content += '<input value="'+Helix[model_name][i]+'" onblur="updateActivity(event);" id="'+i+'">';
+                li_content += '<input value="'+data[i]+'" onblur="updateActivity(event);" id="'+i+'">';
             }
         }
         else {
-            li_content = Helix[model_name][i];
+            li_content = data[i];
         }
         
         
@@ -546,29 +546,30 @@ function updateHelixList(model_name, editable){
 
 function updateActivity(event) {
     console.log('...update activity...');
+    var activity;
     
+    getIndexedDBActivityByID( localStorage.getItem('id') ).then(function(local_db_activity){
+        activity = shallowCopy(local_db_activity);
+        activity[event.target.id] = event.target.value;
+        activity['dirty'] = 1;
+    });
     
-    // changed the updated field
-    Helix.activity_details[event.target.id] = event.target.value;
-    // add a dirty bit so we know it is not in sync
-    Helix.activity_details['dirty'] = 1;
-    console.log(Helix.activity_details);
-    var update_local_db = updateActivityInLocalDB(Helix.activity_details);
-    update_local_db.then(function(activity){
+    updateActivityInLocalDB(activity).then(function(local_db_activity){
         
         var tmp_activity = {};
         // put in properties object 
-        tmp_activity.properties = activity;
+        tmp_activity.properties = local_db_activity;
         // set the activity_id so that the api knows which activity to update
-        tmp_activity.activity_id = activity.id;
+        tmp_activity.activity_id = local_db_activity.id;
+        
+        console.log(tmp_activity);
         
         return updateActivityInOFSC(tmp_activity);
     }).then(function(response){
-        console.log(response);
-        // set dirty bit to 0 since we just updated ofsc
-        Helix.activity_details['dirty'] = 0;
         
-        return updateActivityInLocalDB(Helix.activity_details);
+        console.log(response);
+        console.log(activity.id);
+        return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
         
     }).then(function(response){
         
@@ -657,20 +658,18 @@ function statusActivity(status){
     Helix.activity_details.start_time = time_strings.date_time;
     // add a dirty bit so we know it is not in sync
     Helix.activity_details['dirty'] = 1;
-    var status_object = {};
     
     var update_local_db = updateActivityInLocalDB(Helix.activity_details);
     update_local_db.then(function(activity){
         getIndexedDBActivityByID(activity.id).then(function(activity){
             console.log(activity);
-            status_object = {
+            
+            return updateStatusInOFSC({
                 status: status,
                 activity_id: activity.id,
                 date: time_strings.date,
                 time: time_strings.date_time
-            };
-
-            return updateStatusInOFSC(status_object);
+            });
             
         });
         
@@ -679,13 +678,14 @@ function statusActivity(status){
         // set dirty bit to 0 since we just updated ofsc
         Helix.activity_details['dirty'] = 0;
         
+        console.log(Helix.activity_details);
         return updateActivityInLocalDB(Helix.activity_details);
         
     }).catch(function(status_object){
         
         console.warn(status_object);
         // need to queue the status_object for when we get connection back
-        return addStatusObjectToQueue(status_object);
+        return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, status_object.activity_id);
         
     }).then(function(response){
         
@@ -908,8 +908,7 @@ function initializePage(){
                 openDb().then(function(evt){
                     return getIndexedDBActivityByID( id );
                 }).then(function(activity){
-                    Helix.activity_details = activity;
-                    updateHelixList('activity_details', 'address,name');
+                    updateHelixList('activity_details', activity,'address,name');
                 });
             }
             else {
