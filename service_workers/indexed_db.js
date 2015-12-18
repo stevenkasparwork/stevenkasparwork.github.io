@@ -882,6 +882,10 @@ function initializePage(){
                 //console.log(activities);
                 return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities);
                 
+            }).catch(function(err) {
+                
+                console.warn(err);
+                
             }).then(function() { 
 
                 return getActivitiesFromIndexedDb();
