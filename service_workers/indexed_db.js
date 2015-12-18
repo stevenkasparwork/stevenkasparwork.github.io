@@ -359,7 +359,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
         return Promise.all(promise_array).then(function(value){
             //console.log(value);
             //console.log(promise_array);
-            resolve('finished adding to local db');
+            resolve('finished adding to local db'); 
         }).catch(function(err){
             reject(err);
         });
