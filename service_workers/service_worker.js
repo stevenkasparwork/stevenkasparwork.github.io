@@ -5,11 +5,11 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service_workers/service_worker.js').then(function(reg) {
 
     if(reg.installing) {
-      console.log('Service worker installing');
+      console.log('...Service worker installing');
     } else if(reg.waiting) {
-      console.log('Service worker installed');
+      console.log('...Service worker installed');
     } else if(reg.active) {
-      console.log('Service worker active');
+      console.log('...Service worker active');
     }
 
   }).catch(function(error) {
@@ -20,7 +20,7 @@ if ('serviceWorker' in navigator) {
 
 
 this.addEventListener('install', function(event) {
-    console.log('install event');
+    console.log('...install event');
     event.waitUntil(
         caches.open('v1').then(function(cache) {
             console.log(cache);

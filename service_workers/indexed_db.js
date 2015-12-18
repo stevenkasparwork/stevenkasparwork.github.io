@@ -791,7 +791,7 @@ function sendStatusQueue(){
                 });
             }
             else {
-                resolve('no statuses in queue');
+                resolve('...no statuses in queue...');
             }
         });
     });
@@ -811,15 +811,6 @@ function initializePage(){
     switch(page){
         case 'index.html':
             console.log('------ begin initialization -----');
-            /* 
-            openDB() 
-            -> getResource() 
-            -> addResourceToIndexedDb() 
-            -> getActivities() 
-            -> addObjectsToIndexedDB() 
-            -> getActivitiesFromIndexedDb() 
-            -> updateHelixTable('activities')
-            */
             openDb().then(function(evt){ // send statuses
                 
                 console.log();
