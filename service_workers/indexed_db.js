@@ -811,6 +811,12 @@ function getDateTimeString( date_time_string ){
     var seconds = formatTime(d.getSeconds());
     
     return {
+        year: year,
+        month: month,
+        date: date,
+        hour: hours,
+        minute: minutes,
+        second: seconds,
         time: hours + ":" + minutes + ":" + seconds,
         date: year + "-" + month + "-" + date,
         date_time: year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds
