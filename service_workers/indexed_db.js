@@ -1146,7 +1146,7 @@ function initializeView(page, reload_activities_from_ofsc){
                 return getActivitiesFromIndexedDb(); // get the activities from the local db
                 
             }).then(function(activities) { // update the view
-                updateHelixTable('activities', activities);
+                updateHelixTable('activities', activities, {date: getDateTimeString().date});
                 console.log('------ end of initialization -----');
                 return true;
             });
