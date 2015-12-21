@@ -521,14 +521,14 @@ function getActivitiesFromIndexedDb(){
     
 }
 /**
-* @param {string} model_name
+* @param {string} element_id_to_append_to
 * @param {array} data
 * @param {string} editable
 * updates the element specified by model name as a list with data
 * if the items id is in the editable string then it will be presented as an input
 * updating locally and to OFSC when blurred or changed
 */
-function updateHelixList(model_name, data, editable){
+function updateHelixList(element_id_to_append_to, data, editable){
     console.log('...update helix list...');
     if(!editable){editable = '';}
     console.log(editable);
@@ -565,15 +565,15 @@ function updateHelixList(model_name, data, editable){
     }
         
     
-    $('#'+model_name).html(item_string); 
+    $('#'+element_id_to_append_to).html(item_string); 
     
 }
 /**
-* @param {string} model_name
+* @param {string} element_id_to_append_to
 * @param {array} data
 * updates the element specified by model name as a table with data
 */
-function updateHelixTable(model_name, data){
+function updateHelixTable(element_id_to_append_to, data){
     console.log('...update helix table...');
     var header_cells = '';
     
@@ -593,7 +593,7 @@ function updateHelixTable(model_name, data){
         return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'id\':'+item.id+'},\'activity_detail\');">'+item_string+'</tr>';
     }).join("");
     
-    $('#'+model_name).html('<tr>'+header_cells+'</tr>'+items_string); 
+    $('#'+element_id_to_append_to).html('<tr>'+header_cells+'</tr>'+items_string); 
     
 }
 
