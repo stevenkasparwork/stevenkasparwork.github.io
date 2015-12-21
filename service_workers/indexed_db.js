@@ -793,7 +793,7 @@ date_time: yyyy-mm-dd hh:mm:ss
 }
 */
 function getDateTimeString( date_time_string ){
-    date_time_string || ( date_time_string = null );
+    date_time_string || ( date_time_string = '' );
     
     var d = new Date( date_time_string );
     
