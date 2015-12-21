@@ -31,6 +31,12 @@ window.onload = function(){
     $('#date_selector').val( getDateTimeString().date );
 };
 
+document.getElementById('date_selector').addEventListener('onchange', function(event){
+    console.log('date changed');
+})
+
+
+
 
 /**
 * opens up our IndexedDB and sets a global variable db
