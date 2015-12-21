@@ -593,17 +593,22 @@ function updateHelixTable(element_id_to_append_to, data, filters){
             }
         }
         
-        if(filter_out && index > 0){
+        if(index === 0){
+            for(var i in item){
+                header_cells += '<th>'+i+'</th>';
+            }
+        }
+        
+        if(filter_out){
              return '';
         }
         else {
             for(var i in item){
 
                 if(VISIBLE_ACTIVITY_FIELDS.indexOf(i) > -1){
-                    if(index === 0){
-                        header_cells += '<th>'+i+'</th>';
-                    }
+                    
                     item_string += '<td>'+item[i]+'</td>';
+                    
                 }
             }
 
