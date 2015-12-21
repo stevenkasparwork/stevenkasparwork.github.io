@@ -573,24 +573,38 @@ function updateHelixList(element_id_to_append_to, data, editable){
 * @param {array} data
 * updates the element specified by model name as a table with data
 */
-function updateHelixTable(element_id_to_append_to, data){
+function updateHelixTable(element_id_to_append_to, data, filters){
     console.log('...update helix table...');
-    var header_cells = '';
+    console.log(filters);
+    var header_cells = '', item_string = '', filter_out = false;
     
     var items_string = data.map(function(item, index){
-        var item_string = '';
-        for(var i in item){
-            
-            if(VISIBLE_ACTIVITY_FIELDS.indexOf(i) > -1){
-                if(index === 0){
-                    header_cells += '<th>'+i+'</th>';
-                }
-                item_string += '<td>'+item[i]+'</td>';
+        item_string = '';
+        filter_out = false;
+        
+        for(var f in filters){
+            if(item[f] !== filters[f]){
+                filter_out = true;
             }
         }
         
-        
-        return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'id\':'+item.id+'},\'activity_detail\');">'+item_string+'</tr>';
+        if(filter_out){
+             return '';
+        }
+        else {
+            for(var i in item){
+
+                if(VISIBLE_ACTIVITY_FIELDS.indexOf(i) > -1){
+                    if(index === 0){
+                        header_cells += '<th>'+i+'</th>';
+                    }
+                    item_string += '<td>'+item[i]+'</td>';
+                }
+            }
+
+
+            return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'id\':'+item.id+'},\'activity_detail\');">'+item_string+'</tr>';
+        }
     }).join("");
     
     $('#'+element_id_to_append_to).html('<tr>'+header_cells+'</tr>'+items_string); 
