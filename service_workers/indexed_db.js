@@ -825,8 +825,8 @@ function statusActivity(status){
             req = store.put(activity);
 
             req.onsuccess = function (evt) {
-                console.log(activity);
-                console.log('PUT OBJECT');
+                
+                window.dispatchEvent( Helix.events.sync_dbs );                
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                 resolve(evt);
             };
@@ -839,6 +839,8 @@ function statusActivity(status){
         
     }).then(function(evt){
         
+        
+        
         return updateStatusInOFSC({
             status: status,
             activity_id: activity.id,
@@ -848,13 +850,15 @@ function statusActivity(status){
         
     }).then(function(response){
         
+        window.dispatchEvent( Helix.events.dbs_in_sync );
+        
         console.log(response);
         console.log(activity.id);
         return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
         
     }).then(function(response){
         
-        console.log('activity has been updated locally and in ofsc');
+        //console.log('activity has been updated locally and in ofsc');
         updateHelixFeedback('activity has been updated locally and in ofsc');
         
     }).catch(function(msg){
