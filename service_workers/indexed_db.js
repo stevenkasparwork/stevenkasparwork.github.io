@@ -343,6 +343,7 @@ function syncLocalActivitiesWithOFSC(){
             return Promise.all(promise_array).then(function(value){
                 //console.log(value);
                 //console.log(promise_array);
+                window.dispatchEvent( Helix.events.dbs_in_sync );
                 resolve('...local db is in sync with ofsc...');
             }).catch(function(err){
                 reject(err);
@@ -377,8 +378,6 @@ function addObjectsToIndexedDB(store_name, obj_array){
                 req = store.put(obj);
 
                 req.onsuccess = function (evt) {
-                    console.log(obj);
-                    console.log('PUT OBJECT');
                     localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                     resolve(evt);
                 };
