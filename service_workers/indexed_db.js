@@ -593,7 +593,7 @@ function updateHelixTable(element_id_to_append_to, data, filters){
             }
         }
         
-        if(filter_out){
+        if(filter_out || index === 0){
              return '';
         }
         else {
