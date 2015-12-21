@@ -795,6 +795,7 @@ date_time: yyyy-mm-dd hh:mm:ss
 function getDateTimeString( date_time_string ){
     if(date_time_string){
         var d = new Date( date_time_string );
+        d.setDate(d.getDate() + 1);
     }
     else {
         var d = new Date();
