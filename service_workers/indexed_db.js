@@ -787,6 +787,12 @@ function formatTime(n){
 /**
 * returns a obj 
 {
+year: yyyy,
+month: mm,
+date: dd,
+hour: hh,
+minute: mm,
+second: ss,
 time: hh:mm:ss,
 date: yyyy-mm-dd,
 date_time: yyyy-mm-dd hh:mm:ss
