@@ -17,14 +17,15 @@
 </head>
 
 <body>
-    <div helix-model="db_status"></div>
+    <div id="db_status"></div>
     <!------ home page ------------->
     <div id="home">
+        <input id="date_selector" type="date">
         <button onclick="clearObjectStore(DB_ACTIVITY_STORE_NAME);">Clear Activity Store</button>
         <button onclick="initializeView('home', true);">Sync with OFSC</button>
         <br/>
         <table>
-            <tbody helix-model="activities"></tbody>
+            <tbody id="activities"></tbody>
         </table>
     </div>
     
@@ -35,10 +36,10 @@
         <button onclick="statusActivity('complete');">Complete Activity</button><br/>
         <br/>
 
-        <ul helix-model="activity_details"></ul>
+        <ul id="activity_details"></ul>
     </div>
     
-    <div helix-model="feedback"></div>
+    <div id="feedback"></div>
     
     
     

@@ -555,7 +555,7 @@ function updateHelixList(model_name, data, editable){
     }
         
     
-    $('[helix-model="'+model_name+'"]').html(item_string); 
+    $('#'+model_name).html(item_string); 
     
 }
 /**
@@ -583,24 +583,24 @@ function updateHelixTable(model_name, data){
         return '<tr style="cursor: pointer;" onclick="navigateWithParameters({\'id\':'+item.id+'},\'activity_detail\');">'+item_string+'</tr>';
     }).join("");
     
-    $('[helix-model="'+model_name+'"]').html('<tr>'+header_cells+'</tr>'+items_string); 
+    $('#'+model_name).html('<tr>'+header_cells+'</tr>'+items_string); 
     
 }
 
 function updateHelixFeedback(feedback){
-    $('[helix-model="feedback"]').html(feedback);
+    $('#feedback').html(feedback);
     setTimeout(function(){
-        $('[helix-model="feedback"]').html('---');
+        $('#feedback').html('---');
     }, 3000);
 }
 
 function updateDBStatus(in_sync){
     localStorage.setItem('dbs_in_sync', in_sync);
     if(in_sync){
-        $('[helix-model="db_status"]').html('databases are in sync');
+        $('#db_status').html('databases are in sync');
     }
     else{
-        $('[helix-model="db_status"]').html('databases are out of sync');
+        $('#db_status').html('databases are out of sync');
     }
 }
 
