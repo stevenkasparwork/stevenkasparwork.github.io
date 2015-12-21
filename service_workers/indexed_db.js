@@ -29,7 +29,7 @@ window.onload = function(){
     
     /* set date selector to today */
     $('#date_selector').val( getDateTimeString().date );
-    document.getElementById('date_selector').addEventListener('onclick', function(event){
+    document.getElementById('date_selector').addEventListener('onchange', function(event){
         console.log('date changed');
     });
 };
