@@ -231,7 +231,7 @@ function getActivitiesFromOFSC(){
             type: 'POST'
         }).success(function(response) {
             response = JSON.parse(response);
-            //console.log(response.data.activities);
+            console.log(response);
             resolve(response.data.activities);
         }).error(function(error){
             //console.warn('need to get activities straight from indexedDB');
