@@ -28,7 +28,7 @@ window.onload = function(){
     }
     
     /* set date selector to today */
-    $('#date_selector').value( getDateTimeString().date );
+    $('#date_selector').val( getDateTimeString().date );
 };
 
 
