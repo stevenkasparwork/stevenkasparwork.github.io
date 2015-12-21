@@ -850,8 +850,16 @@ function statusActivity(status){
     getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, localStorage.getItem('id') ).then(function(local_db_activity){
         activity = shallowCopy(local_db_activity);
         activity.status = status;
+        
+        switch(status){
+            case 'started':
+                activity.start_time = time_strings.date_time;
+                break;
+            case 'complete':
+                activity.end_time = time_strings.date_time;
+        }
+        
         activity.dirty = 1;
-        activity.start_time = time_strings.date_time;
         
         //return updateActivityInLocalDB(activity);
         
