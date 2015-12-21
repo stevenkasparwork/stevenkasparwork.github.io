@@ -18,13 +18,17 @@ var Helix = {
 
 
 
-/* initially hide all of the views */
-/* the home will be shown when the service worker is ready */
 window.onload = function(){
     console.log('--window loaded--');
+    
+    /* initially hide all of the views */
+    /* the home will be shown when the service worker is ready */
     for(var i in PAGE_SET){
         $('#'+PAGE_SET[i]).hide();
     }
+    
+    /* set date selector to today */
+    $('#date_selector').value( getDateTimeString().date );
 };
 
 
