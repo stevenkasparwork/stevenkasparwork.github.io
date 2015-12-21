@@ -648,9 +648,8 @@ function updateActivity(event) {
 
             req.onsuccess = function (evt) {
                 
+                updateDBStatus(false);
                 
-                console.log(activity);
-                console.log('PUT OBJECT');
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                 resolve(evt);
             };
@@ -663,7 +662,6 @@ function updateActivity(event) {
     }).then(function(evt){
         
         
-        updateDBStatus(false);
         
         var tmp_activity = {};
         // put in properties object 
@@ -682,7 +680,7 @@ function updateActivity(event) {
         
     }).then(function(response){
         
-        window.dispatchEvent(Helix.events.dbs_in_sync);
+        updateDBStatus(true);
         
         console.log('activity has been updated locally and in ofsc');
         updateHelixFeedback('activity has been updated locally and in ofsc'); 
