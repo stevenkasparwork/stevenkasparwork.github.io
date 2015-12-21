@@ -595,7 +595,9 @@ function updateHelixTable(element_id_to_append_to, data, filters){
         
         if(index === 0){
             for(var i in item){
-                header_cells += '<th>'+i+'</th>';
+                if(VISIBLE_ACTIVITY_FIELDS.indexOf(i) > -1){
+                    header_cells += '<th>'+i+'</th>';
+                }
             }
         }
         
