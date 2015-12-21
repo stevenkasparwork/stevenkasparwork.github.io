@@ -13,24 +13,8 @@ var db;
 /* this is not used for anything but can be used for storing options if */
 /* agents are allowed to change other fields that need select lists */
 var Helix = {
-    options: [],
-    events: {}
+    options: []
 }
-
-
-Helix.events.sync_dbs = new Event('sync_dbs');
-window.addEventListener('sync_dbs', function(event){
-    console.log(event);
-    localStorage.setItem('dbs_in_sync', false);
-    updateHelixEvents('dbs out of sync');
-});
-
-Helix.events.dbs_in_sync = new Event('dbs_in_sync');
-window.addEventListener('dbs_in_sync', function(event){
-    console.log(event);
-    localStorage.setItem('dbs_in_sync', true);
-    updateHelixEvents('dbs in sync');
-});
 
 
 
@@ -42,7 +26,6 @@ window.onload = function(){
         $('#'+PAGE_SET[i]).hide();
     }
 };
-
 
 
 /**
@@ -343,7 +326,7 @@ function syncLocalActivitiesWithOFSC(){
             return Promise.all(promise_array).then(function(value){
                 //console.log(value);
                 //console.log(promise_array);
-                window.dispatchEvent( Helix.events.dbs_in_sync );
+                updateDBStatus(true);
                 resolve('...local db is in sync with ofsc...');
             }).catch(function(err){
                 reject(err);
@@ -610,13 +593,16 @@ function updateHelixFeedback(feedback){
         $('[helix-model="feedback"]').html('---');
     }, 3000);
 }
-function updateHelixEvents(status){
-    $('[helix-model="events"]').html(status);
-    /*setTimeout(function(){
-        $('[helix-model="events"]').html('---');
-    }, 3000);*/
-}
 
+function updateDBStatus(in_sync){
+    localStorage.setItem('dbs_in_sync', in_sync);
+    if(in_sync){
+        $('[helix-model="db_status"]').html('databases are in sync');
+    }
+    else{
+        $('[helix-model="db_status"]').html('databases are out of sync');
+    }
+}
 
 
 /**
@@ -677,7 +663,7 @@ function updateActivity(event) {
     }).then(function(evt){
         
         
-        window.dispatchEvent( Helix.events.sync_dbs );
+        updateDBStatus(false);
         
         var tmp_activity = {};
         // put in properties object 
@@ -825,7 +811,7 @@ function statusActivity(status){
 
             req.onsuccess = function (evt) {
                 
-                window.dispatchEvent( Helix.events.sync_dbs );                
+                updateDBStatus(false);                
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                 resolve(evt);
             };
@@ -849,7 +835,7 @@ function statusActivity(status){
         
     }).then(function(response){
         
-        window.dispatchEvent( Helix.events.dbs_in_sync );
+        updateDBStatus(true);
         
         console.log(response);
         console.log(activity.id);
