@@ -31,6 +31,11 @@ window.onload = function(){
     $('#date_selector').val( getDateTimeString().date );
     document.getElementById('date_selector').onchange = function(event){
         console.log('date changed');
+        
+        getActivitiesFromIndexedDb().then(function(activities) { // update the view
+            updateHelixTable('activities', activities, {date: getDateTimeString( document.getElementById('date_selector').value ).date});
+        });
+        
     };
 };
 
@@ -787,8 +792,10 @@ date: yyyy-mm-dd,
 date_time: yyyy-mm-dd hh:mm:ss
 }
 */
-function getDateTimeString(){
-    var d = new Date();
+function getDateTimeString( date_time_string ){
+    date_time_string || ( date_time_string = null );
+    
+    var d = new Date( date_time_string );
     
     var year = d.getFullYear();
     var month = formatTime( d.getMonth() + 1 );
