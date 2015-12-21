@@ -31,7 +31,7 @@ window.onload = function(){
     $('#date_selector').val( getDateTimeString().date );
 };
 
-document.getElementById('date_selector').addEventListener('onchange', function(event){
+document.getElementById('date_selector').addEventListener('onclick', function(event){
     console.log('date changed');
 })
 
