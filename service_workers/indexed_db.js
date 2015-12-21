@@ -793,9 +793,13 @@ date_time: yyyy-mm-dd hh:mm:ss
 }
 */
 function getDateTimeString( date_time_string ){
-    date_time_string || ( date_time_string = '' );
+    if(date_time_string){
+        var d = new Date( date_time_string );
+    }
+    else {
+        var d = new Date();
+    }
     
-    var d = new Date( date_time_string );
     
     var year = d.getFullYear();
     var month = formatTime( d.getMonth() + 1 );
