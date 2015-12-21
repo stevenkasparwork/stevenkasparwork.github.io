@@ -671,7 +671,7 @@ function updateActivity(event) {
     }).then(function(evt){
         
         
-        window.dispatchEvent('sync_dbs');
+        window.dispatchEvent( Helix.events.sync_dbs );
         
         var tmp_activity = {};
         // put in properties object 
@@ -690,7 +690,7 @@ function updateActivity(event) {
         
     }).then(function(response){
         
-        window.dispatchEvent('dbs_in_sync');
+        window.dispatchEvent(Helix.events.dbs_in_sync);
         
         console.log('activity has been updated locally and in ofsc');
         updateHelixFeedback('activity has been updated locally and in ofsc'); 
