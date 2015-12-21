@@ -43,7 +43,7 @@ window.onload = function(){
 * so that we can access the Database later and make changes as necessary
 * This also will check to see if we are needing to upgrade the db
 */
-function openDb() {
+function openDb() { 
     console.log("...open local db...");
     return new Promise(function(resolve, reject) {
         var req = indexedDB.open(DB_NAME, DB_VERSION);
