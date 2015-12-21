@@ -17,15 +17,16 @@ var Helix = {
     events: {}
 }
 
+
 Helix.events.sync_dbs = new Event('sync_dbs');
-Helix.addEventListener('sync_dbs', function(event){
+window.addEventListener('sync_dbs', function(event){
     console.log(event);
     localStorage.setItem('dbs_in_sync', false);
     updateHelixEvents('dbs out of sync');
 });
 
 Helix.events.dbs_in_sync = new Event('dbs_in_sync');
-Helix.addEventListener('dbs_in_sync', function(event){
+window.addEventListener('dbs_in_sync', function(event){
     console.log(event);
     localStorage.setItem('dbs_in_sync', true);
     updateHelixEvents('dbs in sync');
