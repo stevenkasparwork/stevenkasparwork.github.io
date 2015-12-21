@@ -28,10 +28,9 @@ window.onload = function(){
     }
     
     /* set date selector to today */
-    
-    $(function() {
-        $('#date_selector').datepicker();
-        $('#date_selector').datepicker( 'setDate', getDateTimeString().date );
+    $('#date_selector').val( getDateTimeString().date );
+    document.getElementById('date_selector').addEventListener('onblur', function(event){
+        console.log('date changed');
     });
 };
 
