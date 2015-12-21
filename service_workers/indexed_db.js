@@ -28,9 +28,10 @@ window.onload = function(){
     }
     
     /* set date selector to today */
-    $('#date_selector').val( getDateTimeString().date );
+    
     $(function() {
-        $( "#date_selector" ).datepicker();
+        $('#date_selector').datepicker();
+        $('#date_selector').datepicker( 'setDate', getDateTimeString().date );
     });
 };
 
