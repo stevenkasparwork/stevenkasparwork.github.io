@@ -14,8 +14,25 @@ var db;
 /* agents are allowed to change other fields that need select lists */
 var Helix = {
     options: [],
-    
+    events: {}
 }
+
+Helix.events.sync_dbs = new Event('sync_dbs');
+window.addEventListener('sync_dbs', function(event){
+    console.log(event);
+    localStorage.setItem('dbs_in_sync', false);
+    updateHelixFeedback('dbs out of sync');
+});
+
+Helix.events.dbs_in_sync = new Event('dbs_in_sync');
+window.addEventListener('dbs_in_sync', function(event){
+    console.log(event);
+    localStorage.setItem('dbs_in_sync', true);
+    updateHelixFeedback('dbs in sync');
+});
+
+
+
 /* initially hide all of the views */
 /* the home will be shown when the service worker is ready */
 window.onload = function(){
@@ -24,6 +41,8 @@ window.onload = function(){
         $('#'+PAGE_SET[i]).hide();
     }
 };
+
+
 
 /**
 * opens up our IndexedDB and sets a global variable db
@@ -619,6 +638,7 @@ function updateActivity(event) {
     var activity;
     
     getIndexedDBEntry(DB_ACTIVITY_STORE_NAME, localStorage.getItem('id') ).then(function(local_db_activity){
+        
         activity = shallowCopy(local_db_activity);
         activity[event.target.id] = event.target.value;
         activity['dirty'] = 1;
@@ -635,6 +655,8 @@ function updateActivity(event) {
             req = store.put(activity);
 
             req.onsuccess = function (evt) {
+                
+                
                 console.log(activity);
                 console.log('PUT OBJECT');
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
@@ -647,6 +669,9 @@ function updateActivity(event) {
 
         });
     }).then(function(evt){
+        
+        
+        window.dispatchEvent('sync_dbs');
         
         var tmp_activity = {};
         // put in properties object 
@@ -664,6 +689,8 @@ function updateActivity(event) {
         return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
         
     }).then(function(response){
+        
+        window.dispatchEvent('dbs_in_sync');
         
         console.log('activity has been updated locally and in ofsc');
         updateHelixFeedback('activity has been updated locally and in ofsc'); 
