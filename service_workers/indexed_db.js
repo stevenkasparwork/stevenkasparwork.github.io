@@ -18,17 +18,17 @@ var Helix = {
 }
 
 Helix.events.sync_dbs = new Event('sync_dbs');
-window.addEventListener('sync_dbs', function(event){
+Helix.addEventListener('sync_dbs', function(event){
     console.log(event);
     localStorage.setItem('dbs_in_sync', false);
-    updateHelixFeedback('dbs out of sync');
+    updateHelixEvents('dbs out of sync');
 });
 
 Helix.events.dbs_in_sync = new Event('dbs_in_sync');
-window.addEventListener('dbs_in_sync', function(event){
+Helix.addEventListener('dbs_in_sync', function(event){
     console.log(event);
     localStorage.setItem('dbs_in_sync', true);
-    updateHelixFeedback('dbs in sync');
+    updateHelixEvents('dbs in sync');
 });
 
 
@@ -609,6 +609,12 @@ function updateHelixFeedback(feedback){
     setTimeout(function(){
         $('[helix-model="feedback"]').html('---');
     }, 3000);
+}
+function updateHelixEvents(status){
+    $('[helix-model="events"]').html(status);
+    /*setTimeout(function(){
+        $('[helix-model="events"]').html('---');
+    }, 3000);*/
 }
 
 
