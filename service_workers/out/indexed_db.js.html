@@ -34,7 +34,7 @@ const DB_ACTIVITY_STORE_NAME = 'activities';
 const DB_STATUS_QUEUE_STORE_NAME = 'status_queue';
 const DB_RESOURCE_STORE_NAME = 'resources';
 const PAGE_SET = ['home', 'activity_detail']
-const VISIBLE_ACTIVITY_FIELDS = ['id','date','name','address','zip','state','start_time','end_time','worktype'];
+const VISIBLE_ACTIVITY_FIELDS = ['id','date','status','name','address','zip','state','start_time','end_time','worktype'];
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
@@ -366,7 +366,7 @@ function shallowCopy( original )
 * @returns {Promise} resolves with message, rejects with message
 */
 function sendActivityChangesToOFSC(){
-    console.log('...sync local activities...');
+    console.log('...send activity to ofsc if dirty...');
     return new Promise(function(resolve, reject){
         
         var get_activities = getActivitiesFromIndexedDb();
@@ -378,30 +378,29 @@ function sendActivityChangesToOFSC(){
                     // the array of promises will be evaluated as a group below in Promise.all()
                     var tmp_obj = shallowCopy(obj);
                     if(tmp_obj.dirty){
+                        
                         console.warn('object is dirty');
+                        
                         var tmp_activity = {}; 
                         tmp_activity.properties = tmp_obj;
                         tmp_activity.activity_id = tmp_obj.id;
-                        console.log(tmp_activity);
                         
                         updateActivityInOFSC(tmp_activity).then(function(response){ 
-                            console.log(response);
+                            
                             if(response.result_code === 0){
-                                return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, response.data.activity_id);
+                                removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, response.data.activity_id).then(function(){
+                                    resolve_2('...activity has been cleaned');
+                                });
                             }
                             else {
-                                reject_2(response.data.response);
+                                reject_2(response);
                             }
                             
                         }).catch(function(response){ 
 
-                            console.warn(response);
-                            reject_2('failed to update activity in ofsc');
+                            reject_2(response);
                             
-                        }).then(function(response){
-                            console.log(response);
-                            resolve_2('...object has been cleaned...');
-                        });
+                        })
                         
                         
                     }
@@ -411,12 +410,18 @@ function sendActivityChangesToOFSC(){
                 });
             });
             return Promise.all(promise_array).then(function(value){
-                //console.log(value);
-                //console.log(promise_array);
-                updateDBStatus(true);
-                resolve('...local db is in sync with ofsc...');
-            }).catch(function(err){
-                reject(err);
+                
+                resolve('...local activity properties (not statuses) are in sync with ofsc...');
+                
+            }).catch(function(response){
+                
+                if(response.result_code){
+                    reject(response.data.response);
+                }
+                else {
+                    reject('ajax call unsuccesfull');
+                }
+                
             });
         });
         
@@ -664,10 +669,10 @@ function updateActivityTable(element_id_to_append_to, data, filters){
 * @param {string} feedback
 */
 function updateFeedback(feedback){
-    $('#feedback').html(feedback);
-    setTimeout(function(){
+    $('#feedback').html($('#feedback').html() + '&lt;br/>' + feedback);
+    /*setTimeout(function(){
         $('#feedback').html('---');
-    }, 3000);
+    }, 3000);*/
 }
 
 /**
@@ -690,7 +695,7 @@ function updateDBStatus(in_sync){
 * then initializes the right view
 * @param {obj} param_obj
 * @param {string} page
-* @returns {function} changeView()
+* @returns {function} getView()
 */
 function navigateWithParameters(param_obj, page){
     for(var i in param_obj){
@@ -699,7 +704,7 @@ function navigateWithParameters(param_obj, page){
     for(var i in PAGE_SET){
         $('#'+PAGE_SET[i]).hide();
     }
-    return changeView(page); // this will show the page we need
+    return getView(page); // this will show the page we need
 }
 
 /**
@@ -759,7 +764,7 @@ function updateActivity(event) {
                 
                 updateDBStatus(true);
                 
-                updateFeedback('activity has been updated locally and in ofsc'); 
+                updateFeedback('...activity has been updated locally and in ofsc...'); 
                 
                 return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
             });
@@ -771,7 +776,7 @@ function updateActivity(event) {
     }).catch(function(response){
         
         console.warn(response);
-        updateFeedback( response.toString() ); 
+        updateFeedback( 'ajax call failed - bit is still dirty' ); 
         
     });
 }
@@ -822,11 +827,15 @@ function updateActivityInOFSC(activity){
             },
             type: 'POST'
         }).success(function(response) {
+            
             response = JSON.parse(response);
+            
             resolve(response);
+            
         }).error(function(error){
-            console.warn(error);
-            reject('call to update activity was unsuccesfull');
+            
+            reject(error);
+            
         });
     });
 }
@@ -882,7 +891,7 @@ function getDateTimeObject( date_time_string ){
 * @param {string} status
 */
 function statusActivity(status){
-    console.log('...update activity...');
+    console.log('...status activity...');
     var activity;
     var time_strings = getDateTimeObject();
     
@@ -913,7 +922,8 @@ function statusActivity(status){
 
             req.onsuccess = function (evt) {
                 
-                updateDBStatus(false);                
+                updateDBStatus(false);  
+                
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                 resolve(evt);
             };
@@ -937,27 +947,27 @@ function statusActivity(status){
         
     }).then(function(response){
         
-        updateDBStatus(true);
+        if(response.result_code === 0){
+            updateDBStatus(true);
+            updateFeedback('activity has been updated locally and in ofsc');
+            return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
+        }
+        else {
+            updateFeedback('activity encountered problem in OFSC');
+            console.warn(response);
+        }
         
-        console.log(response);
-        console.log(activity.id);
-        return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
+    }).catch(function(status_object){
         
-    }).then(function(response){
-        
-        //console.log('activity has been updated locally and in ofsc');
-        updateFeedback('activity has been updated locally and in ofsc');
-        
-    }).catch(function(msg){
-        
-        console.warn('queueing status object');
+        console.warn(status_object);
+        console.log('queueing status object');
         // need to queue the status_object for when we get connection back
         addStatusObjectToQueue({
             status: status,
             activity_id: activity.id,
             date: time_strings.date,
             time: time_strings.date_time
-        }).then(function(response){
+        }).then(function(msg){
             console.warn(msg);
             updateFeedback(msg);
         });
@@ -1007,6 +1017,8 @@ function updateStatusInOFSC(status_object){
             response = JSON.parse(response);
             console.log(response);
             resolve(response);
+            
+            
         }).error(function(error){
             //console.log(error);
             console.warn(error);
@@ -1130,7 +1142,7 @@ function sendStatusQueue(tries){
                             
                         }).error(function(error){
                             //console.log(error);
-                            console.warn('activity did not update need to queue status update in localStorage');
+                            console.warn('activity did not update need to queue status update in local db');
                             reject(error);
                         });
                     });
@@ -1146,25 +1158,16 @@ function sendStatusQueue(tries){
                     });
                     
                 }).catch(function(err){
-                    if(window.navigator.onLine){
-                        console.warn('TRIES: '+tries);
-                        tries++;
-                        if(tries > max_tries){
-                            throw err;
-                            reject(err);
-                        }
-                        else {
-
-                            reject('trying to send statuses again');
-                            return sendStatusQueue(tries);
-                        }
-                        
+                    console.warn('TRIES: '+tries);
+                    tries++;
+                    if(tries > max_tries){
+                        console.warn(err);
+                        resolve('MAX TRIES exceeded');
                     }
-                    else{
-                        // if we are offline do not try again.
-                        console.log(window.navigator.onLine);
-                        throw err;
-                        reject(err);
+                    else {
+
+                        resolve('trying to send statuses again');
+                        return sendStatusQueue(tries);
                     }
                     
                 });
@@ -1176,6 +1179,33 @@ function sendStatusQueue(tries){
     });
 }
 
+function loadActivitiesFromOFSC(){
+    console.log('------ load from ofsc -----');
+    
+    getResource().then(function(resource){ 
+        
+        return getActivitiesFromOFSC();
+        
+    }).then(function(activities){
+
+        return addObjectsToIndexedDB( DB_ACTIVITY_STORE_NAME, activities);
+
+    }).then(function(){
+        
+        updateDBStatus(true);
+        
+        return getView('home');
+        
+    }).then(function(){
+        updateFeedback('...activities loaded from ofsc and added to local db...');
+        console.log('...activities loaded from ofsc and added to local db...');
+        console.log('------ end load from ofsc -----');
+    }).catch(function(err){
+        updateFeedback(err);
+        console.warn(err);
+        console.log('------ end load from ofsc -----');
+    });
+}
 
 
 /**
@@ -1186,100 +1216,65 @@ function sendStatusQueue(tries){
 * &lt;page>
 * @params {string} page (view) to initialize 
 */
-function initializeView(page){
+function sendLocalChangesToOFSC(){
     
-    console.log('------ begin initialization -----');
-    
-    var change_view = new Promise(function(resolve, reject){
+    console.log('------ send local changes -----');
+    return new Promise(function(resolve, reject){
         
-        switch(page){
-            case 'home':
-                sendStatusQueue().then(function(response) { // send statuses queue
+        if(window.navigator.onLine){
 
-                    console.log(response);
-                    return getResource(); // get resource and save id to localStorage
+            sendActivityChangesToOFSC().then(function(msg){
+                updateFeedback(msg);
 
-                }).then(function(resource) { 
+                return sendStatusQueue().then(function(msg){
+                
+                    updateDBStatus(true);
 
-                    // first send the dirty activities to ofsc
-                    return sendActivityChangesToOFSC().then(function(activities_updated){
-                        // then get all of the activities from ofsc 
-                        // NOTE: this will mess up bc OFSC does not update right away
-                        // so even though it techincally has the correct info, it will send back 
-                        // old information for the activities that were just updated
-                        return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
-                            console.log('...adding activities to local db...');
-                            // update the local db with the ofsc activities
-                            return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
+                    resolve(msg);
 
-                        });
+                }).catch(function(err){
 
-                    });
-
-                }).catch(function(err) {
-
-                    updateFeedback( err );
-                    reject(err);
-
-                }).then(function(x) { 
-                    console.log(x);
-                    return getActivitiesFromIndexedDb().then(function(activities) { // update the view
-
-                        updateActivityTable('activities', activities, {date: localStorage.getItem('showing_date')});
-                        
-                        resolve();
-
-                    });
+                    resolve(err);
 
                 });
 
-                break;
+            }).catch(function(msg){
 
-            case 'activity_detail':
-                console.log('..on activity_detail page..');
-                var id = localStorage.getItem('id');
-                console.log(id);
-                if(id) {
-                    getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
-                        updateActivityDetailList('activity_details', activity,'address,name');
-                        resolve();
-                    });
-                }
-                else {
-                    reject('No id in local storage');
-                }
+                resolve(msg);
 
-                break;
+            });
         }
+        else {
+            
+            resolve('device is in "Airplane Mode"');
+        }
+        
+    }).then(function(msg){
+        
+        updateFeedback(msg);
+        
+        console.log('------ end of send local changes -----');
     });
     
-    change_view.then(function(){
-        
-        $('#'+page).show();
-        
-    }).catch(function(err){
-        
-        console.warn(err);
-        
-    }).then(function(){
-        console.log('------ end of initialization -----');
-    });
 }
 
+
+
 /**
-* Refresha and show the page(view)
-* @params {string} page (view) to show 
+* Refresh and show the view
+* @params {string} view to show 
+* @returns {Promise} resolves with '', rejects with message
 */
-function changeView(page){
+function getView(view){
     
     console.log('------ changing view -----');
     
-    var change_view = new Promise(function(resolve, reject){
+    return new Promise(function(resolve, reject){
         
-        switch(page){
+        switch(view){
             case 'home':
 
-                getActivitiesFromIndexedDb().then(function(activities) { // send the queue
+                getActivitiesFromIndexedDb().then(function(activities) {
 
                     updateActivityTable('activities', activities, {date: localStorage.getItem('showing_date')} );
                     
@@ -1289,7 +1284,7 @@ function changeView(page){
                 break;
 
             case 'activity_detail':
-                console.log('..on activity_detail page..');
+                console.log('..on activity_detail view..');
 
                 var id = localStorage.getItem('id');
 
@@ -1308,11 +1303,9 @@ function changeView(page){
 
                 break;
         }
-    });
-    
-    change_view.then(function(){
+    }).then(function(){
         
-        $('#'+page).show();
+        $('#'+view).show();
         
     }).catch(function(err){
         
@@ -1327,7 +1320,6 @@ function changeView(page){
     
 }
 
-//initializePage();
 
 
 
@@ -1359,13 +1351,13 @@ function changeView(page){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addActivitiesToIndexedDB">addActivitiesToIndexedDB</a></li><li><a href="global.html#addActivity">addActivity</a></li><li><a href="global.html#addObjectsToIndexedDB">addObjectsToIndexedDB</a></li><li><a href="global.html#addStatusObjectToQueue">addStatusObjectToQueue</a></li><li><a href="global.html#changeView">changeView</a></li><li><a href="global.html#clearObjectStore">clearObjectStore</a></li><li><a href="global.html#deleteObjectFromStore">deleteObjectFromStore</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getActivitiesFromIndexedDb">getActivitiesFromIndexedDb</a></li><li><a href="global.html#getActivitiesFromOFSC">getActivitiesFromOFSC</a></li><li><a href="global.html#getDateTimeObject">getDateTimeObject</a></li><li><a href="global.html#getIndexedDBEntry">getIndexedDBEntry</a></li><li><a href="global.html#getObjectStore">getObjectStore</a></li><li><a href="global.html#getResource">getResource</a></li><li><a href="global.html#getStatusQueue">getStatusQueue</a></li><li><a href="global.html#getUrlParam">getUrlParam</a></li><li><a href="global.html#initializeView">initializeView</a></li><li><a href="global.html#navigateWithParameters">navigateWithParameters</a></li><li><a href="global.html#openDb">openDb</a></li><li><a href="global.html#removeDirtyBitFromLocalDBObject">removeDirtyBitFromLocalDBObject</a></li><li><a href="global.html#sendActivityChangesToOFSC">sendActivityChangesToOFSC</a></li><li><a href="global.html#sendStatusQueue">sendStatusQueue</a></li><li><a href="global.html#shallowCopy">shallowCopy</a></li><li><a href="global.html#sortArrayOfObjects">sortArrayOfObjects</a></li><li><a href="global.html#statusActivity">statusActivity</a></li><li><a href="global.html#updateActivity">updateActivity</a></li><li><a href="global.html#updateActivityDetailList">updateActivityDetailList</a></li><li><a href="global.html#updateActivityInLocalDB">updateActivityInLocalDB</a></li><li><a href="global.html#updateActivityInOFSC">updateActivityInOFSC</a></li><li><a href="global.html#updateActivityTable">updateActivityTable</a></li><li><a href="global.html#updateDBStatus">updateDBStatus</a></li><li><a href="global.html#updateFeedback">updateFeedback</a></li><li><a href="global.html#updateStatusInOFSC">updateStatusInOFSC</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addActivitiesToIndexedDB">addActivitiesToIndexedDB</a></li><li><a href="global.html#addActivity">addActivity</a></li><li><a href="global.html#addObjectsToIndexedDB">addObjectsToIndexedDB</a></li><li><a href="global.html#addStatusObjectToQueue">addStatusObjectToQueue</a></li><li><a href="global.html#clearObjectStore">clearObjectStore</a></li><li><a href="global.html#deleteObjectFromStore">deleteObjectFromStore</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getActivitiesFromIndexedDb">getActivitiesFromIndexedDb</a></li><li><a href="global.html#getActivitiesFromOFSC">getActivitiesFromOFSC</a></li><li><a href="global.html#getDateTimeObject">getDateTimeObject</a></li><li><a href="global.html#getIndexedDBEntry">getIndexedDBEntry</a></li><li><a href="global.html#getObjectStore">getObjectStore</a></li><li><a href="global.html#getResource">getResource</a></li><li><a href="global.html#getStatusQueue">getStatusQueue</a></li><li><a href="global.html#getUrlParam">getUrlParam</a></li><li><a href="global.html#getView">getView</a></li><li><a href="global.html#navigateWithParameters">navigateWithParameters</a></li><li><a href="global.html#openDb">openDb</a></li><li><a href="global.html#removeDirtyBitFromLocalDBObject">removeDirtyBitFromLocalDBObject</a></li><li><a href="global.html#sendActivityChangesToOFSC">sendActivityChangesToOFSC</a></li><li><a href="global.html#sendLocalChangesToOFSC">sendLocalChangesToOFSC</a></li><li><a href="global.html#sendStatusQueue">sendStatusQueue</a></li><li><a href="global.html#shallowCopy">shallowCopy</a></li><li><a href="global.html#sortArrayOfObjects">sortArrayOfObjects</a></li><li><a href="global.html#statusActivity">statusActivity</a></li><li><a href="global.html#updateActivity">updateActivity</a></li><li><a href="global.html#updateActivityDetailList">updateActivityDetailList</a></li><li><a href="global.html#updateActivityInLocalDB">updateActivityInLocalDB</a></li><li><a href="global.html#updateActivityInOFSC">updateActivityInOFSC</a></li><li><a href="global.html#updateActivityTable">updateActivityTable</a></li><li><a href="global.html#updateDBStatus">updateDBStatus</a></li><li><a href="global.html#updateFeedback">updateFeedback</a></li><li><a href="global.html#updateStatusInOFSC">updateStatusInOFSC</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Dec 22 2015 12:20:59 GMT-0600 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Dec 22 2015 15:59:40 GMT-0600 (CST)
 </footer>
 
 <script> prettyPrint(); </script>
