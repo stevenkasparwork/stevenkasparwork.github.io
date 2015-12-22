@@ -637,9 +637,9 @@ function updateActivityTable(element_id_to_append_to, data, filters){
 */
 function updateFeedback(feedback){
     $('#feedback').html($('#feedback').html() + '<br/>' + feedback);
-    setTimeout(function(){
+    /*setTimeout(function(){
         $('#feedback').html('---');
-    }, 3000);
+    }, 3000);*/
 }
 
 /**
