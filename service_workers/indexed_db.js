@@ -244,7 +244,7 @@ function getActivitiesFromOFSC(){
             type: 'POST'
         }).success(function(response) {
             response = JSON.parse(response);
-            //console.log(response);
+            console.log(response);
             resolve(response.data.activities);
         }).error(function(error){
             //console.warn('need to get activities straight from indexedDB');
@@ -402,7 +402,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
         return Promise.all(promise_array).then(function(value){
             //console.log(value);
             //console.log(promise_array);
-            resolve('finished adding to local db'); 
+            resolve('...finished adding to local db...'); 
         }).catch(function(err){
             reject(err);
         });
