@@ -306,7 +306,7 @@ function shallowCopy( original )
 
     return clone ;
 }
-function syncLocalActivitiesWithOFSC(){
+function sendActivityChangesToOFSC(){
     console.log('...sync local activities...');
     return new Promise(function(resolve, reject){
         
@@ -1171,7 +1171,7 @@ function sendStatusQueue(tries){
 * Since we are loading all javascript files FOR NOW, we need to differentiate 
 * by getting what page we are on
 */
-function initializeView(page, reload_activities_from_ofsc){
+function initializeView(page){
     
     switch(page){
         case 'home':
@@ -1183,43 +1183,36 @@ function initializeView(page, reload_activities_from_ofsc){
 
             }).then(function(resource) { 
 
-                //console.log(resource);
-                return syncLocalActivitiesWithOFSC();// sync activities
-
-            }).then(function(msg) { 
-                // only reload the activites if specified.
-                // couple reasons: 
-                // it is more efficient than reloading every view change
-                // OFSC doesn't update very quickly so if we send something there and then call back to it right away
-                // might not get back what we wanted and the view will be displaying incorrect info even though all
-                // the information is correct in OFSC
-                if(reload_activities_from_ofsc){
+                // first send the dirty activities to ofsc
+                return sendActivityChangesToOFSC().then(function(activities_updated){
+                    // then get all of the activities from ofsc 
+                    // NOTE: this will mess up bc OFSC does not update right away
+                    // so even though it techincally has the correct info, it will send back 
+                    // old information for the activities that were just updated
                     return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
                         console.log('...adding activities to local db...');
-                        //console.log(activities);
+                        // update the local db with the ofsc activities
                         return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
+                        
                     });
-                }
-                else {
-                    return true;
-                }
+                    
+                });
 
             }).catch(function(err) {
                 
                 console.warn(err);
                 updateHelixFeedback( err );
                 
-            }).then(function(activities) { 
+            }).then(function(x) { 
+                console.log(x);
+                return getActivitiesFromIndexedDb().then(function(activities) { // update the view
+                
+                    updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')});
 
-                return getActivitiesFromIndexedDb(); // get the activities from the local db
+                    console.log('------ end of initialization -----');
+
+                });
                 
-            }).then(function(activities) { // update the view
-                
-                updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')});
-                
-                console.log('------ end of initialization -----');
-                
-                return true;
             });
             
             break;
