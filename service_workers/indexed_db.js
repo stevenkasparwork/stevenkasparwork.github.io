@@ -700,22 +700,24 @@ function updateActivity(event) {
     }).then(function(evt){
         
         
+        if(window.navigator.onLine){
         
-        var tmp_activity = {};
-        // put in properties object 
-        tmp_activity.properties = shallowCopy(activity);
-        // set the activity_id so that the api knows which activity to update
-        tmp_activity.activity_id = tmp_activity.properties.id;
-        
-        console.log(tmp_activity);
-        
-        return updateActivityInOFSC(tmp_activity);
-    }).then(function(response){
-        
-        console.log(response);
-        console.log(activity.id);
-        return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
-        
+            var tmp_activity = {};
+            // put in properties object 
+            tmp_activity.properties = shallowCopy(activity);
+            // set the activity_id so that the api knows which activity to update
+            tmp_activity.activity_id = tmp_activity.properties.id;
+
+            console.log(tmp_activity);
+
+            return updateActivityInOFSC(tmp_activity).then(function(response){
+                return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
+            });
+            
+        }
+        else {
+            return false;
+        }
     }).then(function(response){
         
         updateDBStatus(true);
