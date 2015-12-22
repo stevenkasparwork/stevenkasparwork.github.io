@@ -297,11 +297,11 @@ function addActivitiesToIndexedDB(activities){
         });
         
     } 
-    addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
+    return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
 }
 /**
 * @param {obj} original
-* this will return a shollow copy or clone of the passed in object
+* this will return a shallow copy or clone of the passed in object
 * prevents from changing referenced variables
 */
 
@@ -465,44 +465,6 @@ function removeDirtyBitFromLocalDBObject(store_name, key){
         };
         
     })
-    
-}
-
-
-/**
-* @param {string} store_name
-* @param {string} key
-* check to see if object is dirty
-* -- NOT IN USE --
-*/
-function checkIfObjectIsDirty(store_name, key){
-    console.log('...check if object is dirty...');
-    return new Promise(function(resolve, reject){
-
-        var store = getObjectStore(store_name, 'readwrite');
-        
-        var req = store.get(key);
-        
-        req.onerror = function(err) {
-            // Handle errors!
-            console.warn(err);
-            reject(err);
-        };
-        req.onsuccess = function(event) {
-            // Do something with the request.result!
-            if(req.result){
-                if(req.result.dirty === 1){
-                    resolve(req.result.id);
-                }
-                else {
-                    resolve(false);
-                }
-            }
-            else {
-                resolve(false);
-            }
-        };
-    });
     
 }
 
