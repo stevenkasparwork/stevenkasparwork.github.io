@@ -100,6 +100,9 @@ function openDb() {
             
             db = evt.target.result;
             
+            // go throught the object stores 
+            // if it exists, delete it.
+            // then create a new one
             if(db.objectStoreNames.contains(DB_RESOURCE_STORE_NAME)){
                 db.deleteObjectStore(DB_RESOURCE_STORE_NAME);
             } 
@@ -126,11 +129,6 @@ function openDb() {
                 console.log(e);
                 
             }
-            
-            
-            
-
-
         };
     });
 }

@@ -6,6 +6,7 @@ if ('serviceWorker' in navigator) {
 
     if(reg.installing) {
         console.log('...Service worker installing');
+        window.location.reload();
     } else if(reg.waiting) {
         console.log('...Service worker installed');
     } else if(reg.active) {
