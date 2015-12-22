@@ -1147,13 +1147,12 @@ function sendStatusQueue(tries){
 */
 function initializeView(page){
     
-    console.log('------ changing view -----');
+    console.log('------ begin initialization -----');
     
     var change_view = new Promise(function(resolve, reject){
         
         switch(page){
             case 'home':
-                console.log('------ begin initialization -----');
                 sendStatusQueue().then(function(response) { // send statuses queue
 
                     console.log(response);
@@ -1217,14 +1216,12 @@ function initializeView(page){
         
         $('#'+page).show();
         
-        console.log('------ end of changing view -----');
-
     }).catch(function(err){
         
         console.warn(err);
         
-        console.log('------ end of changing view -----');
-        
+    }).then(function(){
+        console.log('------ end of initialization -----');
     });
 }
 
@@ -1276,11 +1273,11 @@ function changeView(page){
         
         $('#'+page).show();
         
-        console.log('------ end of changing view -----');
-
     }).catch(function(err){
         
         console.warn(err);
+        
+    }).then(function(){
         
         console.log('------ end of changing view -----');
         
