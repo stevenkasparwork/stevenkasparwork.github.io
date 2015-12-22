@@ -50,7 +50,7 @@ function changeShowingDate(date){
     localStorage.setItem('showing_date', new_date);
 
     return getActivitiesFromIndexedDb().then(function(activities) { // update the view
-        updateHelixTable('activities', activities, {date: new_date});
+        updateActivityTable('activities', activities, {date: new_date});
     });
 }
 function stepShowingDate(step){
@@ -525,7 +525,7 @@ function getActivitiesFromIndexedDb(){
 * if the items id is in the editable string then it will be presented as an input
 * updating locally and to OFSC when blurred or changed
 */
-function updateHelixList(element_id_to_append_to, data, editable){
+function updateActivityDetailList(element_id_to_append_to, data, editable){
     console.log('...update helix list...');
     if(!editable){editable = '';}
     
@@ -569,8 +569,8 @@ function updateHelixList(element_id_to_append_to, data, editable){
 * @param {array} data
 * updates the element specified by model name as a table with data
 */
-function updateHelixTable(element_id_to_append_to, data, filters){
-    console.log('...update helix table...');
+function updateActivityTable(element_id_to_append_to, data, filters){
+    console.log('...update activity table...');
     
     var header_cells = '', item_string = '', filter_out = false;
     
@@ -613,7 +613,7 @@ function updateHelixTable(element_id_to_append_to, data, filters){
     
 }
 
-function updateHelixFeedback(feedback){
+function updateFeedback(feedback){
     $('#feedback').html(feedback);
     setTimeout(function(){
         $('#feedback').html('---');
@@ -703,19 +703,19 @@ function updateActivity(event) {
                 
                 updateDBStatus(true);
                 
-                updateHelixFeedback('activity has been updated locally and in ofsc'); 
+                updateFeedback('activity has been updated locally and in ofsc'); 
                 
                 return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
             });
         }
         else {
-            updateHelixFeedback( 'device is in "Airplane Mode"' ); 
+            updateFeedback( 'device is in "Airplane Mode"' ); 
         }
         
     }).catch(function(response){
         
         console.warn(response);
-        updateHelixFeedback( response.toString() ); 
+        updateFeedback( response.toString() ); 
         
     });
 }
@@ -899,7 +899,7 @@ function statusActivity(status){
     }).then(function(response){
         
         //console.log('activity has been updated locally and in ofsc');
-        updateHelixFeedback('activity has been updated locally and in ofsc');
+        updateFeedback('activity has been updated locally and in ofsc');
         
     }).catch(function(msg){
         
@@ -912,7 +912,7 @@ function statusActivity(status){
             time: time_strings.date_time
         }).then(function(response){
             console.warn(msg);
-            updateHelixFeedback(msg);
+            updateFeedback(msg);
         });
     });
 }
@@ -1178,14 +1178,14 @@ function initializeView(page){
 
                 }).catch(function(err) {
 
-                    updateHelixFeedback( err );
+                    updateFeedback( err );
                     reject(err);
 
                 }).then(function(x) { 
                     console.log(x);
                     return getActivitiesFromIndexedDb().then(function(activities) { // update the view
 
-                        updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')});
+                        updateActivityTable('activities', activities, {date: localStorage.getItem('showing_date')});
                         
                         resolve();
 
@@ -1201,7 +1201,7 @@ function initializeView(page){
                 console.log(id);
                 if(id) {
                     getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
-                        updateHelixList('activity_details', activity,'address,name');
+                        updateActivityDetailList('activity_details', activity,'address,name');
                         resolve();
                     });
                 }
@@ -1243,7 +1243,7 @@ function changeView(page){
 
                 getActivitiesFromIndexedDb().then(function(activities) { // send the queue
 
-                    updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')} );
+                    updateActivityTable('activities', activities, {date: localStorage.getItem('showing_date')} );
                     
                     resolve();
                 });
@@ -1258,7 +1258,7 @@ function changeView(page){
                 if(id) {
                     getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
                         
-                        updateHelixList('activity_details', activity,'address,name');
+                        updateActivityDetailList('activity_details', activity,'address,name');
                         
                         resolve();
                         
