@@ -57,7 +57,11 @@ function stepShowingDate(step){
     var new_date = new Date( localStorage.getItem('showing_date') );
     new_date.setDate(new_date.getDate()+step); 
     
-    return changeShowingDate( getDateTimeObject(new_date).date );
+    new_date = getDateTimeObject(new_date).date;
+    
+    $('#date_selector').val( new_date );
+    
+    return changeShowingDate( new_date );
 }
 
 
