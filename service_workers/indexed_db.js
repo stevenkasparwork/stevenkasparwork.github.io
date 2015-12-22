@@ -1182,8 +1182,8 @@ function initializeView(page, reload_activities_from_ofsc){
                 // the information is correct in OFSC
                 if(reload_activities_from_ofsc){
                     return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
-                        console.warn('adding activities to local db');
-                        console.log(activities);
+                        console.log('...adding activities to local db...');
+                        //console.log(activities);
                         return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
                     });
                 }
@@ -1240,9 +1240,12 @@ function changeView(page){
         case 'home':
             console.log('------ changing view -----');
             
-            sendStatusQueue().then(function(activities) { // send the queue
+            getActivitiesFromIndexedDb().then(function(activities) { // send the queue
+                
                 updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date').date} );
+                
                 console.log('------ end of changing view -----');
+                
             });
             
             break;
