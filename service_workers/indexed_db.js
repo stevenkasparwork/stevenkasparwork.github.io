@@ -1215,8 +1215,10 @@ function initializeView(page, reload_activities_from_ofsc){
                 localStorage.setItem('showing_date', getDateTimeObject().date);
                 
                 
-                updateHelixTable('activities', activities, {date: getDateTimeObject().date});
+                updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')});
+                
                 console.log('------ end of initialization -----');
+                
                 return true;
             });
             
