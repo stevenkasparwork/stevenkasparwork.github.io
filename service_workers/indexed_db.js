@@ -33,6 +33,7 @@ window.onload = function(){
     }
     else {
         var showing_date = getDateTimeObject().date;
+        
         localStorage.setItem('showing_date', showing_date);
         $('#date_selector').val( showing_date );
     }
@@ -1247,15 +1248,14 @@ function initializeView(page, reload_activities_from_ofsc){
 */
 function changeView(page){
     
+    console.log('------ changing view -----');
+    
     switch(page){
         case 'home':
-            console.log('------ changing view -----');
             
             getActivitiesFromIndexedDb().then(function(activities) { // send the queue
                 
                 updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')} );
-                
-                console.log('------ end of changing view -----');
                 
             });
             
@@ -1263,8 +1263,9 @@ function changeView(page){
             
         case 'activity_detail':
             console.log('..on activity_detail page..');
+            
             var id = localStorage.getItem('id');
-            console.log(id);
+            
             if(id) {
                 getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
                     updateHelixList('activity_details', activity,'address,name');
@@ -1276,6 +1277,9 @@ function changeView(page){
             
             break;
     }
+    
+    console.log('------ end of changing view -----');
+    
     $('#'+page).show();
 }
 
