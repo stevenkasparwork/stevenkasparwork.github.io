@@ -934,9 +934,9 @@ function statusActivity(status){
             activity_id: activity.id,
             date: time_strings.date,
             time: time_strings.date_time
-        }).then(function(response){
-            console.warn(response);
-            updateFeedback(response);
+        }).then(function(msg){
+            console.warn(msg);
+            updateFeedback(msg);
         });
     });
 }
