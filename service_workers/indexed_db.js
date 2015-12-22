@@ -743,7 +743,7 @@ function updateActivity(event) {
     }).catch(function(response){
         
         console.warn(response);
-        updateFeedback( response.toString() ); 
+        updateFeedback( 'ajax call failed' ); 
         
     });
 }
@@ -1157,10 +1157,10 @@ function loadActivitiesFromOFSC(){
         
     }).then(function(){
         console.log('..activities loaded from ofsc and added to local db');
-        console.log('------ load from ofsc -----');
+        console.log('------ end load from ofsc -----');
     }).catch(function(err){
         console.warn(err);
-        console.log('------ load from ofsc -----');
+        console.log('------ end load from ofsc -----');
     });
 }
 
