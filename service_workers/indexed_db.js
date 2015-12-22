@@ -1153,7 +1153,12 @@ function sendStatusQueue(tries){
 
 function loadActivitiesFromOFSC(){
     console.log('------ load from ofsc -----');
-    getActivitiesFromOFSC().then(function(activities){
+    
+    getResource().then(function(resource){ 
+        
+        return getActivitiesFromOFSC();
+        
+    }).then(function(activities){
 
         return addObjectsToIndexedDB( DB_ACTIVITY_STORE_NAME, activities);
 
