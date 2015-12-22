@@ -19,7 +19,7 @@ var Helix = {
 
 
 window.onload = function(){
-    console.log('--window loaded--');
+    console.log('------ window loaded -----');
     
     /* initially hide all of the views */
     /* the home will be shown when the service worker is ready */
