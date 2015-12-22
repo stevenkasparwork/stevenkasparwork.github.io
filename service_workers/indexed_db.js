@@ -44,19 +44,26 @@ window.onload = function(){
     };
     
     window.addEventListener('offline', function(e){
-        console.info(e);
-        updateFeedback('...you are offline...');
-        console.warn('you are offline');
-    })
+        updateConnection(false);
+    });
     window.addEventListener('online', function(e){
-        console.info(e);
-        updateFeedback('...you are online...');
-        console.warn('you are online');
-        
-    })
-    
-    
+        updateConnection(true);
+    });
+    updateConnectionStatus(window.navigator.onLine);
 };
+
+function updateConnectionStatus(online){
+    if(online){
+        $('#connection_status').removeClass('error');
+        $('#connection_status').addClass('success');
+        $('#connection_status').html('online');
+    }
+    else {
+        $('#connection_status').removeClass('success');
+        $('#connection_status').addClass('error');
+        $('#connection_status').html('offline');
+    }
+}
 
 function changeShowingDate(date){
     var new_date = getDateTimeObject( date ).date;
