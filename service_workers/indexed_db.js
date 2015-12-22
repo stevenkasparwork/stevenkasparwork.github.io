@@ -1192,45 +1192,34 @@ function sendLocalChangesToOFSC(){
 
             sendActivityChangesToOFSC().then(function(msg){
                 updateFeedback(msg);
-                console.log(msg);
 
                 return sendStatusQueue().then(function(msg){
                 
-                    //updateFeedback(msg);
-                    //console.log(msg);
                     updateDBStatus(true);
 
                     resolve(msg);
 
                 }).catch(function(err){
 
-                    //updateFeedback(err);
-                    //console.log(err);
-                    
                     resolve(err);
 
                 });
 
             }).catch(function(msg){
 
-                //updateFeedback(msg);
-                //console.log(msg);
-                
                 resolve(msg);
 
             });
         }
         else {
             
-            //updateFeedback('device is in "Airplane Mode"');
-            //console.log('device is in "Airplane Mode"');
-            
             resolve('device is in "Airplane Mode"');
         }
         
     }).then(function(msg){
+        
         updateFeedback(msg);
-        console.log(msg);
+        
         console.log('------ end of send local changes -----');
     });
     
