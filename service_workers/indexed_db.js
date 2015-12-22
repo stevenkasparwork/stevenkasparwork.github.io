@@ -1171,66 +1171,85 @@ function sendStatusQueue(tries){
 */
 function initializeView(page){
     
-    switch(page){
-        case 'home':
-            console.log('------ begin initialization -----');
-            sendStatusQueue().then(function(response) { // send statuses queue
-                
-                console.log(response);
-                return getResource(); // get resource and save id to localStorage
+    console.log('------ changing view -----');
+    
+    var change_view = new Promise(function(resolve, reject){
+        
+        switch(page){
+            case 'home':
+                console.log('------ begin initialization -----');
+                sendStatusQueue().then(function(response) { // send statuses queue
 
-            }).then(function(resource) { 
+                    console.log(response);
+                    return getResource(); // get resource and save id to localStorage
 
-                // first send the dirty activities to ofsc
-                return sendActivityChangesToOFSC().then(function(activities_updated){
-                    // then get all of the activities from ofsc 
-                    // NOTE: this will mess up bc OFSC does not update right away
-                    // so even though it techincally has the correct info, it will send back 
-                    // old information for the activities that were just updated
-                    return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
-                        console.log('...adding activities to local db...');
-                        // update the local db with the ofsc activities
-                        return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
-                        
+                }).then(function(resource) { 
+
+                    // first send the dirty activities to ofsc
+                    return sendActivityChangesToOFSC().then(function(activities_updated){
+                        // then get all of the activities from ofsc 
+                        // NOTE: this will mess up bc OFSC does not update right away
+                        // so even though it techincally has the correct info, it will send back 
+                        // old information for the activities that were just updated
+                        return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
+                            console.log('...adding activities to local db...');
+                            // update the local db with the ofsc activities
+                            return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
+
+                        });
+
                     });
-                    
+
+                }).catch(function(err) {
+
+                    updateHelixFeedback( err );
+                    reject(err);
+
+                }).then(function(x) { 
+                    console.log(x);
+                    return getActivitiesFromIndexedDb().then(function(activities) { // update the view
+
+                        updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')});
+                        
+                        resolve();
+
+                    });
+
                 });
 
-            }).catch(function(err) {
-                
-                console.warn(err);
-                updateHelixFeedback( err );
-                
-            }).then(function(x) { 
-                console.log(x);
-                return getActivitiesFromIndexedDb().then(function(activities) { // update the view
-                
-                    updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')});
+                break;
 
-                    console.log('------ end of initialization -----');
+            case 'activity_detail':
+                console.log('..on activity_detail page..');
+                var id = localStorage.getItem('id');
+                console.log(id);
+                if(id) {
+                    getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
+                        updateHelixList('activity_details', activity,'address,name');
+                        resolve();
+                    });
+                }
+                else {
+                    reject('No id in local storage');
+                }
 
-                });
-                
-            });
-            
-            break;
-            
-        case 'activity_detail':
-            console.log('..on activity_detail page..');
-            var id = localStorage.getItem('id');
-            console.log(id);
-            if(id) {
-                getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
-                    updateHelixList('activity_details', activity,'address,name');
-                });
-            }
-            else {
-                console.warn('No id in local storage');
-            }
-            
-            break;
-    }
-    $('#'+page).show();
+                break;
+        }
+    });
+    
+    change_view.then(function(){
+        
+        $('#'+page).show();
+        
+        console.log('------ end of changing view -----');
+
+    }).catch(function(err){
+        
+        console.warn(err);
+        
+        console.log('------ end of changing view -----');
+        
+    });
 }
 
 /**
@@ -1276,6 +1295,7 @@ function changeView(page){
                 break;
         }
     });
+    
     change_view.then(function(){
         
         $('#'+page).show();
