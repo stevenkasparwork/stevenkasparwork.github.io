@@ -1195,15 +1195,31 @@ function syncDbs(){
     
 }
 
+function syncAndRefreshView(view){
+    
+    return new Promise(function(resolve, reject){
+       
+        syncDbs().then(function(){
+            return getView('home');
+        }).then(function(){
+            resolve();
+        });
+        
+    });
+    
+}
+
+
 /**
 * Refresh and show the view
 * @params {string} view to show 
+* @returns {Promise} resolves with '', rejects with message
 */
 function getView(view){
     
     console.log('------ changing view -----');
     
-    var change_view = new Promise(function(resolve, reject){
+    return new Promise(function(resolve, reject){
         
         switch(view){
             case 'home':
@@ -1237,9 +1253,7 @@ function getView(view){
 
                 break;
         }
-    });
-    
-    change_view.then(function(){
+    }).then(function(){
         
         $('#'+view).show();
         
