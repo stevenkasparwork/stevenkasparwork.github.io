@@ -28,12 +28,12 @@ window.onload = function(){
     }
     
     /* set date selector to today */
-    $('#date_selector').val( getDateTimeString().date );
+    $('#date_selector').val( getDateTimeObject().date );
     document.getElementById('date_selector').onchange = function(event){
         console.log('date changed');
         
         getActivitiesFromIndexedDb().then(function(activities) { // update the view
-            updateHelixTable('activities', activities, {date: getDateTimeString( document.getElementById('date_selector').value ).date});
+            updateHelixTable('activities', activities, {date: getDateTimeObject( document.getElementById('date_selector').value ).date});
         });
         
     };
@@ -656,7 +656,7 @@ function navigateWithParameters(param_obj, page){
     for(var i in PAGE_SET){
         $('#'+PAGE_SET[i]).hide();
     }
-    initializeView(page); // this will show the page we need
+    changeView(page); // this will show the page we need
 }
 
 /**
@@ -699,7 +699,8 @@ function updateActivity(event) {
         });
     }).then(function(evt){
         
-        
+        // is not checking if there is actually connection. It checks if the device's connection capability is on or not
+        // basically checking if device is in Airplane Mode or not
         if(window.navigator.onLine){
         
             var tmp_activity = {};
@@ -713,8 +714,6 @@ function updateActivity(event) {
             return updateActivityInOFSC(tmp_activity).then(function(response){
                 
                 updateDBStatus(true);
-
-                console.log('activity has been updated locally and in ofsc');
                 
                 updateHelixFeedback('activity has been updated locally and in ofsc'); 
                 
@@ -722,7 +721,7 @@ function updateActivity(event) {
             });
         }
         else {
-            updateHelixFeedback( 'navigator is not onLine' ); 
+            updateHelixFeedback( 'device is in "Airplane Mode"' ); 
         }
         
     }).catch(function(response){
@@ -812,7 +811,7 @@ date: yyyy-mm-dd,
 date_time: yyyy-mm-dd hh:mm:ss
 }
 */
-function getDateTimeString( date_time_string ){
+function getDateTimeObject( date_time_string ){
     if(date_time_string){
         var d = new Date( date_time_string );
         d.setDate(d.getDate() + 1);
@@ -850,7 +849,7 @@ function getDateTimeString( date_time_string ){
 function statusActivity(status){
     console.log('...update activity...');
     var activity;
-    var time_strings = getDateTimeString();
+    var time_strings = getDateTimeObject();
     
     getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, localStorage.getItem('id') ).then(function(local_db_activity){
         activity = shallowCopy(local_db_activity);
@@ -1202,7 +1201,11 @@ function initializeView(page, reload_activities_from_ofsc){
                 return getActivitiesFromIndexedDb(); // get the activities from the local db
                 
             }).then(function(activities) { // update the view
-                updateHelixTable('activities', activities, {date: getDateTimeString().date});
+                
+                localStorage.setItem('showing_date', getDateTimeObject());
+                
+                
+                updateHelixTable('activities', activities, {date: getDateTimeObject().date});
                 console.log('------ end of initialization -----');
                 return true;
             });
@@ -1226,55 +1229,20 @@ function initializeView(page, reload_activities_from_ofsc){
     }
     $('#'+page).show();
 }
+
 /**
-* Since we are loading all javascript files FOR NOW, this changes the view
+* Since we are loading all javascript files FOR NOW, we need to differentiate 
+* by getting what page we are on
 */
-function changeView(page, reload_activities_from_ofsc){
+function changeView(page){
     
     switch(page){
         case 'home':
-            console.log('------ begin initialization -----');
-            sendStatusQueue().then(function(response) { // send statuses queue
-                
-                console.log(response);
-                return getResource(); // get resource and save id to localStorage
-
-            }).then(function(resource) { 
-
-                //console.log(resource);
-                return syncLocalActivitiesWithOFSC();// sync activities
-
-            }).then(function(msg) { 
-                // only reload the activites if specified.
-                // couple reasons: 
-                // it is more efficient than reloading every view change
-                // OFSC doesn't update very quickly so if we send something there and then call back to it right away
-                // might not get back what we wanted and the view will be displaying incorrect info even though all
-                // the information is correct in OFSC
-                if(reload_activities_from_ofsc){
-                    return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
-                        console.warn('adding activities to local db');
-                        console.log(activities);
-                        return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
-                    });
-                }
-                else {
-                    return true;
-                }
-
-            }).catch(function(err) {
-                
-                console.warn(err);
-                updateHelixFeedback( err );
-                
-            }).then(function(activities) { 
-
-                return getActivitiesFromIndexedDb(); // get the activities from the local db
-                
-            }).then(function(activities) { // update the view
-                updateHelixTable('activities', activities, {date: getDateTimeString().date});
-                console.log('------ end of initialization -----');
-                return true;
+            console.log('------ changing view -----');
+            
+            sendStatusQueue().then(function(activities) { // send the queue
+                updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date').date} );
+                console.log('------ end of changing view -----');
             });
             
             break;
@@ -1296,8 +1264,6 @@ function changeView(page, reload_activities_from_ofsc){
     }
     $('#'+page).show();
 }
-
-
 
 //initializePage();
 
