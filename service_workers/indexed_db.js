@@ -32,7 +32,9 @@ window.onload = function(){
         $('#date_selector').val( localStorage.getItem('showing_date') );
     }
     else {
-        $('#date_selector').val( getDateTimeObject().date );
+        var showing_date = getDateTimeObject().date;
+        localStorage.setItem('showing_date', showing_date);
+        $('#date_selector').val( showing_date );
     }
     
     document.getElementById('date_selector').onchange = function(event){
