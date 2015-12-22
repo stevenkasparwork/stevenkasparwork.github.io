@@ -40,19 +40,23 @@ window.onload = function(){
     
     document.getElementById('date_selector').onchange = function(event){
         console.log('date changed');
-        
-        var new_date = getDateTimeObject( document.getElementById('date_selector').value ).date;
-        
-        localStorage.setItem('showing_date', new_date);
-        
-        getActivitiesFromIndexedDb().then(function(activities) { // update the view
-            updateHelixTable('activities', activities, {date: new_date});
-        });
-        
+        changeShowingDate( document.getElementById('date_selector').value );
     };
 };
 
+function changeShowingDate(date){
+    var new_date = getDateTimeObject( date ).date;
+        
+    localStorage.setItem('showing_date', new_date);
 
+    return getActivitiesFromIndexedDb().then(function(activities) { // update the view
+        updateHelixTable('activities', activities, {date: new_date});
+    });
+}
+function stepShowingDate(step){
+    var tomorrow = new Date( localStorage.getItem('showing_date') );
+    tomorrow.setDate(step); 
+}
 
 
 
