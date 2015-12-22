@@ -36,7 +36,8 @@
         </div>
         
         <button onclick="clearObjectStore(DB_ACTIVITY_STORE_NAME);">Clear Activity Store</button>
-        <button onclick="syncAndRefreshView('home');">Sync with OFSC</button>
+        <button onclick="sendLocalChangesToOFSC();">Send Local Changes</button>
+        <button onclick="loadActivitiesFromOFSC();">Load OFSC Activities</button>
         <br/>
         <table>
             <tbody id="activities"></tbody>
