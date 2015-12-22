@@ -614,18 +614,15 @@ function updateHelixTable(element_id_to_append_to, data, filters){
     
     var header_cells = '', item_string = '', filter_out = false;
     
+    for(var field in VISIBLE_ACTIVITY_FIELDS){// build out the header info first
+        header_cells += '<th>'+field+'</th>';
+    }
+        
+    
     var items_string = data.map(function(item, index){
         item_string = '';
         filter_out = false;
         
-        // build out the header info first
-        if(index === 0){
-            for(var i in item){
-                if(VISIBLE_ACTIVITY_FIELDS.indexOf(i) > -1){
-                    header_cells += '<th>'+i+'</th>';
-                }
-            }
-        }
         
         // if the item does not match the optional filter object then we won't show it
         for(var f in filters){
