@@ -858,7 +858,7 @@ function getDateTimeObject( date_time_string ){
 * @param {string} status
 */
 function statusActivity(status){
-    console.log('...update activity...');
+    console.log('...status activity...');
     var activity;
     var time_strings = getDateTimeObject();
     
@@ -889,7 +889,8 @@ function statusActivity(status){
 
             req.onsuccess = function (evt) {
                 
-                updateDBStatus(false);                
+                updateDBStatus(false);  
+                
                 localStorage.setItem('local_indexeddb_last_update', new Date().getTime() );
                 resolve(evt);
             };
@@ -1153,6 +1154,8 @@ function loadActivitiesFromOFSC(){
 
     }).then(function(){
         
+        updateDBStatus(true);
+        
         return getView('home');
         
     }).then(function(){
@@ -1192,6 +1195,7 @@ function sendLocalChangesToOFSC(){
                 console.log(msg);
                 console.log('------ end send local changes -----');
 
+                updateDBStatus(true);
                 
                 resolve(msg);
                 
