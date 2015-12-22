@@ -368,9 +368,9 @@ function sendActivityChangesToOFSC(){
                                 reject_2(response);
                             }
                             
-                        }).catch(function(error){ 
+                        }).catch(function(response){ 
 
-                            reject_2(error);
+                            reject_2(response);
                             
                         })
                         
@@ -385,9 +385,14 @@ function sendActivityChangesToOFSC(){
                 
                 resolve('...local activity properties (not statuses) are in sync with ofsc...');
                 
-            }).catch(function(err){
+            }).catch(function(response){
                 
-                reject(err);
+                if(response.result_code){
+                    reject(response.data.response);
+                }
+                else {
+                    reject('ajax call unsuccesfull');
+                }
                 
             });
         });
@@ -1187,6 +1192,10 @@ function sendLocalChangesToOFSC(){
                 console.log(msg);
 
                 return sendStatusQueue();
+
+            }).catch(function(msg){
+
+                updateFeedback(msg);
 
             }).then(function(msg){
                 
