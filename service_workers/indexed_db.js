@@ -42,6 +42,20 @@ window.onload = function(){
         console.log('date changed');
         changeShowingDate( document.getElementById('date_selector').value );
     };
+    
+    window.addEventListener('offline', function(e){
+        console.info(e);
+        updateFeedback('...you are offline...');
+        console.warn('you are offline');
+    })
+    window.addEventListener('online', function(e){
+        console.info(e);
+        updateFeedback('...you are online...');
+        console.warn('you are online');
+        
+    })
+    
+    
 };
 
 function changeShowingDate(date){
