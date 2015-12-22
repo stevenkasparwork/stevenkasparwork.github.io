@@ -338,7 +338,7 @@ function shallowCopy( original )
 * @returns {Promise} resolves with message, rejects with message
 */
 function sendActivityChangesToOFSC(){
-    console.log('...sync local activities...');
+    console.log('...send activity to ofsc if dirty...');
     return new Promise(function(resolve, reject){
         
         var get_activities = getActivitiesFromIndexedDb();
@@ -350,30 +350,29 @@ function sendActivityChangesToOFSC(){
                     // the array of promises will be evaluated as a group below in Promise.all()
                     var tmp_obj = shallowCopy(obj);
                     if(tmp_obj.dirty){
+                        
                         console.warn('object is dirty');
+                        
                         var tmp_activity = {}; 
                         tmp_activity.properties = tmp_obj;
                         tmp_activity.activity_id = tmp_obj.id;
-                        console.log(tmp_activity);
                         
                         updateActivityInOFSC(tmp_activity).then(function(response){ 
-                            console.log(response);
+                            
                             if(response.result_code === 0){
-                                return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, response.data.activity_id);
+                                removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, response.data.activity_id).then(function(){
+                                    resolve_2('...activity has been cleaned');
+                                });
                             }
                             else {
-                                reject_2(response.data.response);
+                                reject_2(response);
                             }
                             
-                        }).catch(function(response){ 
+                        }).catch(function(error){ 
 
-                            console.warn(response);
-                            reject_2('failed to update activity in ofsc');
+                            reject_2(error);
                             
-                        }).then(function(response){
-                            console.log(response);
-                            resolve_2('...object has been cleaned...');
-                        });
+                        })
                         
                         
                     }
@@ -383,12 +382,13 @@ function sendActivityChangesToOFSC(){
                 });
             });
             return Promise.all(promise_array).then(function(value){
-                //console.log(value);
-                //console.log(promise_array);
-                updateDBStatus(true);
-                resolve('...local db is in sync with ofsc...');
+                
+                resolve('...local activity properties (not statuses) are in sync with ofsc...');
+                
             }).catch(function(err){
+                
                 reject(err);
+                
             });
         });
         
@@ -794,11 +794,15 @@ function updateActivityInOFSC(activity){
             },
             type: 'POST'
         }).success(function(response) {
+            
             response = JSON.parse(response);
+            
             resolve(response);
+            
         }).error(function(error){
-            console.warn(error);
-            reject('call to update activity was unsuccesfull');
+            
+            reject(error);
+            
         });
     });
 }
@@ -1141,6 +1145,21 @@ function sendStatusQueue(tries){
     });
 }
 
+function loadActivitiesFromOFSC(){
+    getActivitiesFromOFSC().then(function(activities){
+
+        return addObjectsToIndexedDB( DB_ACTIVITY_STORE_NAME, activities);
+
+    }).then(function(){
+        
+        return getView('home');
+        
+    }).then(function(){
+        console.log('..activities loaded from ofsc and added to local db');
+    }).catch(function(err){
+        console.warn(err);
+    });
+}
 
 
 /**
@@ -1151,7 +1170,7 @@ function sendStatusQueue(tries){
 * <page>
 * @params {string} page (view) to initialize 
 */
-function syncDbs(){
+function sendLocalChangesToOFSC(){
     
     console.log('------ begin sync -----');
     return new Promise(function(resolve, reject){
@@ -1163,18 +1182,12 @@ function syncDbs(){
 
                 return sendStatusQueue();
 
-            }).then(function(status_response){
-
-                return getActivitiesFromOFSC();
-
-            }).then(function(activities){
-
-                return addObjectsToIndexedDB( DB_ACTIVITY_STORE_NAME, activities);
-
             }).then(function(msg){
 
                 console.log('------ end sync -----');
 
+                updateFeedback(msg);
+                
                 resolve(msg);
                 
             }).catch(function(err){
@@ -1190,6 +1203,8 @@ function syncDbs(){
         else {
             console.log('------ end sync -----');
             
+            updateFeedback('device is in "Airplane Mode"');
+            
             resolve('device is in "Airplane Mode"');
         }
         
@@ -1197,20 +1212,6 @@ function syncDbs(){
     
 }
 
-function syncAndRefreshView(view){
-    
-    return new Promise(function(resolve, reject){
-       
-        syncDbs().then(function(msg){
-            console.log(msg);
-            return getView('home');
-        }).then(function(){
-            resolve();
-        });
-        
-    });
-    
-}
 
 
 /**

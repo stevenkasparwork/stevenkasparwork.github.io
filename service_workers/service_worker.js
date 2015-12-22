@@ -13,9 +13,9 @@ if ('serviceWorker' in navigator) {
         console.log('...Service worker active');
         
         openDb().then(function(){ 
-            return syncDbs(); 
-        }).then(function(){
-            getView('home');
+            /*return syncDbs(); 
+        }).then(function(){*/
+            return getView('home');
         });
     }
 
