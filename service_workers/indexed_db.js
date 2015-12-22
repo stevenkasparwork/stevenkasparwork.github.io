@@ -231,7 +231,7 @@ function getActivitiesFromOFSC(){
             type: 'POST'
         }).success(function(response) {
             response = JSON.parse(response);
-            console.log(response);
+            //console.log(response);
             resolve(response.data.activities);
         }).error(function(error){
             //console.warn('need to get activities straight from indexedDB');
@@ -1125,8 +1125,16 @@ function sendStatusQueue(tries){
                         reject(err);
                     }
                     else {
-                        reject('trying to send statuses again');
-                        return sendStatusQueue(tries);
+                        
+                        if(window.navigator.onLine){
+                            reject('trying to send statuses again');
+                            return sendStatusQueue(tries);
+                        }
+                        else{
+                            // if we are offline do not try again.
+                            console.log(window.navigator.onLine);
+                            return sendStatusQueue(max_tries);
+                        }
                     }
                     
                 });
@@ -1211,7 +1219,76 @@ function initializeView(page, reload_activities_from_ofsc){
     }
     $('#'+page).show();
 }
+/**
+* Since we are loading all javascript files FOR NOW, this changes the view
+*/
+function changeView(page, reload_activities_from_ofsc){
+    
+    switch(page){
+        case 'home':
+            console.log('------ begin initialization -----');
+            sendStatusQueue().then(function(response) { // send statuses queue
+                
+                console.log(response);
+                return getResource(); // get resource and save id to localStorage
 
+            }).then(function(resource) { 
+
+                //console.log(resource);
+                return syncLocalActivitiesWithOFSC();// sync activities
+
+            }).then(function(msg) { 
+                // only reload the activites if specified.
+                // couple reasons: 
+                // it is more efficient than reloading every view change
+                // OFSC doesn't update very quickly so if we send something there and then call back to it right away
+                // might not get back what we wanted and the view will be displaying incorrect info even though all
+                // the information is correct in OFSC
+                if(reload_activities_from_ofsc){
+                    return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
+                        console.warn('adding activities to local db');
+                        console.log(activities);
+                        return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
+                    });
+                }
+                else {
+                    return true;
+                }
+
+            }).catch(function(err) {
+                
+                console.warn(err);
+                updateHelixFeedback( err );
+                
+            }).then(function(activities) { 
+
+                return getActivitiesFromIndexedDb(); // get the activities from the local db
+                
+            }).then(function(activities) { // update the view
+                updateHelixTable('activities', activities, {date: getDateTimeString().date});
+                console.log('------ end of initialization -----');
+                return true;
+            });
+            
+            break;
+            
+        case 'activity_detail':
+            console.log('..on activity_detail page..');
+            var id = localStorage.getItem('id');
+            console.log(id);
+            if(id) {
+                getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
+                    updateHelixList('activity_details', activity,'address,name');
+                });
+            }
+            else {
+                console.warn('No id in local storage');
+            }
+            
+            break;
+    }
+    $('#'+page).show();
+}
 
 
 
