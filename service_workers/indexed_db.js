@@ -978,7 +978,14 @@ function updateStatusInOFSC(status_object){
         }).success(function(response) {
             response = JSON.parse(response);
             console.log(response);
-            resolve(response);
+            if(response.result_code === 0){
+                resolve(response);
+            }
+            else{
+                reject(response);
+            }
+            
+            
         }).error(function(error){
             //console.log(error);
             console.warn(error);
@@ -1199,7 +1206,8 @@ function syncAndRefreshView(view){
     
     return new Promise(function(resolve, reject){
        
-        syncDbs().then(function(){
+        syncDbs().then(function(msg){
+            console.log(msg);
             return getView('home');
         }).then(function(){
             resolve();
