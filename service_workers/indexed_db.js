@@ -909,20 +909,20 @@ function statusActivity(status){
         
     }).then(function(response){
         
-        updateDBStatus(true);
-        
-        console.log(response);
-        console.log(activity.id);
-        return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
-        
-    }).then(function(response){
-        
-        //console.log('activity has been updated locally and in ofsc');
-        updateFeedback('activity has been updated locally and in ofsc');
+        if(response.result_code === 0){
+            updateDBStatus(true);
+            updateFeedback('activity has been updated locally and in ofsc');
+            return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
+        }
+        else {
+            updateFeedback('activity encountered problem in OFSC');
+            console.warn(response);
+        }
         
     }).catch(function(msg){
         
-        console.warn('queueing status object');
+        console.warn(msg);
+        console.log('queueing status object');
         // need to queue the status_object for when we get connection back
         addStatusObjectToQueue({
             status: status,
@@ -978,12 +978,7 @@ function updateStatusInOFSC(status_object){
         }).success(function(response) {
             response = JSON.parse(response);
             console.log(response);
-            if(response.result_code === 0){
-                resolve(response);
-            }
-            else{
-                reject(response);
-            }
+            resolve(response);
             
             
         }).error(function(error){
