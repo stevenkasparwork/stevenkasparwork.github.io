@@ -87,7 +87,7 @@ function openDb() {
         req.onsuccess = function (evt) {
             //console.log(evt);
             db = this.result;
-            console.log(db);
+            //console.log(db);
             resolve(db);
         };
         req.onerror = function (evt) {
@@ -261,7 +261,7 @@ function getActivitiesFromOFSC(){
             type: 'POST'
         }).success(function(response) {
             response = JSON.parse(response);
-            console.log(response);
+            //console.log(response);
             resolve(response.data.activities);
         }).error(function(error){
             //console.warn('need to get activities straight from indexedDB');
