@@ -730,7 +730,7 @@ function updateActivity(event) {
     });
 }
 
-function failedPromise
+function failedPromise(){}
 
 
 /**
