@@ -662,7 +662,7 @@ function updateDBStatus(in_sync){
 * then initializes the right view
 * @param {obj} param_obj
 * @param {string} page
-* @returns {function} changeView()
+* @returns {function} getView()
 */
 function navigateWithParameters(param_obj, page){
     for(var i in param_obj){
@@ -671,7 +671,7 @@ function navigateWithParameters(param_obj, page){
     for(var i in PAGE_SET){
         $('#'+PAGE_SET[i]).hide();
     }
-    return changeView(page); // this will show the page we need
+    return getView(page); // this will show the page we need
 }
 
 /**
@@ -1097,13 +1097,13 @@ function sendStatusQueue(tries){
                             // if we get a response code of 8 it most likely means that our requests were
                             // just received out of order so we need to retry them
                             else {
-                                reject(response);
+                                resolve(response);
                             }
                             
                         }).error(function(error){
                             //console.log(error);
                             console.warn('activity did not update need to queue status update in localStorage');
-                            reject(error);
+                            resolve(error);
                         });
                     });
 
@@ -1118,25 +1118,16 @@ function sendStatusQueue(tries){
                     });
                     
                 }).catch(function(err){
-                    if(window.navigator.onLine){
-                        console.warn('TRIES: '+tries);
-                        tries++;
-                        if(tries > max_tries){
-                            throw err;
-                            reject(err);
-                        }
-                        else {
-
-                            reject('trying to send statuses again');
-                            return sendStatusQueue(tries);
-                        }
-                        
+                    console.warn('TRIES: '+tries);
+                    tries++;
+                    if(tries > max_tries){
+                        console.warn(err);
+                        resolve('MAX TRIES exceeded');
                     }
-                    else{
-                        // if we are offline do not try again.
-                        console.log(window.navigator.onLine);
-                        throw err;
-                        reject(err);
+                    else {
+
+                        resolve('trying to send statuses again');
+                        return sendStatusQueue(tries);
                     }
                     
                 });
@@ -1158,100 +1149,66 @@ function sendStatusQueue(tries){
 * <page>
 * @params {string} page (view) to initialize 
 */
-function initializeView(page){
+function syncDbs(){
     
-    console.log('------ begin initialization -----');
-    
-    var change_view = new Promise(function(resolve, reject){
+    console.log('------ begin sync -----');
+    return new Promise(function(resolve, reject){
         
-        switch(page){
-            case 'home':
-                sendStatusQueue().then(function(response) { // send statuses queue
+        if(window.navigator.onLine){
 
-                    console.log(response);
-                    return getResource(); // get resource and save id to localStorage
+            sendActivityChangesToOFSC().then(function(msg){
+                console.log(msg);
 
-                }).then(function(resource) { 
+                return sendStatusQueue();
 
-                    // first send the dirty activities to ofsc
-                    return sendActivityChangesToOFSC().then(function(activities_updated){
-                        // then get all of the activities from ofsc 
-                        // NOTE: this will mess up bc OFSC does not update right away
-                        // so even though it techincally has the correct info, it will send back 
-                        // old information for the activities that were just updated
-                        return getActivitiesFromOFSC().then(function(activities){ // get the activities using the resource from local storage
-                            console.log('...adding activities to local db...');
-                            // update the local db with the ofsc activities
-                            return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activities); // update activities in db 
+            }).then(function(status_response){
 
-                        });
+                return getActivitiesFromOFSC();
 
-                    }).catch(function(err){
-                        updateFeedback( err );
-                    });
+            }).then(function(activities){
 
-                }).then(function(x) { 
-                    console.log(x);
-                    return getActivitiesFromIndexedDb().then(function(activities) { // update the view
+                return addObjectsToIndexedDB( DB_ACTIVITY_STORE_NAME, activities);
 
-                        updateActivityTable('activities', activities, {date: localStorage.getItem('showing_date')});
-                        
-                        resolve();
+            }).then(function(msg){
 
-                    }).catch(function(err){
-                        updateFeedback( err );
-                        reject(err);
-                    });
+                console.log('------ end sync -----');
 
-                });
+                resolve(msg);
+                
+            }).catch(function(err){
 
-                break;
+                updateFeedback(err);
 
-            case 'activity_detail':
-                console.log('..on activity_detail page..');
-                var id = localStorage.getItem('id');
-                console.log(id);
-                if(id) {
-                    getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
-                        updateActivityDetailList('activity_details', activity,'address,name');
-                        resolve();
-                    });
-                }
-                else {
-                    reject('No id in local storage');
-                }
+                console.log('------ end sync -----');
+                
+                resolve(err);
 
-                break;
+            });
         }
+        else {
+            console.log('------ end sync -----');
+            
+            resolve('device is in "Airplane Mode"');
+        }
+        
     });
     
-    change_view.then(function(){
-        
-        $('#'+page).show();
-        
-    }).catch(function(err){
-        
-        console.warn(err);
-        
-    }).then(function(){
-        console.log('------ end of initialization -----');
-    });
 }
 
 /**
-* Refresha and show the page(view)
-* @params {string} page (view) to show 
+* Refresh and show the view
+* @params {string} view to show 
 */
-function changeView(page){
+function getView(view){
     
     console.log('------ changing view -----');
     
     var change_view = new Promise(function(resolve, reject){
         
-        switch(page){
+        switch(view){
             case 'home':
 
-                getActivitiesFromIndexedDb().then(function(activities) { // send the queue
+                getActivitiesFromIndexedDb().then(function(activities) {
 
                     updateActivityTable('activities', activities, {date: localStorage.getItem('showing_date')} );
                     
@@ -1261,7 +1218,7 @@ function changeView(page){
                 break;
 
             case 'activity_detail':
-                console.log('..on activity_detail page..');
+                console.log('..on activity_detail view..');
 
                 var id = localStorage.getItem('id');
 
@@ -1284,7 +1241,7 @@ function changeView(page){
     
     change_view.then(function(){
         
-        $('#'+page).show();
+        $('#'+view).show();
         
     }).catch(function(err){
         
@@ -1299,7 +1256,6 @@ function changeView(page){
     
 }
 
-//initializePage();
 
 
 
