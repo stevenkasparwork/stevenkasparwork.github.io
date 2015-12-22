@@ -27,11 +27,19 @@ window.onload = function(){
         $('#'+PAGE_SET[i]).hide();
     }
     
-    /* set date selector to today */
-    $('#date_selector').val( getDateTimeObject().date );
+    /* set date selector to the last showing date stored in localStorage or to today */
+    if( localStorage.getItem('showing_date') ){
+        $('#date_selector').val( localStorage.getItem('showing_date') );
+    }
+    else {
+        $('#date_selector').val( getDateTimeObject().date );
+    }
+    
     document.getElementById('date_selector').onchange = function(event){
         console.log('date changed');
+        
         var new_date = getDateTimeObject( document.getElementById('date_selector').value ).date;
+        
         localStorage.setItem('showing_date', new_date);
         
         getActivitiesFromIndexedDb().then(function(activities) { // update the view
