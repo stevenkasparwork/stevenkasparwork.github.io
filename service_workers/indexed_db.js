@@ -654,9 +654,13 @@ function updateFeedback(feedback){
 function updateDBStatus(in_sync){
     localStorage.setItem('dbs_in_sync', in_sync);
     if(in_sync){
+        $('#db_status').removeClass('error');
+        $('#db_status').addClass('success');
         $('#db_status').html('databases are in sync');
     }
     else{
+        $('#db_status').removeClass('success');
+        $('#db_status').addClass('error');
         $('#db_status').html('databases are out of sync');
     }
 }
