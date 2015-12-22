@@ -64,6 +64,15 @@ function stepShowingDate(step){
     return changeShowingDate( new_date );
 }
 
+function showToday(){
+
+    var today = getDateTimeObject().date;
+    
+    $('#date_selector').val( today );
+    
+    return changeShowingDate( today );
+}
+
 
 
 /**

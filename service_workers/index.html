@@ -13,6 +13,9 @@
         ul li:nth-child(even){
             background: #eee;
         }
+        #date_controls {
+            display: inline;
+        }
     </style>
 </head>
 
@@ -20,7 +23,15 @@
     <div id="db_status"></div>
     <!------ home page ------------->
     <div id="home">
-        <button onclick="stepShowingDate(-1);"><<</button><input id="date_selector" type="date"><button onclick="stepShowingDate(1);">>></button>
+        <div id="date_controls">
+            <div><button onclick="showToday();">today</button></div>
+            <div>
+                <button onclick="stepShowingDate(-1);"><<</button>
+                <input id="date_selector" type="date">
+                <button onclick="stepShowingDate(1);">>></button>
+            </div>
+        </div>
+        
         <button onclick="clearObjectStore(DB_ACTIVITY_STORE_NAME);">Clear Activity Store</button>
         <button onclick="initializeView('home', true);">Sync with OFSC</button>
         <br/>
