@@ -711,20 +711,17 @@ function updateActivity(event) {
             console.log(tmp_activity);
 
             return updateActivityInOFSC(tmp_activity).then(function(response){
+                
+                updateDBStatus(true);
+
+                console.log('activity has been updated locally and in ofsc');
+                
+                updateHelixFeedback('activity has been updated locally and in ofsc'); 
+                
                 return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
             });
-            
         }
-        else {
-            return false;
-        }
-    }).then(function(response){
-        
-        updateDBStatus(true);
-        
-        console.log('activity has been updated locally and in ofsc');
-        updateHelixFeedback('activity has been updated locally and in ofsc'); 
-        
+        updateHelixFeedback( 'navigator is not onLine' ); 
     }).catch(function(response){
         
         console.warn(response);
@@ -732,6 +729,9 @@ function updateActivity(event) {
         
     });
 }
+
+function failedPromise
+
 
 /**
 * @param {int} activity
