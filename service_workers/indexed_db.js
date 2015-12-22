@@ -79,6 +79,7 @@ function showToday(){
 * opens up our IndexedDB and sets a global variable db
 * so that we can access the Database later and make changes as necessary
 * This also will check to see if we are needing to upgrade the db
+* @returns {Promise} resolves to the indexedDB, rejects with an event
 */
 function openDb() {  
     console.log("...open local db...");
@@ -134,9 +135,10 @@ function openDb() {
 }
 
 /**
+* gets an object store so that we can do something with the indexedDB
 * @param {string} store_name
 * @param {string} mode either "readonly" or "readwrite"
-* gets an object store so that we can do something with the indexedDB
+* @returns {indexedDB.ObjectStore.transaction}
 */
 function getObjectStore(store_name, mode) {
     console.log("...get store object: "+store_name+"...");
@@ -145,9 +147,10 @@ function getObjectStore(store_name, mode) {
 }
 
 /**
-* @param {string} store_name
 * will empty the contents of the indexedDb.DB_NAME.store_name
 * be carefull with this
+* @param {string} store_name
+* @returns {Promise} resolves to an event, rejects with a an error message
 */
 function clearObjectStore(store_name) {
     console.log("...clear object store: "+store_name+"...");
@@ -166,9 +169,10 @@ function clearObjectStore(store_name) {
 }
 
 /**
+* removes the entry in store_name with key == key
 * @param {string} store_name
 * @param {string} key
-* removes the entry in store_name with key == key
+* @returns {Promise} resolves with an event, rejects with an error message
 */
 function deleteObjectFromStore(store_name, key) {
     console.log("...delete from object store: "+store_name+"...");
@@ -219,6 +223,7 @@ function addActivity(evt) {
 
 /**
 * Placeholder for the API call that will get resource information from an external system
+* @returns {Promise} resolves with a resource
 */
 function getResource(){
     console.log('...get resource from ofsc (dummy)...');
@@ -247,6 +252,7 @@ function getResource(){
 }
 /**
 * gets activity info from helixsxd.com using the local storage resource_id
+* @returns {Promise} resolves with array of activities, rejects with message
 */
 function getActivitiesFromOFSC(){
     console.log('...get activities from ofsc...');
@@ -273,9 +279,10 @@ function getActivitiesFromOFSC(){
 
 
 /**
-* @param {array} activites
 * Builds out an array of activities to be added to the store
 * This isn't really necessary now but could be in the future
+* @param {array} activites
+* @returns {Promise} addObjectsToIndexedDB which returns a Promise
 */
 function addActivitiesToIndexedDB(activities){
     console.log('...add activities to local db...');
@@ -299,12 +306,13 @@ function addActivitiesToIndexedDB(activities){
     } 
     return addObjectsToIndexedDB(DB_ACTIVITY_STORE_NAME, activity_array);
 }
+
 /**
-* @param {obj} original
 * this will return a shallow copy or clone of the passed in object
 * prevents from changing referenced variables
+* @param {obj} original
+* @returns {obj} clone of the object
 */
-
 function shallowCopy( original )  
 {
     // First create an empty object with
@@ -323,6 +331,12 @@ function shallowCopy( original )
 
     return clone ;
 }
+
+/**
+* Checks to see if any of the local db activities are dirty
+* If so, it send it to OFSC
+* @returns {Promise} resolves with message, rejects with message
+*/
 function sendActivityChangesToOFSC(){
     console.log('...sync local activities...');
     return new Promise(function(resolve, reject){
@@ -385,9 +399,9 @@ function sendActivityChangesToOFSC(){
 
 
 /**
+* adds all objects in the obj_array to the db.store_name
 * @param {string} store_name
 * @param {array} obj_array
-* adds all objects in the obj_array to the db.store_name
 */
 function addObjectsToIndexedDB(store_name, obj_array){
     console.log('...add objects to local db...');
@@ -427,9 +441,10 @@ function addObjectsToIndexedDB(store_name, obj_array){
 }
 
 /**
+* set the local object's dirty bit to 0
 * @param {string} store_name
 * @param {string} key
-* set the local object's dirty bit to 0
+* @returns {Promise} resolves with event, rejects with message
 */
 function removeDirtyBitFromLocalDBObject(store_name, key){
     console.log('...remoce diry bit from local db object: '+key+'...');
@@ -469,10 +484,11 @@ function removeDirtyBitFromLocalDBObject(store_name, key){
 }
 
 /**
-* @param {array} array
-* @param {int} order
 * sorts the activites on the home page by the start_time
 * -- should be implemented to sort more dynamically --
+* @param {array} array
+* @param {int} order
+* @returns {array} array that is sorted by the start_time
 */
 function sortArrayOfObjects(array, order){
     
@@ -495,6 +511,7 @@ function sortArrayOfObjects(array, order){
 
 /**
 * gets all activities from the local IndexedDB
+* @returns {Promise} resolves with activities from IndexedDB
 */
 function getActivitiesFromIndexedDb(){
     console.log('...get activities from indexed db...');
@@ -518,12 +535,12 @@ function getActivitiesFromIndexedDb(){
     
 }
 /**
-* @param {string} element_id_to_append_to
-* @param {array} data
-* @param {string} editable
 * updates the element specified by model name as a list with data
 * if the items id is in the editable string then it will be presented as an input
 * updating locally and to OFSC when blurred or changed
+* @param {string} element_id_to_append_to
+* @param {array} data - data to add to list
+* @param {string} editable - fields that are editable
 */
 function updateActivityDetailList(element_id_to_append_to, data, editable){
     console.log('...update activity detail list...');
@@ -564,10 +581,11 @@ function updateActivityDetailList(element_id_to_append_to, data, editable){
     $('#'+element_id_to_append_to).html(item_string); 
     
 }
+
 /**
+* updates the element specified by model name as a table with data
 * @param {string} element_id_to_append_to
 * @param {array} data
-* updates the element specified by model name as a table with data
 */
 function updateActivityTable(element_id_to_append_to, data, filters){
     console.log('...update activity table...');
@@ -613,6 +631,10 @@ function updateActivityTable(element_id_to_append_to, data, filters){
     
 }
 
+/**
+* updates id="feedback" element with feedback param
+* @param {string} feedback
+*/
 function updateFeedback(feedback){
     $('#feedback').html(feedback);
     setTimeout(function(){
@@ -620,6 +642,10 @@ function updateFeedback(feedback){
     }, 3000);
 }
 
+/**
+* updates id="db_status" element with in sync message
+* @param {bool} in_sync
+*/
 function updateDBStatus(in_sync){
     localStorage.setItem('dbs_in_sync', in_sync);
     if(in_sync){
@@ -632,10 +658,11 @@ function updateDBStatus(in_sync){
 
 
 /**
+* Sets localStorage( [{param_obj.key, param_obj.value}] ), 
+* then initializes the right view
 * @param {obj} param_obj
 * @param {string} page
-* Sets localStorage(param_obj.key, param_obj.value), 
-* then initializes the right view
+* @returns {function} changeView()
 */
 function navigateWithParameters(param_obj, page){
     for(var i in param_obj){
@@ -644,12 +671,13 @@ function navigateWithParameters(param_obj, page){
     for(var i in PAGE_SET){
         $('#'+PAGE_SET[i]).hide();
     }
-    changeView(page); // this will show the page we need
+    return changeView(page); // this will show the page we need
 }
 
 /**
+* updates and activity in local db -> update in OFSC
+* if OFSC updates then clear dirty bit 
 * @param {click_event} event
-* updates and activity in local db -> update in OFSC [x-> leave dirty bit as 1 so we know to update]
 */
 function updateActivity(event) {
     console.log('...update activity...');
@@ -724,9 +752,10 @@ function failedPromise(){}
 
 
 /**
-* @param {int} activity
 * sends an activity to addObjectToIndexedDB 
 * -- should probably be removed or redone to not call addObjects function. Do add here --
+* @param {obj} activity
+* @returns {Promise} resolves with the activity, rejects with a message
 */
 function updateActivityInLocalDB(activity){
     console.log('...update activity in local db...');
@@ -748,12 +777,10 @@ function updateActivityInLocalDB(activity){
 }
 
 /**
-* @param {int} activity
 * updates OFSC with activity object of form
-{
-api_key: OFSC_API_KEY,
-activity: {activity}
-}
+{ api_key: OFSC_API_KEY, activity: {activity} }
+* @param {obj} activity
+* @returns {Promise} resolves with response from helixsxd, rejects with a message
 */
 function updateActivityInOFSC(activity){
     console.log('...update activity in ofsc...');
@@ -778,26 +805,18 @@ function updateActivityInOFSC(activity){
 
 
 /**
-* @param {int} n
 * formats n so that it is a string with a length of at least 2
+* @param {int} n
+* @returns {string} n.toString() with a length of at least
 */
 function formatTime(n){
     return n > 9 ? "" + n: "0" + n;
 }
 
 /**
-* returns a obj 
-{
-year: yyyy,
-month: mm,
-date: dd,
-hour: hh,
-minute: mm,
-second: ss,
-time: hh:mm:ss,
-date: yyyy-mm-dd,
-date_time: yyyy-mm-dd hh:mm:ss
-}
+* Allows us to have consistency of date formatting
+* @param {string} - (Optional) string that will be reformated
+* @returns {obj} { year: yyyy, month: mm, date: dd, hour: hh, minute: mm, second: ss, time: hh:mm:ss, date: yyyy-mm-dd, date_time: yyyy-mm-dd hh:mm:ss }
 */
 function getDateTimeObject( date_time_string ){
     if(date_time_string){
@@ -831,8 +850,8 @@ function getDateTimeObject( date_time_string ){
 }
 
 /**
-* @param {string} status
 * updates the local db -> sends to ofsc [x-> queues in local db ]
+* @param {string} status
 */
 function statusActivity(status){
     console.log('...update activity...');
@@ -918,17 +937,9 @@ function statusActivity(status){
 }
 
 /**
+* queues a status_object => {status: ,date: ,time: ,activity_id: [,properties: [{name: value}] ]} in the local db so that we can send in later to OFSC
 * @param {obj} status_object
-* queues (simple store) a status_object 
-*status_object = {
-    status: ,
-    date: ,
-    time: ,
-    activity_id: [,
-    properties: [{name: value}] ]
-}
-in the local db so that we can send in later to OFSC
-*
+* @returns {Promise} resolves with message, rejects with message
 */
 function addStatusObjectToQueue(status_object) {
     console.log('...add status to local db queue...');
@@ -948,15 +959,9 @@ function addStatusObjectToQueue(status_object) {
 }
 
 /**
+* sends an object to OFSC with status_object = {status: ,date: ,time: ,activity_id: [,properties: [{name: value}] ]}
 * @param {obj} status_object
-* sends an object to OFSC with 
-*status_object = {
-    status: ,
-    date: ,
-    time: ,
-    activity_id: [,
-    properties: [{name: value}] ]
-}
+* @returns {Promise} resolves with response from helixsxd, rejects with status_object
 *
 */
 function updateStatusInOFSC(status_object){
@@ -984,8 +989,10 @@ function updateStatusInOFSC(status_object){
 }
 
 /**
-* @param {string} key
 * returns the local db entry specified by key
+* @param {string} store_name
+* @param {string} key
+* @returns {Promise} resolves with indexed db object, rejects with message
 */
 function getIndexedDBEntry(store_name, key){
     console.log('...get entry from local db...');
@@ -1023,9 +1030,10 @@ function getUrlParam(param) {
 }
 
 /**
-* resolves the statuses in the status_queue
+* Gets status objects in the DB_STATUS_QUEUE_STORE_NAME ObjectStore
+* @returns {Promise} resolves with array of status objects
 */
-function isStatusQueue(){
+function getStatusQueue(){
     console.log('...check status queue...');
     return new Promise(function(resolve, reject){
 
@@ -1046,9 +1054,10 @@ function isStatusQueue(){
 }
 
 /**
-* @param {int} tries (initially empty)
 * this will send the status queue to update ofsc
 * On a failed update, it will try up to 5 times
+* @param {int} tries (initially empty)
+* @returns {Promise} resolves with message, rejects with message
 */
 function sendStatusQueue(tries){
     // limiting the number of retries for our status queue.
@@ -1059,7 +1068,7 @@ function sendStatusQueue(tries){
     
     return new Promise(function(resolve, reject){
         
-        isStatusQueue().then(function(statuses){
+        getStatusQueue().then(function(statuses){
             if(statuses.length){
                 promise_array = statuses.map(function(obj){
 
@@ -1144,6 +1153,10 @@ function sendStatusQueue(tries){
 /**
 * Since we are loading all javascript files FOR NOW, we need to differentiate 
 * by getting what page we are on
+* NOTE: this currently won't ever be anything but 'home', but it should be implemented so
+* that the serviceWorker checks localStorage for most recent view and then passes that value in as
+* <page>
+* @params {string} page (view) to initialize 
 */
 function initializeView(page){
     
@@ -1226,8 +1239,8 @@ function initializeView(page){
 }
 
 /**
-* Since we are loading all javascript files FOR NOW, we need to differentiate 
-* by getting what page we are on
+* Refresha and show the page(view)
+* @params {string} page (view) to show 
 */
 function changeView(page){
     
