@@ -549,7 +549,6 @@ function getActivitiesFromIndexedDb(){
 function updateHelixList(element_id_to_append_to, data, editable){
     console.log('...update helix list...');
     if(!editable){editable = '';}
-    console.log(editable);
     
     var item_string = '';
     
@@ -1021,9 +1020,8 @@ function getIndexedDBEntry(store_name, key){
         var req = store.get(key);
 
         req.onsuccess = function(event) {
-            console.log(event);
-
-            console.log(req.result);
+            
+            //console.log(req.result);
             
             resolve(req.result);
         };
@@ -1243,37 +1241,56 @@ function changeView(page){
     
     console.log('------ changing view -----');
     
-    switch(page){
-        case 'home':
-            
-            getActivitiesFromIndexedDb().then(function(activities) { // send the queue
-                
-                updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')} );
-                
-            });
-            
-            break;
-            
-        case 'activity_detail':
-            console.log('..on activity_detail page..');
-            
-            var id = localStorage.getItem('id');
-            
-            if(id) {
-                getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
-                    updateHelixList('activity_details', activity,'address,name');
+    var change_view = new Promise(function(resolve, reject){
+        
+        switch(page){
+            case 'home':
+
+                getActivitiesFromIndexedDb().then(function(activities) { // send the queue
+
+                    updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')} );
+                    
+                    resolve();
                 });
-            }
-            else {
-                console.warn('No id in local storage');
-            }
-            
-            break;
-    }
+
+                break;
+
+            case 'activity_detail':
+                console.log('..on activity_detail page..');
+
+                var id = localStorage.getItem('id');
+
+                if(id) {
+                    getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, id ).then(function(activity){
+                        
+                        updateHelixList('activity_details', activity,'address,name');
+                        
+                        resolve();
+                        
+                    });
+                }
+                else {
+                    reject('No id in local storage');
+                }
+
+                break;
+        }
+    });
+    change_view.then(function(){
+        
+        $('#'+page).show();
+        
+        console.log('------ end of changing view -----');
+
+    }).catch(function(err){
+        
+        console.warn(err);
+        
+        console.log('------ end of changing view -----');
+        
+    });
     
-    console.log('------ end of changing view -----');
     
-    $('#'+page).show();
 }
 
 //initializePage();
