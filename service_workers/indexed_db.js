@@ -31,9 +31,11 @@ window.onload = function(){
     $('#date_selector').val( getDateTimeObject().date );
     document.getElementById('date_selector').onchange = function(event){
         console.log('date changed');
+        var new_date = getDateTimeObject( document.getElementById('date_selector').value ).date;
+        localStorage.setItem('showing_date', new_date);
         
         getActivitiesFromIndexedDb().then(function(activities) { // update the view
-            updateHelixTable('activities', activities, {date: getDateTimeObject( document.getElementById('date_selector').value ).date});
+            updateHelixTable('activities', activities, {date: new_date});
         });
         
     };
