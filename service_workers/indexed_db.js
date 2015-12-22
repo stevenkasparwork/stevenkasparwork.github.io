@@ -1194,16 +1194,16 @@ function sendLocalChangesToOFSC(){
 
                 return sendStatusQueue().then(function(msg){
                 
-                    updateFeedback(msg);
-                    console.log(msg);
+                    //updateFeedback(msg);
+                    //console.log(msg);
                     updateDBStatus(true);
 
                     resolve(msg);
 
                 }).catch(function(err){
 
-                    updateFeedback(err);
-                    console.log(err);
+                    //updateFeedback(err);
+                    //console.log(err);
                     
                     resolve(err);
 
@@ -1211,8 +1211,8 @@ function sendLocalChangesToOFSC(){
 
             }).catch(function(msg){
 
-                updateFeedback(msg);
-                console.log(msg);
+                //updateFeedback(msg);
+                //console.log(msg);
                 
                 resolve(msg);
 
@@ -1220,8 +1220,8 @@ function sendLocalChangesToOFSC(){
         }
         else {
             
-            updateFeedback('device is in "Airplane Mode"');
-            console.log('device is in "Airplane Mode"');
+            //updateFeedback('device is in "Airplane Mode"');
+            //console.log('device is in "Airplane Mode"');
             
             resolve('device is in "Airplane Mode"');
         }
