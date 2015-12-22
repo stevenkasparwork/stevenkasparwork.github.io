@@ -1202,7 +1202,7 @@ function initializeView(page, reload_activities_from_ofsc){
                 
             }).then(function(activities) { // update the view
                 
-                localStorage.setItem('showing_date', getDateTimeObject());
+                localStorage.setItem('showing_date', getDateTimeObject().date);
                 
                 
                 updateHelixTable('activities', activities, {date: getDateTimeObject().date});
@@ -1242,7 +1242,7 @@ function changeView(page){
             
             getActivitiesFromIndexedDb().then(function(activities) { // send the queue
                 
-                updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date').date} );
+                updateHelixTable('activities', activities, {date: localStorage.getItem('showing_date')} );
                 
                 console.log('------ end of changing view -----');
                 
