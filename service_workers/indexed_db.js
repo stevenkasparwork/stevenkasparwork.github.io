@@ -1186,10 +1186,12 @@ function sendLocalChangesToOFSC(){
                 return sendStatusQueue();
 
             }).then(function(msg){
-
+                
+                updateFeedback(msg);
+                
+                console.log(msg);
                 console.log('------ end send local changes -----');
 
-                updateFeedback(msg);
                 
                 resolve(msg);
                 
@@ -1197,6 +1199,7 @@ function sendLocalChangesToOFSC(){
 
                 updateFeedback(err);
 
+                console.log(err);
                 console.log('------ end send local changes -----');
                 
                 resolve(err);
