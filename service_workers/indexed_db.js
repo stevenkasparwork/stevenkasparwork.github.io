@@ -736,7 +736,7 @@ function updateActivity(event) {
                 
                 updateDBStatus(true);
                 
-                updateFeedback('activity has been updated locally and in ofsc'); 
+                updateFeedback('...activity has been updated locally and in ofsc...'); 
                 
                 return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
             });
@@ -1164,9 +1164,11 @@ function loadActivitiesFromOFSC(){
         return getView('home');
         
     }).then(function(){
-        console.log('..activities loaded from ofsc and added to local db');
+        updateFeedback('...activities loaded from ofsc and added to local db...');
+        console.log('...activities loaded from ofsc and added to local db...');
         console.log('------ end load from ofsc -----');
     }).catch(function(err){
+        updateFeedback(err);
         console.warn(err);
         console.log('------ end load from ofsc -----');
     });
