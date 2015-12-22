@@ -1189,44 +1189,46 @@ function sendLocalChangesToOFSC(){
         if(window.navigator.onLine){
 
             sendActivityChangesToOFSC().then(function(msg){
+                updateFeedback(msg);
                 console.log(msg);
 
-                return sendStatusQueue();
+                return sendStatusQueue().then(function(msg){
+                
+                    updateFeedback(msg);
+                    console.log(msg);
+                    updateDBStatus(true);
+
+                    resolve(msg);
+
+                }).catch(function(err){
+
+                    updateFeedback(err);
+                    console.log(err);
+                    
+                    resolve(err);
+
+                });
 
             }).catch(function(msg){
 
                 updateFeedback(msg);
-
-            }).then(function(msg){
-                
-                updateFeedback(msg);
-                
                 console.log(msg);
-                console.log('------ end send local changes -----');
-
-                updateDBStatus(true);
                 
                 resolve(msg);
-                
-            }).catch(function(err){
-
-                updateFeedback(err);
-
-                console.log(err);
-                console.log('------ end send local changes -----');
-                
-                resolve(err);
 
             });
         }
         else {
-            console.log('------ end send local changes -----');
             
             updateFeedback('device is in "Airplane Mode"');
+            console.log('device is in "Airplane Mode"');
             
             resolve('device is in "Airplane Mode"');
         }
         
+    }).then(function(msg){
+        console.log(msg);
+        console.log('------ end of send local changes -----');
     });
     
 }
