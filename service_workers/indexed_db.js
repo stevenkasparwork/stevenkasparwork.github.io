@@ -1188,7 +1188,6 @@ function initializeView(page){
 
                     }).catch(function(err){
                         updateFeedback( err );
-                        reject(err);
                     });
 
                 }).then(function(x) { 
@@ -1199,6 +1198,9 @@ function initializeView(page){
                         
                         resolve();
 
+                    }).catch(function(err){
+                        updateFeedback( err );
+                        reject(err);
                     });
 
                 });
