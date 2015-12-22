@@ -1188,11 +1188,6 @@ function initializeView(page){
 
                     });
 
-                }).catch(function(err) {
-
-                    updateFeedback( err );
-                    reject(err);
-
                 }).then(function(x) { 
                     console.log(x);
                     return getActivitiesFromIndexedDb().then(function(activities) { // update the view
@@ -1202,6 +1197,11 @@ function initializeView(page){
                         resolve();
 
                     });
+
+                }).catch(function(err) {
+
+                    updateFeedback( err );
+                    reject(err);
 
                 });
 
