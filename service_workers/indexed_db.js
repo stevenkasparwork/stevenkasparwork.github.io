@@ -526,7 +526,7 @@ function getActivitiesFromIndexedDb(){
 * updating locally and to OFSC when blurred or changed
 */
 function updateActivityDetailList(element_id_to_append_to, data, editable){
-    console.log('...update helix list...');
+    console.log('...update activity detail list...');
     if(!editable){editable = '';}
     
     var item_string = '';
