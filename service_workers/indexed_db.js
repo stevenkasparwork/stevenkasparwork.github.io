@@ -6,7 +6,7 @@ const DB_ACTIVITY_STORE_NAME = 'activities';
 const DB_STATUS_QUEUE_STORE_NAME = 'status_queue';
 const DB_RESOURCE_STORE_NAME = 'resources';
 const PAGE_SET = ['home', 'activity_detail']
-const VISIBLE_ACTIVITY_FIELDS = ['id','date','name','address','address','zip','state','start_time','end_time','worktype'];
+const VISIBLE_ACTIVITY_FIELDS = ['id','date','name','address','zip','state','start_time','end_time','worktype'];
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
@@ -615,7 +615,7 @@ function updateHelixTable(element_id_to_append_to, data, filters){
     var header_cells = '', item_string = '', filter_out = false;
     
     for(var field in VISIBLE_ACTIVITY_FIELDS){// build out the header info first
-        header_cells += '<th>'+field+'</th>';
+        header_cells += '<th>'+VISIBLE_ACTIVITY_FIELDS[field]+'</th>';
     }
         
     
