@@ -1146,6 +1146,7 @@ function sendStatusQueue(tries){
 }
 
 function loadActivitiesFromOFSC(){
+    console.log('------ load from ofsc -----');
     getActivitiesFromOFSC().then(function(activities){
 
         return addObjectsToIndexedDB( DB_ACTIVITY_STORE_NAME, activities);
@@ -1156,8 +1157,10 @@ function loadActivitiesFromOFSC(){
         
     }).then(function(){
         console.log('..activities loaded from ofsc and added to local db');
+        console.log('------ load from ofsc -----');
     }).catch(function(err){
         console.warn(err);
+        console.log('------ load from ofsc -----');
     });
 }
 
@@ -1172,7 +1175,7 @@ function loadActivitiesFromOFSC(){
 */
 function sendLocalChangesToOFSC(){
     
-    console.log('------ begin sync -----');
+    console.log('------ send local changes -----');
     return new Promise(function(resolve, reject){
         
         if(window.navigator.onLine){
@@ -1184,7 +1187,7 @@ function sendLocalChangesToOFSC(){
 
             }).then(function(msg){
 
-                console.log('------ end sync -----');
+                console.log('------ end send local changes -----');
 
                 updateFeedback(msg);
                 
@@ -1194,14 +1197,14 @@ function sendLocalChangesToOFSC(){
 
                 updateFeedback(err);
 
-                console.log('------ end sync -----');
+                console.log('------ end send local changes -----');
                 
                 resolve(err);
 
             });
         }
         else {
-            console.log('------ end sync -----');
+            console.log('------ end send local changes -----');
             
             updateFeedback('device is in "Airplane Mode"');
             
