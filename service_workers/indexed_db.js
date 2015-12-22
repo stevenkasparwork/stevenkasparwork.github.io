@@ -602,7 +602,7 @@ function updateHelixList(element_id_to_append_to, data, editable){
 */
 function updateHelixTable(element_id_to_append_to, data, filters){
     console.log('...update helix table...');
-    console.log(filters);
+    
     var header_cells = '', item_string = '', filter_out = false;
     
     var items_string = data.map(function(item, index){
