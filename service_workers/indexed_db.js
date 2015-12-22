@@ -6,7 +6,7 @@ const DB_ACTIVITY_STORE_NAME = 'activities';
 const DB_STATUS_QUEUE_STORE_NAME = 'status_queue';
 const DB_RESOURCE_STORE_NAME = 'resources';
 const PAGE_SET = ['home', 'activity_detail']
-const VISIBLE_ACTIVITY_FIELDS = ['id','date','name','address','zip','state','start_time','end_time','worktype'];
+const VISIBLE_ACTIVITY_FIELDS = ['id','date','name','address','zip','state','start_time','end_time','worktype','status'];
 const OFSC_API_KEY = 'UWJzZ1AyelNmelhuQkhaY1V6YXlMci9rMUM5SW1kaDNSWDJIV2RmQ3FKUmpYSHMwV3dyWXZUQlQ5OE0zUmJZSg==';
 var db;
 
@@ -1099,13 +1099,13 @@ function sendStatusQueue(tries){
                             // if we get a response code of 8 it most likely means that our requests were
                             // just received out of order so we need to retry them
                             else {
-                                resolve(response);
+                                reject(response);
                             }
                             
                         }).error(function(error){
                             //console.log(error);
-                            console.warn('activity did not update need to queue status update in localStorage');
-                            resolve(error);
+                            console.warn('activity did not update need to queue status update in local db');
+                            reject(error);
                         });
                     });
 
