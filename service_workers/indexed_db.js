@@ -55,9 +55,9 @@ function changeShowingDate(date){
 }
 function stepShowingDate(step){
     var new_date = new Date( localStorage.getItem('showing_date') );
-    console.log(new_date);
     new_date.setDate(new_date.getDate()+step+1); 
-    console.log(new_date);
+    
+    return changeShowingDate( getDateTimeObject(new_date).date );
 }
 
 
