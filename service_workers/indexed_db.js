@@ -1227,6 +1227,7 @@ function sendLocalChangesToOFSC(){
         }
         
     }).then(function(msg){
+        updateFeedback(msg);
         console.log(msg);
         console.log('------ end of send local changes -----');
     });
