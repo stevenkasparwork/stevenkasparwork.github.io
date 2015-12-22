@@ -1118,23 +1118,25 @@ function sendStatusQueue(tries){
                     });
                     
                 }).catch(function(err){
-                    console.warn('TRIES: '+tries);
-                    tries++;
-                    if(tries > max_tries){
-                        throw err;
-                        reject(err);
-                    }
-                    else {
-                        
-                        if(window.navigator.onLine){
+                    if(window.navigator.onLine){
+                        console.warn('TRIES: '+tries);
+                        tries++;
+                        if(tries > max_tries){
+                            throw err;
+                            reject(err);
+                        }
+                        else {
+
                             reject('trying to send statuses again');
                             return sendStatusQueue(tries);
                         }
-                        else{
-                            // if we are offline do not try again.
-                            console.log(window.navigator.onLine);
-                            return sendStatusQueue(max_tries);
-                        }
+                        
+                    }
+                    else{
+                        // if we are offline do not try again.
+                        console.log(window.navigator.onLine);
+                        throw err;
+                        reject(err);
                     }
                     
                 });
