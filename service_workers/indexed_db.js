@@ -743,7 +743,7 @@ function updateActivity(event) {
     }).catch(function(response){
         
         console.warn(response);
-        updateFeedback( 'ajax call failed' ); 
+        updateFeedback( 'ajax call failed - bit is still dirty' ); 
         
     });
 }
@@ -924,9 +924,9 @@ function statusActivity(status){
             console.warn(response);
         }
         
-    }).catch(function(msg){
+    }).catch(function(status_object){
         
-        console.warn(msg);
+        console.warn(status_object);
         console.log('queueing status object');
         // need to queue the status_object for when we get connection back
         addStatusObjectToQueue({
@@ -935,8 +935,8 @@ function statusActivity(status){
             date: time_strings.date,
             time: time_strings.date_time
         }).then(function(response){
-            console.warn(msg);
-            updateFeedback(msg);
+            console.warn(response);
+            updateFeedback(response);
         });
     });
 }
