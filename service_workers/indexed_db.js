@@ -54,8 +54,9 @@ function changeShowingDate(date){
     });
 }
 function stepShowingDate(step){
-    var tomorrow = new Date( localStorage.getItem('showing_date') );
-    tomorrow.setDate(step); 
+    var new_date = new Date( localStorage.getItem('showing_date') );
+    new_date.setDate(step); 
+    console.log(new_date);
 }
 
 
