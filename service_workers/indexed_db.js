@@ -636,7 +636,7 @@ function updateActivityTable(element_id_to_append_to, data, filters){
 * @param {string} feedback
 */
 function updateFeedback(feedback){
-    $('#feedback').html(feedback);
+    $('#feedback').html($('#feedback').html() + '<br/>' + feedback);
     setTimeout(function(){
         $('#feedback').html('---');
     }, 3000);
