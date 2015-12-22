@@ -721,7 +721,10 @@ function updateActivity(event) {
                 return removeDirtyBitFromLocalDBObject(DB_ACTIVITY_STORE_NAME, activity.id);
             });
         }
-        updateHelixFeedback( 'navigator is not onLine' ); 
+        else {
+            updateHelixFeedback( 'navigator is not onLine' ); 
+        }
+        
     }).catch(function(response){
         
         console.warn(response);
