@@ -1007,8 +1007,8 @@ function routeCanBeDeactivated(){
 function routeCanBeActivated(){
     console.log('...see if route can be activated...');
     return new Promise(function(resolve, reject){
-        
-        if( localStorage.getItem('route_status') ){
+        var route_active = localStorage.getItem('route_status');
+        if( route_active ){
             reject('route already active');
         }
         
