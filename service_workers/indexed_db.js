@@ -1004,6 +1004,18 @@ function routeCanBeDeactivated(){
         
     });
 }
+function routeCanBeActivated(){
+    console.log('...see if route can be activated...');
+    return new Promise(function(resolve, reject){
+        
+        if( localStorage.getItem('route_status') ){
+            resolve();
+        }
+        
+        reject('route already active');
+        
+    });
+}
 function statusRoute(action){
     console.log('...status route: ' + action + '...');
     
@@ -1014,7 +1026,7 @@ function statusRoute(action){
         action: action
     };
     if(action === 'end'){
-        routeCanBeDeactivated().then(function(can_be_deactivated){
+        routeCanBeDeactivated().then(function(){
             localStorage.setItem('route_status', false);
             localStorage.setItem('route_status_date', route_object.time);
             updateDBStatus(false);
@@ -1056,40 +1068,45 @@ function statusRoute(action){
         });
     }
     else { // we are starting the route
-        localStorage.setItem('route_status', true);
-        localStorage.setItem('route_status_date', route_object.time);
-        updateDBStatus(false);
-        return new Promise(function(resolve, reject){
+        routeCanBeActivated().then(function(){
+            localStorage.setItem('route_status', true);
+            localStorage.setItem('route_status_date', route_object.time);
+            updateDBStatus(false);
+            return new Promise(function(resolve, reject){
 
-            updateRouteInOFSC(route_object).then(function(response){
+                updateRouteInOFSC(route_object).then(function(response){
 
-                if(response.result_code === 0){
-                    updateFeedback('...route updated successfully in ofsc...');
-                    updateDBStatus(true);
-                    resolve('route updated successfully in ofsc');
-                }
-                else{
-                    updateFeedback(response.data.error_msg);
-                    console.warn(response);
-                    reject(response.data.error_msg);
-                }
+                    if(response.result_code === 0){
+                        updateFeedback('...route updated successfully in ofsc...');
+                        updateDBStatus(true);
+                        resolve('route updated successfully in ofsc');
+                    }
+                    else{
+                        updateFeedback(response.data.error_msg);
+                        console.warn(response);
+                        reject(response.data.error_msg);
+                    }
 
-            }).catch(function(error){
-                updateFeedback('ajax.error');
-                console.warn('need to add route update to queue');
-                updateFeedback('...need to add route update to queue...');
+                }).catch(function(error){
+                    updateFeedback('ajax.error');
+                    console.warn('need to add route update to queue');
+                    updateFeedback('...need to add route update to queue...');
 
-                addObjectsToIndexedDB(DB_ROUTE_QUEUE_STORE_NAME, [route_object]).then(function(msg){
-                    console.log(msg);
-                    updateFeedback('...route object added to queue...');
-                    resolve('...route object added to queue...')
-                }).catch(function(err){
-                    console.warn(err);
-                    updateFeedback('...route object not added to queue and not updated in ofsc...');
-                    reject(err);
-                })
+                    addObjectsToIndexedDB(DB_ROUTE_QUEUE_STORE_NAME, [route_object]).then(function(msg){
+                        console.log(msg);
+                        updateFeedback('...route object added to queue...');
+                        resolve('...route object added to queue...')
+                    }).catch(function(err){
+                        console.warn(err);
+                        updateFeedback('...route object not added to queue and not updated in ofsc...');
+                        reject(err);
+                    })
+                });
+
             });
-
+        }).catch(function(msg){
+            console.warn(msg);
+            updateFeedback(msg);
         });
     }
     
