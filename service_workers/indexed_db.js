@@ -451,7 +451,7 @@ function addObjectsToIndexedDB(store_name, obj_array){
                 };
                 req.onerror = function(evt) {
                     console.warn(evt);
-                    reject('could not add to local db');
+                    reject('...could not add to local db...');
                 };
 
             });
@@ -883,14 +883,80 @@ function getDateTimeObject( date_time_string ){
     };
 }
 
+function statusRoute(action){
+    console.log('...status route: ' + action + '...');
+    
+    var route_object = {
+        date: getDateTimeObject().date,
+        time: getDateTimeObject().date_time,
+        resource_id: localStorage.getItem('resource_id'),
+        action: action
+    };
+    
+    localStorage.setItem('route_status', (action === 'start') );
+    localStorage.setItem('route_status_date', route_object.time);
+    
+    return new Promise(function(resolve, reject){
+        
+        updateRouteInOFSC(route_object).then(function(response){
+
+            if(response.result_code === 0){
+                updateFeedback('...route updated successfully in ofsc...');
+                resolve('route updated successfully in ofsc');
+            }
+            else{
+                updateFeedback(response.error_msg);
+                console.warn(response);
+                reject(response.error_msg);
+            }
+
+        }).catch(function(error){
+            updateFeedback('ajax.error');
+            console.warn(error);
+            console.warn('need to add route update to queue');
+            updateFeedback('...need to add route update to queue...');
+            
+            addObjectsToIndexedDB(DB_ROUTE_QUEUE_STORE_NAME, [route_object]).then(function(msg){
+                console.log(msg);
+                updateFeedback('...route object added to queue...');
+                resolve('...route object added to queue...')
+            }).catch(function(err){
+                console.warn(err);
+                updateFeedback('...route object not added to queue and not updated in ofsc...');
+                reject(err);
+            })
+        });
+        
+    });
+}
+
+function updateRouteInOFSC(route_object){
+    
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: "//helixsxd.com/service_workers/controllers/statusRoute.php",
+            data: {
+                api_key: OFSC_API_KEY,
+                route_object: route_object
+            },
+            type: 'POST'
+            
+        }).success(function(response) {
+            response = JSON.parse(response);
+            resolve(response);
+        }).error(function(error){
+            reject(error);
+        });
+    });
+}
+
 /**
 * updates the local db -> sends to ofsc [x-> queues in local db ]
 * @param {string} status
 */
 function statusActivity(status){
     console.log('...status activity...');
-    var activity;
-    var time_strings = getDateTimeObject();
+    var activity, time_strings = getDateTimeObject();
     
     getIndexedDBEntry( DB_ACTIVITY_STORE_NAME, localStorage.getItem('id') ).then(function(local_db_activity){
         activity = shallowCopy(local_db_activity);
