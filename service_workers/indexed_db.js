@@ -990,15 +990,16 @@ function routeCanBeDeactivated(){
     return new Promise(function(resolve, reject){
         
         getAllEntriesForObjectStore(DB_ACTIVITY_STORE_NAME).then(function(activities){
-            var day_is_complete = true, date_to_check = getDateTimeObject().date;
+            var date_to_check = getDateTimeObject().date;
             
             activities.map(function(activity){
                 if(activity.date === date_to_check && activity.status !== 'complete'){
-                    day_is_complete = false;
+                    updateFeedback('activity id: '+activity.id+' is not completed');
+                    reject('activity id: '+activity.id+' is not completed');
                 }
             });
             
-            resolve(day_is_complete);
+            resolve();
             
         });
         
