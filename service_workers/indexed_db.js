@@ -1009,10 +1009,10 @@ function routeCanBeActivated(){
     return new Promise(function(resolve, reject){
         
         if( localStorage.getItem('route_status') ){
-            resolve();
+            reject('route already active');
         }
         
-        reject('route already active');
+        resolve();
         
     });
 }
