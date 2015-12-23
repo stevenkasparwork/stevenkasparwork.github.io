@@ -1,9 +1,11 @@
 
 const DB_NAME = 'helix-ofsc-mobility';
-const DB_VERSION = 7; // Use a long long for this value (don't use a float)
+const DB_VERSION = 8; // Use a long long for this value (don't use a float)
 
 const DB_ACTIVITY_STORE_NAME = 'activities';
 const DB_STATUS_QUEUE_STORE_NAME = 'status_queue';
+const DB_ROUTE_QUEUE_STORE_NAME = 'route_queue';
+
 const DB_RESOURCE_STORE_NAME = 'resources';
 const PAGE_SET = ['home', 'activity_detail']
 const VISIBLE_ACTIVITY_FIELDS = ['id','date','status','name','address','zip','state','start_time','end_time','worktype'];
@@ -139,6 +141,11 @@ function openDb() {
                 db.deleteObjectStore(DB_STATUS_QUEUE_STORE_NAME);
             } 
             var store = db.createObjectStore(DB_STATUS_QUEUE_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+            
+            if(db.objectStoreNames.contains(DB_ROUTE_QUEUE_STORE_NAME)){
+                db.deleteObjectStore(DB_ROUTE_QUEUE_STORE_NAME);
+            } 
+            var store = db.createObjectStore(DB_ROUTE_QUEUE_STORE_NAME, { keyPath: 'id', autoIncrement: true });
             
             //store.createIndex('id', 'id', { unique: true });
             //store.createIndex('address', 'address', { unique: false });
