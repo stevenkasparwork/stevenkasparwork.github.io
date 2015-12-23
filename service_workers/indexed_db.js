@@ -985,7 +985,25 @@ function sendRouteQueue(tries){
         });
     });
 }
-
+function routeCanBeDeactivated(){
+    console.log('...see if route can be deactivated...');
+    return new Promise(function(resolve, reject){
+        
+        getAllEntriesForObjectStore(DB_ACTIVITY_STORE_NAME).then(function(activities){
+            var day_is_complete = true, date_to_check = getDateTimeObject().date;
+            
+            activities.map(function(activity){
+                if(activity.date === date_to_check && activity.status !== 'complete'){
+                    day_is_complete = false;
+                }
+            });
+            
+            resolve(day_is_complete);
+            
+        });
+        
+    });
+}
 function statusRoute(action){
     console.log('...status route: ' + action + '...');
     
@@ -995,42 +1013,83 @@ function statusRoute(action){
         resource_id: localStorage.getItem('resource_id'),
         action: action
     };
-    
-    localStorage.setItem('route_status', (action === 'start') );
-    localStorage.setItem('route_status_date', route_object.time);
-    updateDBStatus(false);
-    return new Promise(function(resolve, reject){
-        
-        updateRouteInOFSC(route_object).then(function(response){
+    if(action === 'end'){
+        routeCanBeDeactivated().then(function(can_be_deactivated){
+            localStorage.setItem('route_status', false);
+            localStorage.setItem('route_status_date', route_object.time);
+            updateDBStatus(false);
+            return new Promise(function(resolve, reject){
 
-            if(response.result_code === 0){
-                updateFeedback('...route updated successfully in ofsc...');
-                updateDBStatus(true);
-                resolve('route updated successfully in ofsc');
-            }
-            else{
-                updateFeedback(response.data.error_msg);
-                console.warn(response);
-                reject(response.data.error_msg);
-            }
+                updateRouteInOFSC(route_object).then(function(response){
 
-        }).catch(function(error){
-            updateFeedback('ajax.error');
-            console.warn('need to add route update to queue');
-            updateFeedback('...need to add route update to queue...');
-            
-            addObjectsToIndexedDB(DB_ROUTE_QUEUE_STORE_NAME, [route_object]).then(function(msg){
-                console.log(msg);
-                updateFeedback('...route object added to queue...');
-                resolve('...route object added to queue...')
-            }).catch(function(err){
-                console.warn(err);
-                updateFeedback('...route object not added to queue and not updated in ofsc...');
-                reject(err);
-            })
+                    if(response.result_code === 0){
+                        updateFeedback('...route updated successfully in ofsc...');
+                        updateDBStatus(true);
+                        resolve('route updated successfully in ofsc');
+                    }
+                    else{
+                        updateFeedback(response.data.error_msg);
+                        console.warn(response);
+                        reject(response.data.error_msg);
+                    }
+
+                }).catch(function(error){
+                    updateFeedback('ajax.error');
+                    console.warn('need to add route update to queue');
+                    updateFeedback('...need to add route update to queue...');
+
+                    addObjectsToIndexedDB(DB_ROUTE_QUEUE_STORE_NAME, [route_object]).then(function(msg){
+                        console.log(msg);
+                        updateFeedback('...route object added to queue...');
+                        resolve('...route object added to queue...')
+                    }).catch(function(err){
+                        console.warn(err);
+                        updateFeedback('...route object not added to queue and not updated in ofsc...');
+                        reject(err);
+                    })
+                });
+
+            });
         });
-        
-    });
+    }
+    else { // we are starting the route
+        localStorage.setItem('route_status', true);
+        localStorage.setItem('route_status_date', route_object.time);
+        updateDBStatus(false);
+        return new Promise(function(resolve, reject){
+
+            updateRouteInOFSC(route_object).then(function(response){
+
+                if(response.result_code === 0){
+                    updateFeedback('...route updated successfully in ofsc...');
+                    updateDBStatus(true);
+                    resolve('route updated successfully in ofsc');
+                }
+                else{
+                    updateFeedback(response.data.error_msg);
+                    console.warn(response);
+                    reject(response.data.error_msg);
+                }
+
+            }).catch(function(error){
+                updateFeedback('ajax.error');
+                console.warn('need to add route update to queue');
+                updateFeedback('...need to add route update to queue...');
+
+                addObjectsToIndexedDB(DB_ROUTE_QUEUE_STORE_NAME, [route_object]).then(function(msg){
+                    console.log(msg);
+                    updateFeedback('...route object added to queue...');
+                    resolve('...route object added to queue...')
+                }).catch(function(err){
+                    console.warn(err);
+                    updateFeedback('...route object not added to queue and not updated in ofsc...');
+                    reject(err);
+                })
+            });
+
+        });
+    }
+    
 }
 
 function updateRouteInOFSC(route_object){
