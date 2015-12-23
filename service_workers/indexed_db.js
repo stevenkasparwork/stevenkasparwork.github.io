@@ -983,7 +983,7 @@ function sendRouteQueue(tries){
                 resolve('...no route objects in queue...');
             }
         });
-    }):
+    });
 }
 
 function statusRoute(action){
