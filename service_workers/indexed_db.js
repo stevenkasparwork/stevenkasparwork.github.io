@@ -890,6 +890,102 @@ function getDateTimeObject( date_time_string ){
     };
 }
 
+
+/**
+* gets all entries from the local IndexedDB.store_name
+* @params {string} store_name
+* @returns {Promise} resolves with entries from IndexedDB
+*/
+function getAllEntriesForObjectStore(store_name){
+    console.log('...get entries from indexed db: '+store_name+'...');
+    return new Promise(function(resolve, reject){
+
+        var store = getObjectStore(store_name, 'readwrite');
+        var entries = [];
+
+        store.openCursor().onsuccess = function(event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                entries.push(cursor.value);
+                cursor.continue();
+            }
+            else {
+                resolve(entries);
+            }
+        };
+    });
+    
+}
+function sendRouteQueue(tries){
+    console.log('...send route queue...');
+    
+    // limiting the number of retries for our status queue.
+    // this should probably be done in middle-ware but for now this will do
+    var max_tries = 5;
+    // if tries is not defined then it is the first loop so set it to 0
+    tries || (tries = 0);
+    
+    return new Promise(function(resolve, reject){
+        
+        getAllEntriesForObjectStore(DB_ROUTE_QUEUE_STORE_NAME).then(function(route_objects){
+            if(route_objects.length){
+                var promise_array = route_objects.map(function(route_object){
+
+                    return new Promise(function(resolve, reject){
+                        updateRouteInOFSC(route_object).then(function(response){
+
+                            if(response.result_code === 0){
+                                updateFeedback('...route updated successfully in ofsc...');
+                                
+                                deleteObjectFromStore(DB_ROUTE_QUEUE_STORE_NAME, route_object.id).then(function(){
+                                    resolve('route updated successfully in ofsc');
+                                });
+                            }
+                            else{
+                                updateFeedback(response.data.error_msg);
+                                console.warn(response);
+                                reject(response.data.error_msg);
+                            }
+
+                        }).catch(function(error){
+                            updateFeedback('ajax.error');
+                            console.warn('leaving route object in ObjectStore');
+                            updateFeedback('...need to leaving route object in route queue...');
+                            reject(error);
+                        });
+                    });
+                });
+
+                return Promise.all(promise_array).then(function(value){
+
+                    var clear_route_queue = clearObjectStore(DB_ROUTE_QUEUE_STORE_NAME);
+
+                    clear_route_queue.then(function(response){
+                        resolve('...updated all route objects to ofsc and cleared local queue...');
+                    });
+
+                }).catch(function(err){
+                    console.warn('TRIES: '+tries);
+                    tries++;
+                    if(tries > max_tries){
+                        console.warn(err);
+                        resolve('MAX TRIES exceeded');
+                    }
+                    else {
+
+                        resolve('trying to send route again');
+                        return sendRouteQueue(tries);
+                    }
+
+                });
+            }
+            else {
+                resolve('...no route objects in queue...');
+            }
+        });
+    }):
+}
+
 function statusRoute(action){
     console.log('...status route: ' + action + '...');
     
@@ -902,13 +998,14 @@ function statusRoute(action){
     
     localStorage.setItem('route_status', (action === 'start') );
     localStorage.setItem('route_status_date', route_object.time);
-    
+    updateDBStatus(false);
     return new Promise(function(resolve, reject){
         
         updateRouteInOFSC(route_object).then(function(response){
 
             if(response.result_code === 0){
                 updateFeedback('...route updated successfully in ofsc...');
+                updateDBStatus(true);
                 resolve('route updated successfully in ofsc');
             }
             else{
@@ -1295,11 +1392,12 @@ function sendLocalChangesToOFSC(){
             sendActivityChangesToOFSC().then(function(msg){
                 updateFeedback(msg);
 
-                return sendStatusQueue().then(function(msg){
+                return sendRouteQueue().then(function(msg){
                 
-                    updateDBStatus(true);
-
-                    resolve(msg);
+                    return sendStatusQueue().then(function(msg){
+                        updateDBStatus(true);
+                        resolve(msg);
+                    });
 
                 }).catch(function(err){
 
