@@ -994,7 +994,6 @@ function routeCanBeDeactivated(){
             
             activities.map(function(activity){
                 if(activity.date === date_to_check && activity.status !== 'complete'){
-                    updateFeedback('activity id: '+activity.id+' is not completed');
                     reject('activity id: '+activity.id+' is not completed');
                 }
             });
@@ -1015,7 +1014,7 @@ function statusRoute(action){
         action: action
     };
     if(action === 'end'){
-        routeCanBeDeactivated().then(function(){
+        routeCanBeDeactivated().then(function(can_be_deactivated){
             localStorage.setItem('route_status', false);
             localStorage.setItem('route_status_date', route_object.time);
             updateDBStatus(false);
@@ -1051,6 +1050,9 @@ function statusRoute(action){
                 });
 
             });
+        }).catch(function(msg){
+            console.warn(msg);
+            updateFeedback(msg);
         });
     }
     else { // we are starting the route
