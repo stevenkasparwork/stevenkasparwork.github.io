@@ -1015,7 +1015,7 @@ function statusRoute(action){
         action: action
     };
     if(action === 'end'){
-        routeCanBeDeactivated().then(function(can_be_deactivated){
+        routeCanBeDeactivated().then(function(){
             localStorage.setItem('route_status', false);
             localStorage.setItem('route_status_date', route_object.time);
             updateDBStatus(false);
