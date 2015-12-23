@@ -16,8 +16,8 @@
         #db_status {
             display: inline-block;
         }
-        #db_status:after {
-            content: ' - ';
+        i.sk-separator {
+            content: '-';
         }
         #connection_status {
             display: inline-block;
@@ -49,6 +49,7 @@
 
 <body>
     <div id="db_status"></div>
+    <i class="sk-separator"></i>
     <div id="connection_status"></div>
     <!------ home page ------------->
     <div id="home">
