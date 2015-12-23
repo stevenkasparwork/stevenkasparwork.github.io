@@ -912,14 +912,13 @@ function statusRoute(action){
                 resolve('route updated successfully in ofsc');
             }
             else{
-                updateFeedback(response.error_msg);
+                updateFeedback(response.data.error_msg);
                 console.warn(response);
-                reject(response.error_msg);
+                reject(response.data.error_msg);
             }
 
         }).catch(function(error){
             updateFeedback('ajax.error');
-            console.warn(error);
             console.warn('need to add route update to queue');
             updateFeedback('...need to add route update to queue...');
             
