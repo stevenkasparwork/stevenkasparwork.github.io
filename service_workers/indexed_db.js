@@ -914,7 +914,7 @@ function statusRoute(action){
             else{
                 updateFeedback(response.data.error_msg);
                 console.warn(response);
-                resolve(response.data.error_msg);
+                reject(response.data.error_msg);
             }
 
         }).catch(function(error){
