@@ -1393,6 +1393,7 @@ function sendLocalChangesToOFSC(){
                 updateFeedback(msg);
 
                 return sendRouteQueue().then(function(msg){
+                    updateFeedback(msg);
                 
                     return sendStatusQueue().then(function(msg){
                         updateDBStatus(true);
