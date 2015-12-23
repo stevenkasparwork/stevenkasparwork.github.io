@@ -1062,7 +1062,7 @@ function statusRoute(action){
                 });
 
             });
-        }).catch(function(msg){
+        }).catch(function(msg){ 
             console.warn(msg);
             updateFeedback(msg);
         });
